@@ -20,7 +20,7 @@ viddir = [root 'Vid\'];
 
 % EXPERIMENTAL PARAMETERS
 n_tracktime = 20;	% length(func)/fps; seconds for each EXPERIMENT
-n_resttime = 2;     % seconds for each REST
+n_resttime = 1;     % seconds for each REST
 n_pause = 0.2;      % seconds for each pause between panel commands
 n_trial = 20;     	% # of repetitions
 n_AI = 6;          	% # of analog input channels
