@@ -1,22 +1,18 @@
-
-%% Analyze Chirp Data:
-    % INPUTS:
-        % root: root directory
-        % Amp: amplitude  of stimulus [deg]
-        % HeadWings: head=1, wings=0
-        % plotTime: show time domain plot (logical)
-        % plotFreq: show frequency domain plots (logical)
-
-clear
-
+function [] = Analyze_Chirp_HeadFixed()
+% Analyze_Chirp_HeadFixed: Summary of this function goes here
+%   Detailed explanation goes here
+%   INPUTS:
+%       root: root directory
+%   OUTPUTS:
+%  
+%---------------------------------------------------------------------------------------------------------------------------------
 showplot.Time = 0;
-showplot.Freq = 0;
+showplot.Freq = 1;
 showplot.Bode = 0;
 showplot.Coher = 0;
-
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
-root.pat = 'H:\Experiment_HeadExcitation\Chirp\HeadFixed\';
+root.pat = 'E:\Experiment_HeadExcitation\Chirp\HeadFixed\';
 
 % Select files
 [FILES, PATH.pat] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -434,58 +430,7 @@ for kk = 1:nFly
             pp = pp + 1;            
     end 
 end
-
-%% FUNCTION:	fitPanel
-function [xi,ti] = fitPanel(xPos,time,time_new)
-%---------------------------------------------------------------------------------------------------------------------------------
-% fitPanel: fits curve to panel panel pattern position
-    % INPUTS:
-        % xPos: pattern position in deg
-        % t_p: time vector
- 	% OUTPUTS
-        % ti: new time vector
-        % xi: fitted data
-        % timeMean: interrpolated time vector
-        % xPosMean: interrpolated data points
-%---------------------------------------------------------------------------------------------------------------------------------      
-    % Find when panel position changes (transition)
-    pp = 1;
-    for jj = 2:length(xPos)
-        dP = xPos(jj) - xPos(jj-1);
-        if abs(dP) > 1
-            markerIndex(pp) = jj-1;
-%             markerPos(pp) = xPos(jj-1);
-%             markerTime(pp) = time(jj-1);
-            pp = pp + 1;
-        end
-    end
-    
-    % Find the mean values between transisiton points
-    indexMean = nan(1,length(markerIndex));
-    timeMean = nan(1,length(markerIndex));
-    xPosMean = nan(1,length(markerIndex));
-    for jj = 2:length(markerIndex)
-        indexMean(jj-1) = round(mean(markerIndex(jj-1):1:markerIndex(jj)));
-        timeMean(jj-1)  = time   (indexMean(jj-1));
-        xPosMean(jj-1)  = xPos  (indexMean(jj-1));
-    end
-
-    timeMean = [time(1) timeMean(1:end-1) time(end)]; % time when data is between two transisiton points
-    xPosMean = [xPos(1) xPosMean(1:end-1) xPos(end)]; % pattern position when data is between two transisiton points
-    
-    ti = timeMean;
-    xi = xPosMean;
-    
-    xi = spline(timeMean',xPosMean',time_new); % spline interrpolated data
-    ti = time_new;
-
-% 	figure (1) ; clf ; hold on
-%         plot(markerTime,markerPos,'g*')
-%         plot(time,xPos,'b')
-%         plot(timeMean,xPosMean,'r*-');
-%         plot(time_new,xi,'-k')
 end
-%---------------------------------------------------------------------------------------------------------------------------------
 %% FUNCTION:    FFT
 function [Fv, Mag , Phase] = FFT(t,x)
 %---------------------------------------------------------------------------------------------------------------------------------
