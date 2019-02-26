@@ -12,7 +12,7 @@ showplot.Coher = 0;
 showplot.FFT   = 0;
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
-root.pat = 'E:\Experiment_HeadExcitation\Chirp\HeadFree\';
+root.pat = 'H:\Experiment_HeadExcitation\Chirp\HeadFree\';
 root.head = [root.pat '\Vid\Angles\'];
 
 % Select files
@@ -156,7 +156,7 @@ for kk = 1:nTrial
   	wing.Full.Pos   = wing.Full.Pos - mean(wing.Full.Pos); % subtract mean
   	wing.Full.Vel   = [diff(wing.Full.Pos)./diff(wing.Full.Time) ; 0];
     
-    interval = floor(length(wing.Full.Time)/length(head.Time));
+    interval  = floor(length(wing.Full.Time)/length(head.Time));
     wing.Pos  = wing.Full.Pos(1:interval:end-1);
     wing.Vel  = wing.Full.Vel(1:interval:end-1);
     wing.Time = wing.Full.Time(1:interval:end-1);
@@ -347,6 +347,7 @@ for kk = 1:nFly
         HEAD.FlyMed.Phase       {kk,1}   	= zeros(length(HEAD.Phase{kk}{jj}),nAmp);
         HEAD.FlyMed.Mag         {kk,1}   	= zeros(length(HEAD.Mag{kk}{jj}),nAmp);
         
+     	WING.FlyMed.Time        {kk,1}   	= zeros(length(WING.Time{kk}{jj}),nAmp);
      	WING.FlyMed.Freq        {kk,1}   	= zeros(length(WING.Freq{kk}{jj}),nAmp);
         WING.FlyMed.Phase       {kk,1}   	= zeros(length(WING.Phase{kk}{jj}),nAmp);
         WING.FlyMed.Mag         {kk,1}   	= zeros(length(WING.Freq{kk}{jj}),nAmp);
@@ -370,6 +371,8 @@ for kk = 1:nFly
         HEAD.FlyMed.Phase       {kk}(:,jj) 	= median(HEAD.Phase{kk}{jj},2);
         HEAD.FlyMed.Mag         {kk}(:,jj) 	= median(HEAD.Mag{kk}{jj},2);
         
+        WING.FlyMed.Time        {kk}(:,jj) 	= median(WING.Time{kk}{jj},2);
+     	WING.FlyMed.Pos         {kk}(:,jj) 	= median(WING.Pos{kk}{jj},2);
     	WING.FlyMed.Freq        {kk}(:,jj) 	= median(WING.Freq{kk}{jj},2);
         WING.FlyMed.Phase       {kk}(:,jj)	= median(WING.Phase{kk}{jj},2);
         WING.FlyMed.Mag         {kk}(:,jj)	= median(WING.Mag{kk}{jj},2);
@@ -393,9 +396,12 @@ HEAD.GrandMed.Freq  = median(cat(3,HEAD.FlyMed.Freq{:}),3);
 HEAD.GrandMed.Phase = median(cat(3,HEAD.FlyMed.Phase{:}),3);
 HEAD.GrandMed.Mag   = median(cat(3,HEAD.FlyMed.Mag{:}),3);
 
+WING.GrandMed.Time  = median(cat(3,WING.FlyMed.Time{:}),3);
+WING.GrandMed.Pos   = median(cat(3,WING.FlyMed.Pos{:}),3);
 WING.GrandMed.Freq  = median(cat(3,WING.FlyMed.Freq{:}),3);
 WING.GrandMed.Phase = median(cat(3,WING.FlyMed.Phase{:}),3);
 WING.GrandMed.Mag   = median(cat(3,WING.FlyMed.Mag{:}),3);
+WING.GrandSTD.Pos   = std(cat(3,WING.FlyMed.Pos{:}),0,3);
 
 HEAD.GrandMed.Err.Freq  = median(cat(3,HEAD.FlyMed.Err.Freq{:}),3);
 HEAD.GrandMed.Err.Phase = median(cat(3,HEAD.FlyMed.Err.Phase{:}),3);
@@ -405,12 +411,11 @@ HEAD.GrandMed.Time  = median(cat(3,HEAD.FlyMed.Time{:}),3);
 HEAD.GrandMed.Pos   = median(cat(3,HEAD.FlyMed.Pos{:}),3);
 HEAD.GrandSTD.Pos   = std(cat(3,HEAD.FlyMed.Pos{:}),0,3);
 
-%% Time Domain %%
+%% HEAD TIME DOMAIN %%
 %---------------------------------------------------------------------------------------------------------------------------------
-clc
 figure (76) ; clf
-amp = 1:4;
-pp = 1;
+set(gcf,'Position',[100 100 1100 800])
+amp = 1:nAmp;
 MR = cell(length(amp),1);
 for kk = 1:nFly
     for jj = 1:length(amp)
@@ -425,7 +430,7 @@ for kk = 1:nFly
             LW = MD - SD;
             R = (DT<=UP) & (DT>=LW);
             pp = size(MR{jj},1) + 1;
-            MR{jj}(pp,1) = mean(R);  % Value
+            MR{jj}(pp,1) = mean(R); % Value
             MR{jj}(pp,2) = kk; % Fly idx
             MR{jj}(pp,3) = aa; % Amplitude
          	MR{jj}(pp,4) = uFly(ii); % Trial (not actual)
@@ -433,45 +438,92 @@ for kk = 1:nFly
         end
         
         figure (76)
-        subplot(length(amp),1,jj) ; hold on ; box on ; grid on ; title([num2str(uAmp(amp(jj))) '^{o}'])
-%           	plot(HEAD.Time{kk}{amp(jj)},HEAD.Pos{kk}{amp(jj)},'Color',[0.5 0.5 0.5],'LineWidth',1)
+        subplot(length(amp),1,jj) ; hold on ; title([num2str(uAmp(amp(jj))) '$^{\circ}$'],'Interpreter','latex','FontSize',15)
+          	plot(HEAD.Time{kk}{amp(jj)},HEAD.Pos{kk}{amp(jj)},'Color',[0.5 0.5 0.5],'LineWidth',1)
             xlim([0 20])
             ylim([-20 20])
-            xlabel('Time (s)')
-            ylabel('deg')
+            yticks([-20:10:20])
+            if jj==nAmp
+                xlabel('Time (s)','Interpreter','latex','FontSize',15)
+            end
+            if jj~=nAmp
+                xticks([0])
+                xticklabels([''])
+            end
+            ylabel('Head Angle $(^{\circ}$)','Interpreter','latex','FontSize',15)
     end 
 end
-
+clear h
 for jj = 1:length(amp)
     figure (76)
     subplot(length(amp),1,jj)
-    	plot(HEAD.GrandMed.Time(:,amp(jj)),PAT.GrandMed.Pos(:,amp(jj)),'b','LineWidth',3)
-        g.patch = PatchSTD(HEAD.GrandMed.Pos(:,amp(jj)),HEAD.GrandSTD.Pos(:,amp(jj)),HEAD.GrandMed.Time(:,amp(jj)),...
+    	h.stim = plot(HEAD.GrandMed.Time(:,amp(jj)),PAT.GrandMed.Pos(:,amp(jj)),'b','LineWidth',1);
+        
+        h.patch = PatchSTD(HEAD.GrandMed.Pos(:,amp(jj)),HEAD.GrandSTD.Pos(:,amp(jj)),HEAD.GrandMed.Time(:,amp(jj)),...
         'k',[0.4 0.4 0.6]);
-        plot(HEAD.GrandMed.Time(:,amp(jj)),HEAD.GrandMed.Pos(:,amp(jj)),'k','LineWidth',3)    
+    
+        h.med = plot(HEAD.GrandMed.Time(:,amp(jj)),HEAD.GrandMed.Pos(:,amp(jj)),'k','LineWidth',3);
+        
+        if jj==1
+           legend([h.med h.stim],{'Median Response','Stimulus'}) 
+        end
 end
 
-AMR = cell(length(MR),1);
-for jj = 1:length(MR)
-    D = MR{jj};
-    [B,I]  = maxk(D(:,1),1);
-    AMR{jj} = D(I,:);
-    disp(AMR{jj})
-    
-    fi = AMR{jj}(:,2);
-    aa = AMR{jj}(:,3);
-    ai = amp(jj);
-    ti = AMR{jj}(:,4);
-    fn = AMR{jj}(:,5);
-    
-    for mm = 1:size(AMR{jj},1)
-        figure (76)
-        subplot(length(MR),1,jj)
-            plot(HEAD.Time{fi(mm)}{ai}(:,ti(mm)),HEAD.Pos{fi(mm)}{ai}(:,ti(mm)),'LineWidth',2)
+% AMR = cell(length(MR),1);
+% for jj = 1:length(MR)
+%     D = MR{jj};
+%     [B,I]  = maxk(D(:,1),1);
+%     AMR{jj} = D(I,:);
+%     disp(AMR{jj})
+%     
+%     fi = AMR{jj}(:,2);
+%     aa = AMR{jj}(:,3);
+%     ai = amp(jj);
+%     ti = AMR{jj}(:,4);
+%     fn = AMR{jj}(:,5);
+%     
+%     for mm = 1:size(AMR{jj},1)
+%         figure (76)
+%         subplot(length(MR),1,jj)
+%             plot(HEAD.Time{fi(mm)}{ai}(:,ti(mm)),HEAD.Pos{fi(mm)}{ai}(:,ti(mm)),'LineWidth',2)
+%     end
+% end
+
+%% WING TIME DOMAIN
+%---------------------------------------------------------------------------------------------------------------------------------
+figure (101) ; clf
+set(gcf,'Position',[100 100 1100 800])
+for kk = 1:nFly
+  	for jj = 1:nAmp
+    	subplot(nAmp,1,jj) ; hold on ; title(['Amp = ' num2str(uAmp(jj))])
+        h = plot(WING.Time{kk}{jj},WING.Pos{kk}{jj},'Color',[0.5 0.5 0.5]);
+        for ii = 1:length(h)
+            h(ii).Color(4) = 0.1;
+        end
+        h = plot(WING.FlyMed.Time{kk}(:,jj),WING.FlyMed.Pos{kk}(:,jj),'Color',[0.5 0.5 0.5]);
+        h.Color(4) = 0.5;
     end
-
 end
-
+clear h
+for jj = 1:nAmp
+	subplot(nAmp,1,jj) ; hold on ; title([num2str(uAmp(amp(jj))) '$^{\circ}$'],'Interpreter','latex','FontSize',15)
+%       	plot(HEAD.GrandMed.Time(:,jj), PAT.GrandMed.Pos(:,jj),'b','LineWidth',1);
+        h.med = plot(WING.GrandMed.Time(:,jj),WING.GrandMed.Pos(:,jj),'k','LineWidth',3);
+        h.patch = PatchSTD(WING.GrandMed.Pos(:,amp(jj)),WING.GrandSTD.Pos(:,amp(jj)),WING.GrandMed.Time(:,amp(jj)),...
+        'k',[0.4 0.4 0.6]);
+    
+     	xlim([0 20])
+        ylim([-4 4])
+%         yticks([-20:10:20])
+        if jj==nAmp
+            xlabel('Time (s)','Interpreter','latex','FontSize',15)
+        end
+        if jj~=nAmp
+            xticks([0])
+            xticklabels([''])
+        end
+        ylabel('$\Delta$ WBA$(V)$','Interpreter','latex','FontSize',15)
+end
 %% Frequency Domain %%
 %---------------------------------------------------------------------------------------------------------------------------------
 % PAT FFT %
