@@ -4,11 +4,7 @@ function [] = Analyze_Chirp_HeadFixed()
 %   INPUTS:
 %       root: root directory
 %   OUTPUTS:
-<<<<<<< HEAD
 %
-=======
-%  
->>>>>>> a829af326fa72c65a017e67ae208fea55c29c9b2
 %---------------------------------------------------------------------------------------------------------------------------------
 showplot.Time = 0;
 showplot.Freq = 1;
