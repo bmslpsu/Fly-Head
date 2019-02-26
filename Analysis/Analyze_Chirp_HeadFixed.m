@@ -4,15 +4,19 @@ function [] = Analyze_Chirp_HeadFixed()
 %   INPUTS:
 %       root: root directory
 %   OUTPUTS:
+<<<<<<< HEAD
 %
+=======
+%  
+>>>>>>> a829af326fa72c65a017e67ae208fea55c29c9b2
 %---------------------------------------------------------------------------------------------------------------------------------
 showplot.Time = 0;
-showplot.Freq = 0;
+showplot.Freq = 1;
 showplot.Bode = 0;
 showplot.Coher = 0;
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
-root.pat = 'H:\Experiment_HeadExcitation\Chirp\HeadFixed\';
+root.pat = 'E:\Experiment_HeadExcitation\Chirp\HeadFixed\';
 
 % Select files
 [FILES, PATH.pat] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -494,7 +498,6 @@ for kk = 1:nFly
     end 
 end
 end
-%---------------------------------------------------------------------------------------------------------------------------------
 %% FUNCTION:    FFT
 function [Fv, Mag , Phase] = FFT(t,x)
 %---------------------------------------------------------------------------------------------------------------------------------

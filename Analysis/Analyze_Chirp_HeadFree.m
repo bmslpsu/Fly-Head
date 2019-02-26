@@ -5,8 +5,8 @@ function [] = Analyze_Chirp_HeadFree()
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-showplot.Time  = 0;
-showplot.Freq  = 0;
+showplot.Time  = 1;
+showplot.Freq  = 1;
 showplot.Bode  = 0;
 showplot.Coher = 0;
 showplot.FFT   = 0;
@@ -266,21 +266,24 @@ for kk = 1:nTrial
                 title(['Fly ' num2str(Fly(kk)) ' Amp ' num2str(Amp(kk))])
                 plot(pat.Time,pat.Pos,'k')
                 plot(head.Time,head.Pos,'b')
-                box on
     end
+                plot(wing.Time,wing.Pos,'r')
+                box on
     if showplot.Freq
         figure (104)
             subplot(ceil(nTrial/colmn),colmn,kk) ; hold on
                 title(['Fly ' num2str(Fly(kk)) ' Amp ' num2str(Amp(kk))])
-                plot(pat.Freq,  pat.Mag ,'g')
+                plot(pat.Freq,  pat.Mag ,'k')
                 plot(head.Freq, head.Mag,'b')
+             	plot(wing.Freq, wing.Mag,'r')
                 xlim([0.5 11.5])
                 box on
         figure (105)
             subplot(ceil(nTrial/colmn),colmn,kk) ; hold on
                 title(['Fly ' num2str(Fly(kk)) ' Amp ' num2str(Amp(kk))])
-                plot(pat.Freq,  pat.Phase ,'g')
+                plot(pat.Freq,  pat.Phase ,'k')
                 plot(head.Freq, head.Phase ,'b')
+                plot(wing.Freq, wing.Phase,'r')
                 xlim([0.5 11.5])
                 box on    
     end
