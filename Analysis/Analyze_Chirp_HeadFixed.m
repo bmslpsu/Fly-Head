@@ -4,7 +4,7 @@ function [] = Analyze_Chirp_HeadFixed()
 %   INPUTS:
 %       root: root directory
 %   OUTPUTS:
-%  
+%
 %---------------------------------------------------------------------------------------------------------------------------------
 showplot.Time = 0;
 showplot.Freq = 1;
@@ -91,14 +91,14 @@ for kk = 1:nFly % # of flys
         PAT.Time{kk,1}{jj,1}        = [];
         PAT.Pos{kk,1}{jj,1}         = [];
         PAT.Freq{kk,1}{jj,1}        = [];
-        PAT.P1{kk,1}{jj,1}          = [];
+        PAT.Mag{kk,1}{jj,1}          = [];
         PAT.Phase{kk,1}{jj,1}       = [];
         PAT.Vel{kk,1}{jj,1}         = [];
         
         WING.Time{kk,1}{jj,1}       = [];
         WING.Pos{kk,1}{jj,1}        = [];
         WING.Freq{kk,1}{jj,1}       = [];
-        WING.P1{kk,1}{jj,1}         = [];
+        WING.Mag{kk,1}{jj,1}         = [];
         WING.Phase{kk,1}{jj,1}      = [];
         WING.GAIN{kk,1}{jj,1}       = [];
         WING.PHASE{kk,1}{jj,1}      = [];        
@@ -136,7 +136,6 @@ for kk = 1:nTrial
     wing.Pos  = wing.PosFull;
     wing.Time = t_p;
     wing.Vel = [diff(wing.Pos)./diff(wing.Time) ; 0];
-    
 	%-----------------------------------------------------------------------------------------------------------------------------
     % Get pattern data from DAQ %
     pat.TimeFull = t_p;
@@ -147,19 +146,19 @@ for kk = 1:nTrial
     Amplitude(kk,1) = max(pat.Pos);
     %-----------------------------------------------------------------------------------------------------------------------------
     % Convert head, wings, & pattern data to frequency domain %
-    [wing.Freq , wing.P1 , wing.Phase]  = FFT(wing.Time,wing.Pos);
-    [pat.Freq  , pat.P1  , pat.Phase ]  = FFT(pat.Time,pat.Pos);
+    [wing.Freq , wing.Mag , wing.Phase]  = FFT(wing.Time,wing.Pos);
+    [pat.Freq  , pat.Mag  , pat.Phase ]  = FFT(pat.Time,pat.Pos);
     
  	wing.Freq   = wing.Freq(SI:EI);
-    wing.P1     = wing.P1(SI:EI);
+    wing.Mag     = wing.Mag(SI:EI);
     wing.Phase  = wing.Phase(SI:EI);
 	
     pat.Freq   = pat.Freq(SI:EI);
-    pat.P1     = pat.P1(SI:EI);
+    pat.Mag     = pat.Mag(SI:EI);
     pat.Phase  = pat.Phase(SI:EI);   
     %-----------------------------------------------------------------------------------------------------------------------------
     % Calculate BODE gain % phase %       
-	wing.bode.mag = wing.P1./pat.P1; % wing gain
+	wing.bode.mag = wing.Mag./pat.Mag; % wing gain
     wing.bode.phase = medfilt1(-(pat.Phase - wing.Phase),20); % wing phase
     %-----------------------------------------------------------------------------------------------------------------------------
     % Calculate coherence %
@@ -172,7 +171,7 @@ for kk = 1:nTrial
 	PAT.Vel    	{idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = pat.Vel;
 
     PAT.Freq  	{idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = pat.Freq;
-	PAT.P1      {idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = pat.P1;
+	PAT.Mag      {idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = pat.Mag;
 	PAT.Phase	{idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = pat.Phase;
     
     % Wings
@@ -180,7 +179,7 @@ for kk = 1:nTrial
 	WING.Time	{idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = wing.Time;
 
 	WING.Freq  {idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = wing.Freq;
-	WING.P1    {idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = wing.P1;
+	WING.Mag    {idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = wing.Mag;
 	WING.Phase	{idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = wing.Phase;
     
 	WING.GAIN   {idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = wing.bode.mag;
@@ -196,16 +195,14 @@ for kk = 1:nTrial
                 title(['Fly ' num2str(Fly(kk)) ' Amp ' num2str(Amp(kk))])
                 plot(pat.Time,pat.Pos,'k')
                 plot(wing.Time,wing.Pos,'b')
-%                 plot(head.Time,head.Err,'r--')
-%                 ylim([-20 20])
                 box on
     end
     if showplot.Freq
         figure (104)
             subplot(ceil(nTrial/colmn),colmn,kk) ; hold on
                 title(['Fly ' num2str(Fly(kk)) ' Amp ' num2str(Amp(kk))])
-                plot(pat.Freq,  pat.P1 ,'g')
-                plot(wing.Freq, wing.P1 ,'b')
+                plot(pat.Freq,  pat.Mag ,'g')
+                plot(wing.Freq, wing.Mag ,'b')
                 xlim([0.5 11.5])
                 box on
         figure (105)
@@ -234,28 +231,96 @@ for kk = 1:nTrial
     %-----------------------------------------------------------------------------------------------------------------------------
 end
 disp('DONE')
-
-%% WING BODE %%
+%% Averages %%
 %---------------------------------------------------------------------------------------------------------------------------------
-clc
-if showplot.Bode
-    figure (80) ; clf
-end
-WING.FlyMean.Gain = [];
-WING.FlyMean.Phase = [];
-WING.FlyMean.Freq  = [];
 for kk = 1:nFly
     for jj = 1:nAmp
-        WING.FlyMean.Gain {kk,1}  = zeros(length(WING.GAIN{kk}{jj}),nAmp);
-        WING.FlyMean.Phase{kk,1}  = zeros(length(WING.PHASE{kk}{jj}),nAmp);
-        WING.FlyMean.Freq {kk,1}  = zeros(length(WING.Freq{kk}{jj}),nAmp);
+        PAT.FlyMed.Time  	{kk,1} 	= zeros(length(PAT.Time{kk}{jj}),nAmp);
+        PAT.FlyMed.Pos    	{kk,1} 	= zeros(length(PAT.Pos{kk}{jj}),nAmp);
+     	PAT.FlyMed.Freq    	{kk,1}	= zeros(length(PAT.Freq{kk}{jj}),nAmp);
+        PAT.FlyMed.Phase  	{kk,1} 	= zeros(length(PAT.Phase{kk}{jj}),nAmp);
+        PAT.FlyMed.Mag    	{kk,1} 	= zeros(length(PAT.Mag{kk}{jj}),nAmp);
         
-    	WING.FlyMed.Gain {kk,1}  = zeros(length(WING.GAIN{kk}{jj}),nAmp);
-        WING.FlyMed.Phase{kk,1}  = zeros(length(WING.PHASE{kk}{jj}),nAmp);
-        WING.FlyMed.Freq {kk,1}  = zeros(length(WING.Freq{kk}{jj}),nAmp);
+        WING.FlyMed.Time 	{kk,1} 	= zeros(length(WING.Time{kk}{jj}),nAmp);
+        WING.FlyMed.Pos  	{kk,1}	= zeros(length(WING.Pos{kk}{jj}),nAmp);
+     	WING.FlyMed.Freq 	{kk,1} 	= zeros(length(WING.Freq{kk}{jj}),nAmp);
+        WING.FlyMed.Phase	{kk,1} 	= zeros(length(WING.Phase{kk}{jj}),nAmp);
+        WING.FlyMed.Mag   	{kk,1}	= zeros(length(WING.Freq{kk}{jj}),nAmp);
+        
+        WING.FlyMed.GAIN   {kk,1}  = zeros(length(WING.GAIN{kk}{jj}),nAmp);
+        WING.FlyMed.PHASE  {kk,1}  = zeros(length(WING.PHASE{kk}{jj}),nAmp);
     end
 end
 
+for kk = 1:nFly
+  	for jj = 1:nAmp
+        PAT.FlyMed.Time  	{kk}(:,jj) 	= median(PAT.Time{kk}{jj},2);
+        PAT.FlyMed.Pos    	{kk}(:,jj) 	= median(PAT.Pos{kk}{jj},2);
+     	PAT.FlyMed.Freq  	{kk}(:,jj) 	= median(PAT.Freq{kk}{jj},2);
+        PAT.FlyMed.Phase  	{kk}(:,jj) 	= median(PAT.Phase{kk}{jj},2);
+        PAT.FlyMed.Mag   	{kk}(:,jj) 	= median(PAT.Mag{kk}{jj},2);
+
+        WING.FlyMed.Time   	{kk}(:,jj) 	= median(WING.Time{kk}{jj},2);
+        WING.FlyMed.Pos  	{kk}(:,jj) 	= median(WING.Pos{kk}{jj},2);
+    	WING.FlyMed.Freq    {kk}(:,jj) 	= median(WING.Freq{kk}{jj},2);
+        WING.FlyMed.Phase	{kk}(:,jj)	= median(WING.Phase{kk}{jj},2);
+        WING.FlyMed.Mag    	{kk}(:,jj)	= median(WING.Mag{kk}{jj},2);
+    end
+end
+
+PAT.GrandMed.Time  = median(cat(3,PAT.FlyMed.Time{:}),3);
+PAT.GrandMed.Pos   = median(cat(3,PAT.FlyMed.Pos{:}),3);
+PAT.GrandMed.Freq  = median(cat(3,PAT.FlyMed.Freq{:}),3);
+PAT.GrandMed.Phase = median(cat(3,PAT.FlyMed.Phase{:}),3);
+PAT.GrandMed.Mag   = median(cat(3,PAT.FlyMed.Mag{:}),3);
+
+WING.GrandMed.Time  = median(cat(3,WING.FlyMed.Time{:}),3);
+WING.GrandMed.Pos   = median(cat(3,WING.FlyMed.Pos{:}),3);
+WING.GrandMed.Freq  = median(cat(3,WING.FlyMed.Freq{:}),3);
+WING.GrandMed.Phase = median(cat(3,WING.FlyMed.Phase{:}),3);
+WING.GrandMed.Mag   = median(cat(3,WING.FlyMed.Mag{:}),3);
+WING.GrandSTD.Pos   = std(cat(3,WING.FlyMed.Pos{:}),0,3);
+
+%% WING TIME DOMAIN
+%---------------------------------------------------------------------------------------------------------------------------------
+figure (101) ; clf
+amp = 1:4;
+set(gcf,'Position',[100 100 1100 800/4])
+% suptitle('Wings: Head Fixed')
+for kk = 1:nFly
+  	for jj = 1:nAmp
+    	subplot(nAmp,1,jj) ; hold on ; title(['Amp = ' num2str(uAmp(jj))])
+        h = plot(WING.Time{kk}{jj},WING.Pos{kk}{jj},'Color',[0.5 0.5 0.5]);
+        for ii = 1:length(h)
+            h(ii).Color(4) = 0.1;
+        end
+        h = plot(WING.FlyMed.Time{kk}(:,jj),WING.FlyMed.Pos{kk}(:,jj),'Color',[0.5 0.5 0.5]);
+        h.Color(4) = 0.5;
+    end
+end
+clear h
+for jj = 1:nAmp
+	subplot(nAmp,1,jj) ; hold on ; title([num2str(uAmp(amp(jj))) '$^{\circ}$'],'Interpreter','latex','FontSize',15)
+%       	plot(PAT.GrandMed.Time(:,jj), PAT.GrandMed.Pos(:,jj),'b','LineWidth',1);
+        h.med = plot(WING.GrandMed.Time(:,jj),WING.GrandMed.Pos(:,jj),'k','LineWidth',3);
+        h.patch = PatchSTD(WING.GrandMed.Pos(:,amp(jj)),WING.GrandSTD.Pos(:,amp(jj)),WING.GrandMed.Time(:,amp(jj)),...
+        'k',[0.4 0.4 0.6]);
+    
+     	xlim([0 20])
+        ylim([-4 4])
+%         yticks([-20:10:20])
+        if jj==nAmp
+            xlabel('Time (s)','Interpreter','latex','FontSize',15)
+        end
+        if jj~=nAmp
+            xticks([0])
+            xticklabels([''])
+        end
+        ylabel('$\Delta$ WBA$(V)$','Interpreter','latex','FontSize',15)
+end
+
+%% WING BODE %%
+%---------------------------------------------------------------------------------------------------------------------------------
 for kk = 1:nFly
   	for jj = 1:nAmp
         WING.FlyMean.Gain{kk}(:,jj)  = nanmean(WING.GAIN{kk}{jj},2);
@@ -319,7 +384,6 @@ for kk = 1:nFly
             subplot(2,nAmp,pp) ; hold on
           	plot(WING.FlyMean.Freq{kk}(:,jj),WING.FlyMean.Gain{kk}(:,jj),'LineWidth',1)
             xlim([0.5 11.5])
-%             ylim([0 1])
             box on ; grid on
             
             if kk==nFly
@@ -333,7 +397,6 @@ for kk = 1:nFly
             subplot(2,nAmp,pp+nAmp) ; hold on
           	plot(WING.FlyMean.Freq{kk}(:,jj),WING.FlyMean.Phase{kk}(:,jj),'LineWidth',1)
             xlim([0.5 11.5])
-            ylim([-270 180])
             box on ; grid on
             
             if kk==nFly
