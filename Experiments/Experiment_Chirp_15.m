@@ -1,14 +1,13 @@
 function [] = Experiment_Chirp_15(Fn)
-%% Experiment_HeadExcitation_Sinusoids_V1: runs a experiment using the LED arena and fly panel
-% Fn is the fly number
-% Experiment Template written by Ben Cellini
+% Experiment_Chirp_15: runs an experiment using LED arena and fly panel controller
 % This code is written for Panel Controller v3 and NiDAQ seesion mode
+%   INPUTS:
+%       Fn          :  	fly number
 daqreset
 imaqreset
 %% Set directories & experimental paramters %%
 %---------------------------------------------------------------------------------------------------------------------------------
 %rootdir = uigetdir({}, 'Select folder to save data'); % define directory to save file
-
 root = 'D:\Experiment_HeadExcitation\Chirp_Linear_15\';
 viddir = [root 'Vid\'];
 
@@ -18,6 +17,10 @@ n_resttime = 1;     % seconds for each REST
 n_pause = 0.2;      % seconds for each pause between panel commands
 n_trial = 20;     	% # of repetitions
 n_AI = 6;          	% # of analog input channels
+patID = 2;          % Spatial frequency grating pattern
+yPos  = 4;          % 30 deg spatial frequency
+funcX = 1;        	% linear chirp fucntion (20s)
+xUpdate = 100;      % function update rate
 
 %% Set up data acquisition on NiDAQ (session mode) %%
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -58,25 +61,7 @@ TriggerSignal = (square(2*pi*FrameRate*t,90) + 1)';
 adaptorName = 'gige';
 deviceID = 1;
 vidFormat = 'Mono8';
-tag = '';
-existingObjs1 = imaqfind('DeviceID', deviceID, 'VideoFormat', vidFormat, 'Tag', tag);
-if isempty(existingObjs1)
-    % If there are no existing video input objects, construct the object.
-    vid = videoinput(adaptorName, deviceID, vidFormat);
-else
-    for i = 1:length(existingObjs1)
-        objhwinfo = imaqhwinfo(existingObjs1{i});
-        if strcmp(objhwinfo.AdaptorName, adaptorName)
-            vid = existingObjs1{i};
-            break;
-        elseif(i == length(existingObjs1))
-            % We have queried through all existing objects and no
-            % AdaptorName values matches the AdaptorName value of the
-            % object being recreated. So the object must be created.
-            vid = videoinput(adaptorName, deviceID, vidFormat);
-        end
-    end
-end
+vid = videoinput(adaptorName, deviceID, vidFormat);
 
 % Configure vidobj properties.
 set(vid, 'ErrorFcn', @imaqcallback);
@@ -117,25 +102,25 @@ for ii =  1:n_trial
     % CLOSED LOOP BAR TRACKING %
     disp('rest');
     Panel_com('stop'); pause(n_pause)
-    Panel_com('set_pattern_id', 1);pause(n_pause)           % set output to p_rest_pat (Pattern_Fourier_bar_barwidth=8)
-    Panel_com('set_position',[1, 1]); pause(n_pause)        % set starting position (xpos,ypos)
-    Panel_com('set_mode',[1,0]); pause(n_pause)             % closed loop tracking [xpos,ypos] (NOTE: 0=open, 1=closed)
-    Panel_com('set_posfunc_id',[1,0]); pause(n_pause)       % no position function for x-channel
-    Panel_com('set_funcX_freq', 50); pause(n_pause)         % 50Hz update rate
-    Panel_com('set_posfunc_id',[2,0]); pause(n_pause)       % no position function for y-channel
-    Panel_com('set_funcY_freq', 50); pause(n_pause)         % 50Hz update rate
-    Panel_com('send_gain_bias',[-15,0,0,0]); pause(n_pause)	% [xgain,xoffset,ygain,yoffset]
-    Panel_com('start');                                     % start closed-loop rest
-    pause(n_resttime)                                       % rest 5 seconds
-    Panel_com('stop');                                      % stop closed-loop rest
+    Panel_com('set_pattern_id', 1);pause(n_pause)                   % set output to p_rest_pat (Pattern_Fourier_bar_barwidth=8)
+    Panel_com('set_position',[1, 1]); pause(n_pause)                % set starting position (xpos,ypos)
+    Panel_com('set_mode',[1,0]); pause(n_pause)                     % closed loop tracking [xpos,ypos] (NOTE: 0=open, 1=closed)
+    Panel_com('set_posfunc_id',[1,0]); pause(n_pause)               % no position function for x-channel
+    Panel_com('set_funcX_freq', 50); pause(n_pause)                 % 50Hz update rate
+    Panel_com('set_posfunc_id',[2,0]); pause(n_pause)               % no position function for y-channel
+    Panel_com('set_funcY_freq', 50); pause(n_pause)                 % 50Hz update rate
+    Panel_com('send_gain_bias',[-15,0,0,0]); pause(n_pause)         % [xgain,xoffset,ygain,yoffset]
+    Panel_com('start');                                             % start closed-loop rest
+    pause(n_resttime)                                               % rest 5 seconds
+    Panel_com('stop');                                              % stop closed-loop rest
     %-----------------------------------------------------------------------------------------------------------------------------
     pause(1) % pause between closed-loop & experiment 
     % EXPERIMENT SETUP %
     disp('Play Stimulus: ')
-    Panel_com('set_pattern_id', 2); pause(n_pause)                	% set pattern to "Pattern_spatFreq_22_30_60"
-    Panel_com('set_position',[1 , 2]); pause(n_pause)             	% set starting position (xpos,ypos)
-    Panel_com('set_posfunc_id',[1, 1]); pause(n_pause)              % arg1 = channel (x=1,y=2); arg2 = funcid
-	Panel_com('set_funcX_freq', 200); pause(n_pause)                % 100Hz update rate for x-channel
+    Panel_com('set_pattern_id', patID); pause(n_pause)           	% set pattern to "Pattern_spatFreq_22_30_60"
+    Panel_com('set_position',[15 , yPos]); pause(n_pause)            % set starting position (xpos,ypos)
+    Panel_com('set_posfunc_id',[funcX, 1]); pause(n_pause)       	% arg1 = channel (x=1,y=2); arg2 = funcid
+	Panel_com('set_funcX_freq', xUpdate); pause(n_pause)            % 100Hz update rate for x-channel
     Panel_com('set_funcY_freq', 50); pause(n_pause)              	% 50Hz update rate for y-channel
     Panel_com('set_mode', [4,0]); pause(n_pause)                    % 0=open,1=closed,2=fgen,3=vmode,4=pmode
 	%-----------------------------------------------------------------------------------------------------------------------------
@@ -165,8 +150,8 @@ for ii =  1:n_trial
     %-----------------------------------------------------------------------------------------------------------------------------
     % SAVE DATA %
     disp('Saving...') ; disp('----------------------------------------------------------------------')
-    save([root   'fly_' num2str(Fn) '_trial_' num2str(ii) '_Amp_' num2str(15) '.mat'],'-v7.3','data','t_p');
-    save([viddir 'fly_' num2str(Fn) '_trial_' num2str(ii) '_Amp_' num2str(15) '.mat'],'-v7.3','vidData','t_v');
+    save([root   'fly_' num2str(Fn) '_trial_' num2str(ii) '_Amp_' num2str(15) '_Linear.mat'],'-v7.3','data','t_p');
+    save([viddir 'fly_' num2str(Fn) '_trial_' num2str(ii) '_Amp_' num2str(15) '_Linear.mat'],'-v7.3','vidData','t_v');
     %-----------------------------------------------------------------------------------------------------------------------------
 end
 
