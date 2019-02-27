@@ -55,7 +55,7 @@ nFrame = FrameRate * n_tracktime; % # of frames to log
 t = 0:1/s.Rate:n_tracktime;
 TriggerSignal = (square(2*pi*FrameRate*t,90) + 1)';
 % plot(t,TriggerSignal)
-
+disp('DAQ Setup Done...')
 %% Setup camera input to sample at Fs = 200Hz %%
 %---------------------------------------------------------------------------------------------------------------------------------
 adaptorName = 'gige';
@@ -89,10 +89,11 @@ set(srcObj1(1),'TriggerActivation','RisingEdge');
 set(srcObj1(1),'TriggerMode','on');
 set(srcObj1(1),'TriggerSelector','FrameStart');
 
+disp('VID Setup Done...')
 %% EXPERIMENT LOOP %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Start Experiment:')
-for ii =  1:n_trial  
+for ii =  5:n_trial  
    
     disp('Trial')
     disp(num2str(ii));  % print counter to command line
@@ -118,7 +119,7 @@ for ii =  1:n_trial
     % EXPERIMENT SETUP %
     disp('Play Stimulus: ')
     Panel_com('set_pattern_id', patID); pause(n_pause)           	% set pattern to "Pattern_spatFreq_22_30_60"
-    Panel_com('set_position',[15 , yPos]); pause(n_pause)            % set starting position (xpos,ypos)
+    Panel_com('set_position',[15 , yPos]); pause(n_pause)           % set starting position (xpos,ypos)
     Panel_com('set_posfunc_id',[funcX, 1]); pause(n_pause)       	% arg1 = channel (x=1,y=2); arg2 = funcid
 	Panel_com('set_funcX_freq', xUpdate); pause(n_pause)            % 100Hz update rate for x-channel
     Panel_com('set_funcY_freq', 50); pause(n_pause)              	% 50Hz update rate for y-channel
@@ -161,4 +162,5 @@ disp('Done');
 clear all
 daqreset
 imaqreset
+PControl
 %---------------------------------------------------------------------------------------------------------------------------------
