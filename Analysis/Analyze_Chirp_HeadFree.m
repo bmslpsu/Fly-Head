@@ -5,14 +5,15 @@ function [] = Analyze_Chirp_HeadFree()
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-showplot.Time  = 1;
-showplot.Freq  = 1;
+showplot.Time  = 0;
+showplot.Freq  = 0;
 showplot.Bode  = 0;
 showplot.Coher = 0;
 showplot.FFT   = 0;
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
-root.pat = 'H:\Experiment_HeadExcitation\Chirp\HeadFree\';
+% root.pat = 'H:\Experiment_HeadExcitation\Chirp\HeadFree\';
+root.pat = 'H:\Experiment_HeadExcitation\Chirp_Linear_15\';
 root.head = [root.pat '\Vid\Angles\'];
 
 % Select files
@@ -308,29 +309,29 @@ disp('DONE')
 
 %% Example Trial %%
 %---------------------------------------------------------------------------------------------------------------------------------
-ttt = 0:(1/500):20;
-Stim = 15*chirp(ttt,0.1,20,12,'Logarithmic',45);
-ff = 4;
-HH = HEAD.Pos{ff}{3}(:,2);
-HT = HEAD.Time{ff}{3}(:,2);
-WT = WING.Pos{ff}{3}(:,2);
-
-figure (322) ; clf ; hold on ; box on
-set(gcf,'Position',[100 100 900 600])
-xlabel('Time (s)')
-xticks([0 20])
-set(gca,'fontsize',28)
-
-yyaxis left ; set(gca,'YColor','b') ; ylabel(['Angle (' char(176) ')']) ; ylim([-15 15]) ; yticks([-15 0 15])
-    plot(ttt,0*Stim,'Color',[0.5 0.5 0.5],'LineStyle','--','LineWidth',2)
-    hh.Stim = plot(ttt,Stim,'-k','LineWidth',2,'HandleVisibility','off');
-    hh.Head =  plot(HT,HH,'-b','LineWidth',3);
-    
-yyaxis right ; set(gca,'YColor','r') ; ylabel('Voltage (V)') ; ylim([-6 6]) ; yticks([-6 0 6])
-    hh.Wing = plot(HT,WT,'Color','r','LineWidth',3);
-
-legend([hh.Stim,hh.Head,hh.Wing],{['Visual Scene (' char(176) ')'],['Head (' char(176) ')'],'Wings (V)'},...
-    'Orientation','horizontal','Box','off','Location','north')
+% ttt = 0:(1/500):20;
+% Stim = 15*chirp(ttt,0.1,20,12,'Logarithmic',45);
+% ff = 4;
+% HH = HEAD.Pos{ff}{3}(:,2);
+% HT = HEAD.Time{ff}{3}(:,2);
+% WT = WING.Pos{ff}{3}(:,2);
+% 
+% figure (322) ; clf ; hold on ; box on
+% set(gcf,'Position',[100 100 900 600])
+% xlabel('Time (s)')
+% xticks([0 20])
+% set(gca,'fontsize',28)
+% 
+% yyaxis left ; set(gca,'YColor','b') ; ylabel(['Angle (' char(176) ')']) ; ylim([-15 15]) ; yticks([-15 0 15])
+%     plot(ttt,0*Stim,'Color',[0.5 0.5 0.5],'LineStyle','--','LineWidth',2)
+%     hh.Stim = plot(ttt,Stim,'-k','LineWidth',2,'HandleVisibility','off');
+%     hh.Head =  plot(HT,HH,'-b','LineWidth',3);
+%     
+% yyaxis right ; set(gca,'YColor','r') ; ylabel('Voltage (V)') ; ylim([-6 6]) ; yticks([-6 0 6])
+%     hh.Wing = plot(HT,WT,'Color','r','LineWidth',3);
+% 
+% legend([hh.Stim,hh.Head,hh.Wing],{['Visual Scene (' char(176) ')'],['Head (' char(176) ')'],'Wings (V)'},...
+%     'Orientation','horizontal','Box','off','Location','north')
 
 %% Averages %%
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -851,7 +852,7 @@ figure (400) ; clf ;
 set(gcf, 'Position',  [300, 200, 1200, 800])
 set(gcf,'Color','w')
 pp = 1;
-amps = 2:4;
+amps = 1;
 nPlot = length(amps);
 for jj = amps
 	subplot(2,nPlot,pp) ; hold on ; box on  ; title([num2str(uAmp(jj)) char(176)]) ; xlim([0.1 12]) ; grid on
@@ -906,7 +907,7 @@ figure (401) ; clf ; set(gcf,'Color','w') ; set(gcf, 'Position',  [500, 100, 110
 figure (402) ; clf ; set(gcf,'Color','w') ; set(gcf, 'Position',  [400, 100, 1100, 800])
 % set(gcf, 'Position',  [300, 200, 900, 450])
 pp = 1;
-amps = 2:4;
+amps = 1;
 nPlot = length(amps);
 for jj = amps
     figure (401)
