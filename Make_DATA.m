@@ -130,6 +130,11 @@ for kk = 1:n.Fly
     end
 end
 % Store data in organized cells
+% pat.Fs = 5000;
+% pat.Time = (0:1/pat.Fs:20)';
+% pat.Time = pat.Time(1:end-1);
+tt = (0:1/200:20)';
+tt = tt(1:end-1);
 for kk = 1:n.Trial
     disp(kk)
     % Load HEAD & DAQ data %
@@ -148,7 +153,9 @@ for kk = 1:n.Trial
     pat.Time        = t_p; % pattern time from DAQ [s]
     pat.n           = length(pat.Time); % # of samples for pat data
     pat.Fs          = 1/mean(diff(pat.Time)); % pattern sampling frequency [Hz]
-    pat.Pos         = panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]
+    pat.Pos         = panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]  
+    pat.Pos         = FitPanel(pat.Pos,pat.Time,tt); % fit panel data
+    pat.Time        = tt; % set new panel time
 	pat.Vel         = [diff(pat.Pos)/(1/pat.Fs) ; 0]; % pattern velocity [deg/s]
     pat.VelMean     = mean(abs(pat.Vel)); % mean pattern velocity [deg/s]
 	pat.VelSTD      = mean(abs(pat.Vel)); % STD pattern velocity [deg/s]
@@ -180,15 +187,15 @@ for kk = 1:n.Trial
     wing.VelSTD     = std(abs(wing.Vel)); % STD dWBA velocity [V/s]
     %-----------------------------------------------------------------------------------------------------------------------------
 	% Decimate DAQ data to match head Fs %
-	pat.Time        = resample(pat.Time,head.n,pat.n);
-    pat.Pos         = resample(pat.Pos,head.n,pat.n);
-  	pat.Vel         = resample(pat.Vel,head.n,pat.n);
-    wing.Time       = resample(wing.Time,head.n,wing.n);
-    wing.Pos        = resample(wing.Pos,head.n,wing.n);
-    wing.Left       = resample(wing.Left,head.n,wing.n);
-	wing.Right      = resample(wing.Left,head.n,wing.n);
-  	wing.Vel        = resample(wing.Vel,head.n,wing.n);
-    wing.f          = resample(wing.f,head.n,wing.n);
+% 	pat.Time        = resample(pat.Time,head.n,pat.n);
+% 	pat.Pos         = resample(pat.Pos,head.n,pat.n);
+% 	pat.Vel         = resample(pat.Vel,head.n,pat.n);
+	wing.Time       = tt;
+	wing.Pos        = resample(wing.Pos,head.n,wing.n);
+	wing.Vel        = resample(wing.Vel,head.n,wing.n);
+% 	wing.Left       = resample(wing.Left,head.n,wing.n);
+% 	wing.Right      = resample(wing.Right,head.n,wing.n);
+% 	wing.f          = resample(wing.f,head.n,wing.n);
 	%-----------------------------------------------------------------------------------------------------------------------------
  	head.Err.Pos    = pat.Pos - head.Pos; % calculate Error between head & pattern (retinal slip) [deg]
     %-----------------------------------------------------------------------------------------------------------------------------
