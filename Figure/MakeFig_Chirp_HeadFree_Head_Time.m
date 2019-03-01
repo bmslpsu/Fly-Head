@@ -10,7 +10,7 @@ function [] = MakeFig_Chirp_HeadFree_Head_Time(root,figNum)
 % root = 'E:\Experiment_HeadExcitation\Chirp\HeadFree\DATA\';
 % figNum = 1;
 %---------------------------------------------------------------------------------------------------------------------------------
-filename = 'MakeFig_Chirp_HeadFree_Head_Time'; % name of file to save
+filename = 'Chirp_HeadFree_Head_Time'; % name of figure to save
 load([root 'DATA.mat'],'PAT','WING','HEAD','n','unq') % load data structure
 
 F = figure (figNum); % figure handle
