@@ -1,5 +1,5 @@
-function [] = MakeFig_Chirp_HeadFree_Pattern_Vel_Time(root,figNum)
-%% MakeFig_Chirp_HeadFree_Pattern_Pos_Time:
+function [] = MakeFig_Chirp_HeadFree_Wing_Pos_COHR(root,figNum)
+%% MakeFig_Chirp_HeadFree_Wing_Pos_COHR:
 %   INPUTS:
 %       root: root directory containing data structure
 %       figNum: figure #
@@ -10,40 +10,41 @@ function [] = MakeFig_Chirp_HeadFree_Pattern_Vel_Time(root,figNum)
 % root = 'H:\Experiment_HeadExcitation\Chirp\HeadFree\DATA\';
 % figNum = 1;
 %---------------------------------------------------------------------------------------------------------------------------------
-filename = 'Chirp_HeadFree_Pattern_Vel_Time'; % name of figure to save
+filename = 'Chirp_HeadFree_Wing_Pos_COHR'; % name of figure to save
 HeadFree = load([root 'Chirp_HeadFree_DATA.mat'],'PAT','WING','HEAD','n','unq'); % load data structure
 
 FIG = figure (figNum); % figure handle
 FIG.Color = 'w';
 FIG.Position = [100 100 1100 800];
+set(gcf,'Position',[200 400 1300 400])
 for kk = 1:HeadFree.n.Fly
     for jj = 1:HeadFree.n.Amp
-        subplot(HeadFree.n.Amp,1,jj) ; hold on
-        h.Trial = plot(HeadFree.PAT.Time{kk}{jj},HeadFree.PAT.Vel{kk}{jj},'Color',[0.5 0.5 0.5],'LineWidth',1); % trials
+        subplot(1,HeadFree.n.Amp,jj) ; hold on
+        h.Trial = plot(HeadFree.WING.COHR.Freq{kk}{jj},HeadFree.WING.COHR.Mag{kk}{jj},'Color',[0.5 0.5 0.5],'LineWidth',1); % trials
         for ii = 1:length(h.Trial)
-            h.Trial(ii).Color(4) = 0.4;
+            h.Trial(ii).Color(4) = 0.2;
         end
-        h.Fly = plot(HeadFree.PAT.FlyMed.Time{kk}(:,jj),HeadFree.PAT.FlyMed.Vel{kk}(:,jj),'LineWidth',1); % flys
+        h.Fly = plot(HeadFree.WING.FlyMean.COHR.Freq{kk}(:,jj),HeadFree.WING.FlyMean.COHR.Mag{kk}(:,jj),'LineWidth',1); % flys
         h.Fly.Color(4) = 0.6;
     end
 end
 
 for jj = 1:HeadFree.n.Amp
-	subplot(HeadFree.n.Amp,1,jj) ; hold on
+	subplot(1,HeadFree.n.Amp,jj) ; hold on
     title([num2str(HeadFree.unq.Amp(jj)) '$^{\circ}$'],'Interpreter','latex','FontSize',15)
-        h.patch = PlotPatch(HeadFree.PAT.GrandMed.Vel(:,jj),HeadFree.PAT.GrandSTD.Vel(:,jj),...
-            HeadFree.PAT.GrandMed.Time(:,jj),2,HeadFree.n.Fly,'k',[0.4 0.4 0.6],0.5,2); % all flys
-    
-     	xlim([0 20])
-        ylim(4e4*[-1 1])
-        if jj==HeadFree.n.Amp
-            xlabel('Time (s)','Interpreter','latex','FontSize',15)
+        h.patch = PlotPatch(HeadFree.WING.GrandMean.COHR.Mag(:,jj),HeadFree.WING.GrandSTD.COHR.Mag(:,jj),...
+            HeadFree.WING.GrandMean.COHR.Freq(:,jj),2,HeadFree.n.Fly,'k',[0.4 0.4 0.6],0.5,2); % all flys
+        xlim([0.1 12])
+        ylim([0 1])
+        if jj==1
+            ylabel('Wing Coherence','Interpreter','latex','FontSize',15)
         end
-        if jj~=HeadFree.n.Amp
-            xticks(0)
-            xticklabels('')
+        if jj~=1
+            yticks(0)
+            yticklabels('')
         end
-        ylabel('Pattern($^{\circ}/s$)','Interpreter','latex','FontSize',15)
+        xticks([0.1 2:2:12])
+        xlabel('Frequency (Hz)','Interpreter','latex','FontSize',15)
 end
 
 saveas(FIG,[root 'FIGURE\' filename '.fig']); % save .fig file

@@ -7,15 +7,15 @@ function [] = MakeFig_Chirp_HeadFree_Head_Pos_Freq(root,figNum)
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
-% root = 'E:\Experiment_HeadExcitation\Chirp\HeadFree\DATA\';
+% root = 'H:\Experiment_HeadExcitation\Chirp\HeadFree\DATA\';
 % figNum = 1;
 %---------------------------------------------------------------------------------------------------------------------------------
 filename = 'Chirp_HeadFree_Head_Pos_Freq'; % name of figure to save
-HeadFree = load([root 'DATA.mat'],'PAT','WING','HEAD','n','unq'); % load data structure
+HeadFree = load([root 'Chirp_HeadFree_DATA.mat'],'PAT','WING','HEAD','n','unq'); % load data structure
 
-F = figure (figNum); % figure handle
-clf
-set(gcf,'Position',[200 400 1300 600])
+FIG = figure (figNum); % figure handle
+FIG.Color = 'w';
+FIG.Position = [200 400 1300 600];
 for kk = 1:HeadFree.n.Fly
     for jj = 1:HeadFree.n.Amp
         % MAGNITUDE
@@ -72,6 +72,8 @@ for jj = 1:HeadFree.n.Amp
         xlabel('Frequency (Hz)','Interpreter','latex','FontSize',15)
 end
 
-saveas(F,[root 'FIGURE\' filename '.fig']);
-% print('ScreenSizeFigure','-dpng','-r0','-bestfit')
+saveas(FIG,[root 'FIGURE\' filename '.fig']); % save .fig file
+print(gcf,[root 'FIGURE\' filename],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
+disp('Saved to')
+disp(root)
 end

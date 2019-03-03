@@ -11,11 +11,11 @@ function [] = MakeFig_Chirp_HeadFree_Wing_Vel_Time(root,figNum)
 % figNum = 1;
 %---------------------------------------------------------------------------------------------------------------------------------
 filename = 'Chirp_HeadFree_Wing_Vel_Time'; % name of figure to save
-HeadFree = load([root 'DATA.mat'],'PAT','WING','HEAD','n','unq'); % load data structure
+HeadFree = load([root 'Chirp_HeadFree_DATA.mat'],'PAT','WING','HEAD','n','unq'); % load data structure
 
-F = figure (figNum); % figure handle
-clf
-set(gcf,'Position',[100 100 1100 800])
+FIG = figure (figNum); % figure handle
+FIG.Color = 'w';
+FIG.Position = [100 100 1100 800];
 for kk = 1:HeadFree.n.Fly
     for jj = 1:HeadFree.n.Amp
         subplot(HeadFree.n.Amp,1,jj) ; hold on
@@ -46,6 +46,8 @@ for jj = 1:HeadFree.n.Amp
         ylabel('$\Delta$WBA(V/s)','Interpreter','latex','FontSize',15)
 end
 
-saveas(F,[root 'FIGURE\' filename '.fig']);
-% print('ScreenSizeFigure','-dpng','-r0','-bestfit')
+saveas(FIG,[root 'FIGURE\' filename '.fig']); % save .fig file
+print(gcf,[root 'FIGURE\' filename],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
+disp('Saved to')
+disp(root)
 end

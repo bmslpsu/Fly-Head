@@ -16,5 +16,6 @@ fts = fft(x)/L;                        	% normalised fourier transform
 Iv = 1:length(Fv);                  	% index vector
 Mag = 2*abs(fts(Iv));                   % magnitude
 Phs = angle(fts(Iv));                   % phase [rad]
+% Phs = rad2deg(Phs);                     % phase [deg]
 %---------------------------------------------------------------------------------------------------------------------------------
 end
