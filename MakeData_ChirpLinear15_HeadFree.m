@@ -1,4 +1,4 @@
-function [PAT,WING,HEAD,FD,T,n,unq] = MakeData_Chirp_HeadFree(rootdir,filename)
+function [PAT,WING,HEAD,FD,T,n,unq] = MakeData_ChirpLinear15_HeadFree(rootdir,filename)
 %% MakeData_Chirp_HeadFree: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
 %   INPUTS:
 %       root    : root directory
@@ -12,8 +12,8 @@ function [PAT,WING,HEAD,FD,T,n,unq] = MakeData_Chirp_HeadFree(rootdir,filename)
 %       unq   	: unique fields
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
-% rootdir = 'H:\Experiment_HeadExcitation\Chirp\HeadFree\';
-% filename = 'Chirp_HeadFree_DATA';
+% rootdir = 'H:\Experiment_HeadExcitation\Chirp_Linear_15\';
+% filename = 'ChirpLinear15_HeadFree_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------

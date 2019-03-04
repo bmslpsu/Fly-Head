@@ -1,4 +1,4 @@
-function [] = MakeFig_Chirp_HeadFree_Head_Pos_BODE(root,figNum)
+function [] = MakeFig_ChirpLinear15_HeadFree_Head_Pos_BODE(root,figNum)
 %% MakeFig_Chirp_HeadFree_Head_Pos_BODE:
 %   INPUTS:
 %       root: root directory containing data structure
@@ -7,35 +7,35 @@ function [] = MakeFig_Chirp_HeadFree_Head_Pos_BODE(root,figNum)
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
-root = 'H:\Experiment_HeadExcitation\Chirp\HeadFree\DATA\';
-figNum = 1;
+% root = 'H:\Experiment_HeadExcitation\Chirp_Linear_15\DATA\';
+% figNum = 1;
 %---------------------------------------------------------------------------------------------------------------------------------
-filename = 'Chirp_HeadFree_Head_Pos_BODE'; % name of figure to save
-HeadFree = load([root 'Chirp_HeadFree_DATA.mat'],'PAT','WING','HEAD','n','unq'); % load data structure
+filename = 'ChirpLinear15_HeadFree_Head_Pos_BODE'; % name of figure to save
+HeadFree = load([root 'ChirpLinear15_HeadFree_DATA.mat'],'PAT','WING','HEAD','n','unq'); % load data structure
 
 FIG = figure (figNum); % figure handle
 FIG.Color = 'w';
 set(gcf,'Position',[200 400 1300 600])
-% for kk = 1:HeadFree.n.Fly
-%     for jj = 1:HeadFree.n.Amp
-% %         % MAGNITUDE
-%         subplot(2,HeadFree.n.Amp,jj) ; hold on
-%         h.Trial = plot(HeadFree.HEAD.Freq{kk}{jj},HeadFree.HEAD.GAIN{kk}{jj},'Color',[0.5 0.5 0.5],'LineWidth',1); % trials
-%         for ii = 1:length(h.Trial)
-%             h.Trial(ii).Color(4) = 0.2;
-%         end
-%         h.Fly = plot(HeadFree.HEAD.FlyMean.Freq{kk}(:,jj),HeadFree.HEAD.FlyMean.GAIN{kk}(:,jj),'LineWidth',1); % flys
-%         h.Fly.Color(4) = 0.6;
-% %         % PHASE
-%     	subplot(2,HeadFree.n.Amp,jj+HeadFree.n.Amp) ; hold on
-%         h.Trial = plot(HeadFree.HEAD.Freq{kk}{jj},HeadFree.HEAD.PHASE{kk}{jj},'Color',[0.5 0.5 0.5],'LineWidth',1); % trials
-%         for ii = 1:length(h.Trial)
-%             h.Trial(ii).Color(4) = 0.4;
-%         end
-%         h.Fly = plot(HeadFree.HEAD.FlyMean.Freq{kk}(:,jj),HeadFree.HEAD.FlyMean.PHASE{kk}(:,jj),'LineWidth',1); % flys
-%         h.Fly.Color(4) = 0.6;
-%     end
-% end
+for kk = 1:HeadFree.n.Fly
+    for jj = 1:HeadFree.n.Amp
+%         % MAGNITUDE
+        subplot(2,HeadFree.n.Amp,jj) ; hold on
+        h.Trial = plot(HeadFree.HEAD.Freq{kk}{jj},HeadFree.HEAD.GAIN{kk}{jj},'Color',[0.5 0.5 0.5],'LineWidth',1); % trials
+        for ii = 1:length(h.Trial)
+            h.Trial(ii).Color(4) = 0.2;
+        end
+        h.Fly = plot(HeadFree.HEAD.FlyMean.Freq{kk}(:,jj),HeadFree.HEAD.FlyMean.GAIN{kk}(:,jj),'LineWidth',1); % flys
+        h.Fly.Color(4) = 0.6;
+%         % PHASE
+    	subplot(2,HeadFree.n.Amp,jj+HeadFree.n.Amp) ; hold on
+        h.Trial = plot(HeadFree.HEAD.Freq{kk}{jj},HeadFree.HEAD.PHASE{kk}{jj},'Color',[0.5 0.5 0.5],'LineWidth',1); % trials
+        for ii = 1:length(h.Trial)
+            h.Trial(ii).Color(4) = 0.4;
+        end
+        h.Fly = plot(HeadFree.HEAD.FlyMean.Freq{kk}(:,jj),HeadFree.HEAD.FlyMean.PHASE{kk}(:,jj),'LineWidth',1); % flys
+        h.Fly.Color(4) = 0.6;
+    end
+end
 
 for jj = 1:HeadFree.n.Amp
     % MAGNITUDE
