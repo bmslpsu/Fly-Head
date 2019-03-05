@@ -1,14 +1,14 @@
 function [] = MakeFig_Chirp_HeadFree_Head_Pos_Time(root,figNum)
-%% Fig_Chirp_HeadFree_Time:
+%% MakeFig_Chirp_HeadFree_Head_Pos_Time:
 %   INPUTS:
 %       root: root directory containing data structure
 %       figNum: figure #
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-% EXAMPLE INPUT %
-root = 'H:\Experiment_HeadExcitation\Chirp\HeadFree\DATA\';
-figNum = 1;
+% % EXAMPLE INPUT %
+% root = 'H:\Experiment_HeadExcitation\Chirp\HeadFree\DATA\';
+% figNum = 1;
 %---------------------------------------------------------------------------------------------------------------------------------
 filename = 'Chirp_HeadFree_Head_Pos_Time'; % name of figure to save
 HeadFree = load([root 'Chirp_HeadFree_DATA.mat'],'PAT','WING','HEAD','n','unq'); % load data structure

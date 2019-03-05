@@ -12,7 +12,7 @@ function [PAT,WING,HEAD,FD,T,n,unq] = MakeData_Chirp_HeadFree(rootdir,filename)
 %       unq   	: unique fields
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
-% rootdir = 'H:\Experiment_HeadExcitation\Chirp\HeadFree\';
+% rootdir = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\';
 % filename = 'Chirp_HeadFree_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -87,6 +87,8 @@ clear pp kk
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Loading...')
 % Preallocate data cells
+WING.ALL.Pos = cell(n.Amp,1);
+HEAD.ALL.Pos = cell(n.Amp,1);
 for kk = 1:n.Fly
     for jj = 1:n.Amp
         % PATTERN Data
@@ -219,7 +221,22 @@ for kk = 1:n.Trial
     PAT.Freq        {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = pat.Freq;
 	PAT.Mag         {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = pat.Mag;
 	PAT.Phase       {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = pat.Phase;
+    % WINGS
+    WING.ALL.Pos    {FD.idxAmp(kk)}(:,end+1) = wing.Pos;
+	WING.Pos        {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.Pos;
+	WING.Time       {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.Time;
+	WING.Vel        {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.Vel;
+	WING.VelMean	{FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.VelMean;
+	WING.VelSTD     {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.VelSTD;
+	WING.Freq       {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.Freq;
+	WING.Mag        {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.Mag;
+	WING.Phase      {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.Phase;
+	WING.COHR.Freq  {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.cohr.f;
+    WING.COHR.Mag   {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.cohr.mag;
+	WING.GAIN       {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.GAIN;
+  	WING.PHASE      {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.PHASE;
     % HEAD
+    HEAD.ALL.Pos    {FD.idxAmp(kk)}(:,end+1) = head.Pos;
 	HEAD.Time       {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.Time;
 	HEAD.Pos        {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.Pos;
     HEAD.Vel        {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.Vel;
@@ -236,22 +253,9 @@ for kk = 1:n.Trial
     HEAD.COHR.Mag   {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.cohr.mag;
     HEAD.GAIN       {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.GAIN;
 	HEAD.PHASE      {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.PHASE;
-    % WINGS
-	WING.Pos        {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.Pos;
-	WING.Time       {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.Time;
-	WING.Vel        {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.Vel;
-	WING.VelMean	{FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.VelMean;
-	WING.VelSTD     {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.VelSTD;
-	WING.Freq       {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.Freq;
-	WING.Mag        {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.Mag;
-	WING.Phase      {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.Phase;
-	WING.COHR.Freq  {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.cohr.f;
-    WING.COHR.Mag   {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.cohr.mag;
-	WING.GAIN       {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.GAIN;
-  	WING.PHASE      {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.PHASE;
 end
 clear jj kk a b t_p t_v hAngles data
-disp('DONE')
+disp('LOADING DONE')
 %% FLY Stats by Fly %%
 %---------------------------------------------------------------------------------------------------------------------------------
 for kk = 1:n.Fly
@@ -587,5 +591,6 @@ end
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
 save([rootdir 'DATA\' filename '.mat'],'PAT','WING','HEAD','FD','T','n','unq')
-disp('DONE')
+disp('SAVING DONE')
+beep
 end
