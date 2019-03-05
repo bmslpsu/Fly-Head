@@ -6,7 +6,7 @@ function [] = MakeFig_ALL_HeadFixed_Wing_Pos_BODE()
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-root        = 'H:\DATA\';
+root        = 'E:\DATA\';
 filename    = 'ALL_HeadFixed_Wing_Pos_BODE'; % name of figure to save
 HeadFree    = load([root 'Chirp_HeadFree_DATA.mat'],'PAT','WING','HEAD','n','unq');
 HeadFixed   = load([root 'Chirp_HeadFixed_DATA.mat'],'PAT','WING','n','unq');
