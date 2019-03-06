@@ -1,4 +1,4 @@
-function [PAT,WING,HEAD,FD,T,n,unq] = MakeData_Chirp_HeadFree(rootdir,filename)
+function [PAT,WING,HEAD,BODE,FD,T,n,unq] = MakeData_Chirp_HeadFree(rootdir,filename)
 %% MakeData_Chirp_HeadFree: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
 %   INPUTS:
 %       root    : root directory
@@ -12,7 +12,7 @@ function [PAT,WING,HEAD,FD,T,n,unq] = MakeData_Chirp_HeadFree(rootdir,filename)
 %       unq   	: unique fields
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
-% rootdir = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\';
+% rootdir = 'E:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\';
 % filename = 'Chirp_HeadFree_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -130,6 +130,9 @@ for kk = 1:n.Fly
         HEAD.COHR.Mag{kk,1}{jj,1}   = [];
         HEAD.GAIN{kk,1}{jj,1}       = [];
         HEAD.PHASE{kk,1}{jj,1}      = [];
+        % BODE
+        BODE.head2wing.GAIN{kk,1}{jj,1}     = [];
+        BODE.head2wing.PHASE{kk,1}{jj,1}	= [];
     end
 end
 % Store data in organized cells
@@ -206,10 +209,12 @@ for kk = 1:n.Trial
 	[wing.cohr.mag,wing.cohr.f] = mscohere(pat.Pos , wing.Pos ,[],[] , wing.Freq , wing.Fs);
     %-----------------------------------------------------------------------------------------------------------------------------
 	% Calculate BODE gain & phase difference for head & wings %
-    head.GAIN   = medfilt1(head.Mag./pat.Mag,10);
-    head.PHASE  = medfilt1(-(pat.Phase - head.Phase),10);
- 	wing.GAIN   = medfilt1(wing.Mag./head.Err.Mag,10);
-    wing.PHASE  = medfilt1(-(head.Err.Phase - wing.Phase),10);
+    head.GAIN   = medfilt1(head.Mag./pat.Mag,5);
+    head.PHASE  = medfilt1(-(pat.Phase - head.Phase),5);
+ 	wing.GAIN   = medfilt1(wing.Mag./head.Err.Mag,5);
+    wing.PHASE  = medfilt1(-(head.Err.Phase - wing.Phase),5);
+    bode.head2wing.GAIN = medfilt1(wing.Mag./head.Mag,5);
+    bode.head2wing.PHASE = medfilt1(-(head.Phase - wing.Phase),5);
     %-----------------------------------------------------------------------------------------------------------------------------
     % Store data in cells %
   	% PATTERN
@@ -253,8 +258,12 @@ for kk = 1:n.Trial
     HEAD.COHR.Mag   {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.cohr.mag;
     HEAD.GAIN       {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.GAIN;
 	HEAD.PHASE      {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.PHASE;
+    % BODE
+    BODE.head2wing.GAIN     {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = bode.head2wing.GAIN;
+ 	BODE.head2wing.PHASE  	{FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = bode.head2wing.PHASE;
+
 end
-clear jj kk a b t_p t_v hAngles data
+clear jj kk a b t_p t_v hAngles data head wing pat bode tt
 disp('LOADING DONE')
 %% FLY Stats by Fly %%
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -296,7 +305,9 @@ for kk = 1:n.Fly
         WING.FlyMed.COHR.Mag 	{kk,1}(:,jj)	= median(WING.COHR.Mag{kk}{jj},2);
         WING.FlyMed.GAIN     	{kk,1}(:,jj)	= median(WING.GAIN{kk}{jj},2);
         WING.FlyMed.PHASE    	{kk,1}(:,jj)	= circ_median(WING.PHASE{kk}{jj},2)';
-        
+        % BODE
+     	BODE.FlyMed.head2wing.GAIN      {kk,1}(:,jj)	= median(BODE.head2wing.GAIN{kk}{jj},2);
+     	BODE.FlyMed.head2wing.PHASE     {kk,1}(:,jj) 	= circ_median(BODE.head2wing.PHASE{kk}{jj},2)';
 	% MEAN
     %-----------------------------------------------------------------------------------------------------------------------------
         % PATTERN
@@ -333,6 +344,9 @@ for kk = 1:n.Fly
         WING.FlyMean.COHR.Mag 	{kk,1}(:,jj)	= mean(WING.COHR.Mag{kk}{jj},2);
         WING.FlyMean.GAIN     	{kk,1}(:,jj)	= mean(WING.GAIN{kk}{jj},2);
         WING.FlyMean.PHASE    	{kk,1}(:,jj)	= circ_mean(WING.PHASE{kk}{jj},[],2)';
+        % BODE
+     	BODE.FlyMean.head2wing.GAIN     {kk,1}(:,jj)	= mean(BODE.head2wing.GAIN{kk}{jj},2);
+     	BODE.FlyMean.head2wing.PHASE	{kk,1}(:,jj) 	= circ_mean(BODE.head2wing.PHASE{kk}{jj},[],2)';        
     % STD
     %-----------------------------------------------------------------------------------------------------------------------------
         % PATTERN
@@ -369,9 +383,12 @@ for kk = 1:n.Fly
         WING.FlySTD.COHR.Mag 	{kk,1}(:,jj)	= std(WING.COHR.Mag{kk}{jj},0,2);
         WING.FlySTD.GAIN     	{kk,1}(:,jj)	= std(WING.GAIN{kk}{jj},0,2);
         WING.FlySTD.PHASE    	{kk,1}(:,jj)	= circ_std(WING.PHASE{kk}{jj},[],[],2);
+        % BODE
+     	BODE.FlySTD.head2wing.GAIN      {kk,1}(:,jj)	= std(BODE.head2wing.GAIN{kk}{jj},0,2);
+     	BODE.FlySTD.head2wing.PHASE     {kk,1}(:,jj) 	= circ_std(BODE.head2wing.PHASE{kk}{jj},[],[],2);           
     end
 end
-clear kk
+clear kk jj
 %% FLY stats by Amplitude %%
 %---------------------------------------------------------------------------------------------------------------------------------
 for jj = 1:n.Amp
@@ -410,6 +427,9 @@ for jj = 1:n.Amp
         WING.FlyAmpMed.COHR.Mag     {jj,1}(:,kk)	= WING.FlyMed.COHR.Mag{kk}(:,jj);
         WING.FlyAmpMed.GAIN         {jj,1}(:,kk)   	= WING.FlyMed.GAIN{kk}(:,jj);
         WING.FlyAmpMed.PHASE        {jj,1}(:,kk)   	= WING.FlyMed.PHASE{kk}(:,jj);
+        
+        BODE.FlyAmpMed.head2wing.GAIN   {jj,1}(:,kk)    = BODE.FlyMed.head2wing.GAIN{kk}(:,jj);
+        BODE.FlyAmpMed.head2wing.PHASE  {jj,1}(:,kk)    = BODE.FlyMed.head2wing.PHASE{kk}(:,jj);
 	% MEAN
     %-----------------------------------------------------------------------------------------------------------------------------
         PAT.FlyAmpMean.Time        	{jj,1}(:,kk)  	= PAT.FlyMean.Time{kk}(:,jj);
@@ -444,6 +464,9 @@ for jj = 1:n.Amp
         WING.FlyAmpMean.COHR.Mag  	{jj,1}(:,kk)	= WING.FlyMean.COHR.Mag{kk}(:,jj);
         WING.FlyAmpMean.GAIN      	{jj,1}(:,kk)   	= WING.FlyMean.GAIN{kk}(:,jj);
         WING.FlyAmpMean.PHASE    	{jj,1}(:,kk)   	= WING.FlyMean.PHASE{kk}(:,jj);
+        
+        BODE.FlyAmpMean.head2wing.GAIN   {jj,1}(:,kk)    = BODE.FlyMean.head2wing.GAIN{kk}(:,jj);
+        BODE.FlyAmpMean.head2wing.PHASE  {jj,1}(:,kk)    = BODE.FlyMean.head2wing.PHASE{kk}(:,jj);
 	% STD
     %-----------------------------------------------------------------------------------------------------------------------------
         PAT.FlyAmpSTD.Time        	{jj,1}(:,kk)  	= PAT.FlySTD.Time{kk}(:,jj);
@@ -478,8 +501,12 @@ for jj = 1:n.Amp
         WING.FlyAmpSTD.COHR.Mag  	{jj,1}(:,kk)	= WING.FlySTD.COHR.Mag{kk}(:,jj);
         WING.FlyAmpSTD.GAIN      	{jj,1}(:,kk)   	= WING.FlySTD.GAIN{kk}(:,jj);
         WING.FlyAmpSTD.PHASE    	{jj,1}(:,kk)   	= WING.FlySTD.PHASE{kk}(:,jj);
+        
+        BODE.FlyAmpSTD.head2wing.GAIN   {jj,1}(:,kk)    = BODE.FlySTD.head2wing.GAIN{kk}(:,jj);
+        BODE.FlyAmpSTD.head2wing.PHASE  {jj,1}(:,kk)    = BODE.FlySTD.head2wing.PHASE{kk}(:,jj);
     end
 end
+clear kk jj
 %% GRAND Stats %%
 %---------------------------------------------------------------------------------------------------------------------------------
 % MEDIAN
@@ -516,7 +543,9 @@ end
     WING.GrandMed.COHR.Mag      = cell2mat((cellfun(@(x) median(x,2),WING.FlyAmpMed.COHR.Mag,'UniformOutput',false))');
     WING.GrandMed.GAIN      	= cell2mat((cellfun(@(x) median(x,2),WING.FlyAmpMed.GAIN,'UniformOutput',false))');
     WING.GrandMed.PHASE      	= cell2mat((cellfun(@(x) circ_median(x,2),WING.FlyAmpMed.PHASE,'UniformOutput',false)))';
-    
+
+    BODE.GrandMed.head2wing.GAIN    = cell2mat((cellfun(@(x) median(x,2),BODE.FlyAmpMed.head2wing.GAIN ,'UniformOutput',false))');
+    BODE.GrandMed.head2wing.PHASE 	= cell2mat((cellfun(@(x) circ_median(x,2),BODE.FlyAmpMed.head2wing.PHASE ,'UniformOutput',false)))';
 % MEAN
 %---------------------------------------------------------------------------------------------------------------------------------
     PAT.GrandMean.Time        	= cell2mat((cellfun(@(x) mean(x,2),PAT.FlyAmpMean.Time,'UniformOutput',false))');
@@ -551,7 +580,9 @@ end
     WING.GrandMean.COHR.Mag   	= cell2mat((cellfun(@(x) mean(x,2),WING.FlyAmpMean.COHR.Mag,'UniformOutput',false))');
     WING.GrandMean.GAIN      	= cell2mat((cellfun(@(x) mean(x,2),WING.FlyAmpMean.GAIN,'UniformOutput',false))');
     WING.GrandMean.PHASE      	= cell2mat((cellfun(@(x) circ_mean(x,[],2),WING.FlyAmpMean.PHASE,'UniformOutput',false)'));
-    
+  	
+    BODE.GrandMean.head2wing.GAIN 	= cell2mat((cellfun(@(x) mean(x,2),BODE.FlyAmpMean.head2wing.GAIN ,'UniformOutput',false))');
+  	BODE.GrandMean.head2wing.PHASE 	= cell2mat((cellfun(@(x) circ_mean(x,[],2),BODE.FlyAmpMean.head2wing.PHASE ,'UniformOutput',false)')); 
 % STD
 %---------------------------------------------------------------------------------------------------------------------------------
     PAT.GrandSTD.Time           = cell2mat((cellfun(@(x) std(x,0,2),PAT.FlyAmpSTD.Time,'UniformOutput',false))');
@@ -587,10 +618,13 @@ end
     WING.GrandSTD.GAIN      	= cell2mat((cellfun(@(x) std(x,0,2),WING.FlyAmpSTD.GAIN,'UniformOutput',false))');
     WING.GrandSTD.PHASE      	= cell2mat((cellfun(@(x) circ_std(x,[],[],2),WING.FlyAmpSTD.PHASE,'UniformOutput',false))');
     
+    BODE.GrandSTD.head2wing.GAIN    = cell2mat((cellfun(@(x) std(x,0,2),BODE.FlyAmpMed.head2wing.GAIN ,'UniformOutput',false))');
+    BODE.GrandSTD.head2wing.PHASE 	= cell2mat((cellfun(@(x) circ_std(x,[],[],2),BODE.FlyAmpMed.head2wing.PHASE ,'UniformOutput',false))');
+    
 %% Save ouputs as structure %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
-save([rootdir 'DATA\' filename '.mat'],'PAT','WING','HEAD','FD','T','n','unq')
+save([rootdir 'DATA\' filename '.mat'],'PAT','WING','HEAD','BODE','FD','T','n','unq')
 disp('SAVING DONE')
 beep
 end
