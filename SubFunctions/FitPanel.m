@@ -17,11 +17,18 @@ function [fitData] = FitPanel(X,t,t_new)
 % X = panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]
 % clear data t_p
 %---------------------------------------------------------------------------------------------------------------------------------
-    thresh = 1; % velcoity threshold to detect panel transitions 
+    thresh = 3; % velcoity threshold to detect panel transitions 
     n = length(X); % length of signal
     IV = (1:n)'; % index vector
     dX = [abs(diff(X)) ; 0]; % pattern velocity
     mIdx = [IV(1) ; IV(dX>thresh) ; IV(end)]; % detect transition points
+    if any(mIdx==n) && any(mIdx==1)
+        mIdx = mIdx(2:end-1); % make sure last & 1st point are not detected, we will add it later
+    elseif any(mIdx==n)
+        mIdx = mIdx(1:end-1); % make sure last point is not detected, we will add it later
+	elseif any(mIdx==1)
+        mIdx = mIdx(2:end); % make sure first point is not detected, we will add it later 
+    end
     mX = X(mIdx); % pattern position corresponding to transtion points
 	mt = t(mIdx); % pattern time corresponding to transtion points
     m2Idx = [IV(1) ; mean([mIdx(1:end-1),mIdx(2:end)],2) ; IV(end)]; % peak indicies between transition points
@@ -39,7 +46,7 @@ function [fitData] = FitPanel(X,t,t_new)
 %  	figure (1) ; clf ; hold on
 %         plot(t,X,'k')
 %     	plot(mt,mX,'g*')
-%         plot(m2t,m2X,'r*')    
+% %         plot(m2t,m2X,'r*')    
 %         plot(t_new,fitData,'b')
 %         xlim([0 t(end)])
 %         xlabel('Time (s)')
