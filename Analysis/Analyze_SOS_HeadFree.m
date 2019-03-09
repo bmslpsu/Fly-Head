@@ -2,8 +2,8 @@ showplot.Time  = 1;
 showplot.Freq  = 1;
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
-root.pat = 'C:\Users\amb7595\Desktop\Experiment_HeadExcitation\SOS';
-root.head = [root.pat '\Vid\Angles\'];
+root.pat = '/Users/akb427/Documents/MATLAB/Research/Sum-of-Sine';
+root.head = [root.pat '/Vid/Angles/'];
 
 % Select files
 [FILES, PATH.head] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -11,7 +11,7 @@ root.head = [root.pat '\Vid\Angles\'];
 FILES = FILES';
 
 PATH.pat = uigetdir(root.pat);
-PATH.pat = [PATH.pat '\'];
+PATH.pat = [PATH.pat '/'];
 
 %% Process File Data %%
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -23,12 +23,6 @@ for jj = 1:nTrial
     HEAD.FileCells(jj,:) = {temp{1} temp{2} temp{3} temp{4} temp{5} temp{6}}; % separate strings into six rows with one item in each cell
     Fly(jj,1) = str2double(temp{2}); % store fly #
     Trial(jj,1) = str2double(temp{4}); % store trial #
-    
-    if ~isnan(str2double(temp{7}))
-        Amp(jj,1) = str2double([temp{6} '.' temp{7}]); % store frequency
-    else
-        Amp(jj,1) = str2double(temp{6});
-    end
 end
 %% Set up indexing convention for files %%
 % Normalize to start at fly#1 and increment by 1 for each fy (same for trials)
@@ -56,7 +50,7 @@ for kk = 1:nFly
    pp = pp+trialFly{kk,2};
 end
 
-fprintf('Total Flies''s: %i \n',nFly) ; fprintf('Total Trials''s: %i \n',nTrial)
+fprintf('Total Flies: %i \n',nFly) ; fprintf('Total Trials: %i \n',nTrial)
 T = cell2table(trialFly,'VariableNames',{'Fly','Trials'});
 disp(T)
 
@@ -68,23 +62,23 @@ SI = 1;
 EI = 241;
 % Preallocate data cells %
 for kk = 1:nFly % # of flys
-        HEAD.Time{kk,1}{jj,1}       = [];
-        HEAD.Pos{kk,1}{jj,1}        = [];
-        HEAD.Freq{kk,1}{jj,1}       = [];
-        HEAD.Mag{kk,1}{jj,1}      	= [];
-        HEAD.Phase{kk,1}{jj,1}      = [];
+        HEAD.Time{kk,1}       = [];
+        HEAD.Pos{kk,1}        = [];
+        HEAD.Freq{kk,1}       = [];
+        HEAD.Mag{kk,1}     	= [];
+        HEAD.Phase{kk,1}     = [];
         
-        PAT.Time{kk,1}{jj,1}        = [];
-        PAT.Pos{kk,1}{jj,1}         = [];
-        PAT.Freq{kk,1}{jj,1}        = [];
-        PAT.Mag{kk,1}{jj,1}     	= [];
-        PAT.Phase{kk,1}{jj,1}       = [];
+        PAT.Time{kk,1}       = [];
+        PAT.Pos{kk,1}        = [];
+        PAT.Freq{kk,1}       = [];
+        PAT.Mag{kk,1}     	= [];
+        PAT.Phase{kk,1}      = [];
         
-        WING.Time{kk,1}{jj,1}       = [];
-        WING.Pos{kk,1}{jj,1}        = [];
-        WING.Freq{kk,1}{jj,1}       = [];
-        WING.Mag{kk,1}{jj,1}     	= [];
-        WING.Phase{kk,1}{jj,1}      = [];
+        WING.Time{kk,1}      = [];
+        WING.Pos{kk,1}        = [];
+        WING.Freq{kk,1}      = [];
+        WING.Mag{kk,1}    	= [];
+        WING.Phase{kk,1}     = [];
 end
 % Save time & frequency domain data in cells %
 for kk = 1:nTrial
@@ -148,31 +142,31 @@ for kk = 1:nTrial
 %-----------------------------------------------------------------------------------------------------------------------------
     % Store data in cells %
     % Head
-	HEAD.Time     {idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = head.Time;
-	HEAD.Pos  	  {idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = head.Pos;
-	HEAD.Freq   {idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = head.Freq;
-	HEAD.Mag 	{idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = head.Mag;
-	HEAD.Phase	{idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = head.Phase;
+	HEAD.Time     {idxFly(kk),1}(:,end+1) = head.Time;
+	HEAD.Pos  	  {idxFly(kk),1}(:,end+1) = head.Pos;
+	HEAD.Freq   {idxFly(kk),1}(:,end+1) = head.Freq;
+	HEAD.Mag 	{idxFly(kk),1}(:,end+1) = head.Mag;
+	HEAD.Phase	{idxFly(kk),1}(:,end+1) = head.Phase;
     
     % Pattern
-	PAT.Time  	{idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = pat.Full.Time;
-	PAT.Pos    	{idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = pat.Pos;
-    PAT.Freq  	{idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = pat.Freq;
-	PAT.Mag    	{idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = pat.Mag;
-	PAT.Phase	{idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = pat.Phase;
+	PAT.Time  	{idxFly(kk),1}(:,end+1) = pat.Full.Time;
+	PAT.Pos    	{idxFly(kk),1}(:,end+1) = pat.Pos;
+    PAT.Freq  	{idxFly(kk),1}(:,end+1) = pat.Freq;
+	PAT.Mag    	{idxFly(kk),1}(:,end+1) = pat.Mag;
+	PAT.Phase	{idxFly(kk),1}(:,end+1) = pat.Phase;
     
     % Wings
-	WING.Pos	{idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = wing.Pos;
-	WING.Time	{idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = wing.Time;
-	WING.Freq  {idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = wing.Freq;
-	WING.Mag    {idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = wing.Mag;
-	WING.Phase {idxFly(kk),1}{idxAmp(kk),1}(:,end+1) = wing.Phase;
+	WING.Pos	{idxFly(kk),1}(:,end+1) = wing.Pos;
+	WING.Time	{idxFly(kk),1}(:,end+1) = wing.Time;
+	WING.Freq  {idxFly(kk),1}(:,end+1) = wing.Freq;
+	WING.Mag    {idxFly(kk),1}(:,end+1) = wing.Mag;
+	WING.Phase {idxFly(kk),1}(:,end+1) = wing.Phase;
 %-----------------------------------------------------------------------------------------------------------------------------
     colmn = 4; 
     if showplot.Time
         figure (100)
             subplot(ceil(nTrial/colmn),colmn,kk) ; hold on
-                title(['Fly ' num2str(Fly(kk)) ' Amp ' num2str(Amp(kk))])
+                title(['Fly ' num2str(Fly(kk))])
                 plot(pat.Time,pat.Pos,'k')
                 plot(head.Time,head.Pos,'b')
     end
@@ -181,7 +175,7 @@ for kk = 1:nTrial
     if showplot.Freq
         figure (104)
             subplot(ceil(nTrial/colmn),colmn,kk) ; hold on
-                title(['Fly ' num2str(Fly(kk)) ' Amp ' num2str(Amp(kk))])
+                title(['Fly ' num2str(Fly(kk))])
                 plot(pat.Freq,  pat.Mag ,'k')
                 plot(head.Freq, head.Mag,'b')
              	plot(wing.Freq, wing.Mag,'r')
@@ -189,7 +183,7 @@ for kk = 1:nTrial
                 box on
         figure (105)
             subplot(ceil(nTrial/colmn),colmn,kk) ; hold on
-                title(['Fly ' num2str(Fly(kk)) ' Amp ' num2str(Amp(kk))])
+                title(['Fly ' num2str(Fly(kk))])
                 plot(pat.Freq,  pat.Phase ,'k')
                 plot(head.Freq, head.Phase ,'b')
                 plot(wing.Freq, wing.Phase,'r')
