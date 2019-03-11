@@ -12,8 +12,8 @@ function [PAT,WING,HEAD,BODE,FD,T,n,unq] = MakeData_Chirp_HeadFree(rootdir,filen
 %       unq   	: unique fields
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
-% rootdir = 'E:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\';
-% filename = 'Chirp_HeadFree_DATA';
+rootdir = 'E:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\';
+filename = 'Chirp_HeadFree_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------

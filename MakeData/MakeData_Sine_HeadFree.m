@@ -210,14 +210,6 @@ for kk = 1:n.Trial
     [head.cohr.mag,head.cohr.f] = mscohere(pat.Pos , head.Pos ,[],[] , head.Freq , head.Fs);
 	[wing.cohr.mag,wing.cohr.f] = mscohere(pat.Pos , wing.Pos ,[],[] , wing.Freq , wing.Fs);
     %-----------------------------------------------------------------------------------------------------------------------------
-	% Calculate BODE gain & phase difference for head & wings %
-    head.GAIN   = medfilt1(head.Mag./pat.Mag,5);
-    head.PHASE  = medfilt1(-(pat.Phase - head.Phase),5);
- 	wing.GAIN   = medfilt1(wing.Mag./head.Err.Mag,5);
-    wing.PHASE  = medfilt1(-(head.Err.Phase - wing.Phase),5);
-    bode.head2wing.GAIN = medfilt1(wing.Mag./head.Mag,5);
-    bode.head2wing.PHASE = medfilt1(-(head.Phase - wing.Phase),5);
-    %-----------------------------------------------------------------------------------------------------------------------------
     % Store data in cells %
   	% PATTERN
 	PAT.Time        {FD.idxFly(kk),1}{FD.idxFreq(kk),1}(:,end+1) = pat.Time;
@@ -266,6 +258,24 @@ for kk = 1:n.Trial
 end
 clear jj kk a b t_p t_v hAngles data head wing pat bode tt
 disp('LOADING DONE')
+
+
+%% BODE Calculations %%
+%---------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 %% FLY Stats by Fly %%
 %---------------------------------------------------------------------------------------------------------------------------------
 for kk = 1:n.Fly
