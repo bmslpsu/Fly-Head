@@ -13,13 +13,13 @@ function [PAT,WING,HEAD,BODE,FD,T,n,unq] = MakeData_Sine_HeadFree(rootdir,Amp)
 %       unq   	: unique fields
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
-% Amp = 3.75;
-% rootdir = 'H:\EXPERIMENTS\Experiment_Sinusoid\';
+Amp = 15;
+rootdir = 'E:\EXPERIMENTS\Experiment_Sinusoid\';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
 filename = ['Sine_HeadFree_' num2str(Amp) '_DATA_' ] ;
-root.daq = ['H:\EXPERIMENTS\Experiment_Sinusoid\' num2str(Amp) '\'];
+root.daq = [rootdir num2str(Amp) '\'];
 root.ang = [root.daq '\Vid\Angles\'];
 
 % Select files
@@ -143,6 +143,16 @@ for kk = 1:n.Fly
         % BODE
         BODE.head2wing.GAIN{kk,1}{jj,1}         = [];
         BODE.head2wing.PhaseDiff{kk,1}{jj,1}	= [];
+        % CROSS-CORRELATION
+        CROSS.pat2head.cc{kk,1}{jj,1}       = [];
+        CROSS.pat2wing.cc{kk,1}{jj,1}       = [];
+        CROSS.head2wing.cc{kk,1}{jj,1}      = [];
+        CROSS.pat2head.lag{kk,1}{jj,1}      = [];
+        CROSS.pat2wing.lag{kk,1}{jj,1}      = [];
+        CROSS.head2wing.lag{kk,1}{jj,1}     = [];
+        CROSS.pat2head.delay{kk,1}{jj,1}    = [];
+        CROSS.pat2wing.delay{kk,1}{jj,1}    = [];
+        CROSS.head2wing.delay{kk,1}{jj,1}   = [];        
     end
 end
 % Store data in organized cells
@@ -178,7 +188,7 @@ for kk = 1:n.Trial
     % Get head data %
 	head.Time       = t_v; % store head time vector [s]
     head.n          = length(head.Time); % # of samples for wing data
-    head.Fs         = 1/mean(diff(head.Time)); % sampling frequency [Hz]
+    head.Fs         = round(1/mean(diff(head.Time))); % sampling frequency [Hz]
     head.Fc         = 20; % cutoff frequency [Hz]
     [b,a]           = butter(2,head.Fc/(head.Fs/2),'low'); % 2nd-order low-pass butterworth filter
     head.Pos        = filtfilt(b,a,hAngles); % filter head position [deg]
@@ -207,7 +217,8 @@ for kk = 1:n.Trial
     wing.Time  	= tt; % new wing time [s]
     wing.Fs  	= head.Fs ; % new wing sampling frequency [Hz]
 	%-----------------------------------------------------------------------------------------------------------------------------
- 	head.Err.Pos    = pat.Pos - head.Pos; % calculate Error between head & pattern (retinal slip) [deg]
+ 	% Calculate Error %
+    head.Err.Pos    = pat.Pos - head.Pos; % calculate Error between head & pattern (retinal slip) [deg]
     head.Err.Vel    = pat.Vel - head.Vel; % calculate Error between head & pattern (retinal slip) [deg/s]
     %-----------------------------------------------------------------------------------------------------------------------------
     % Convert head, wings, & pattern data to frequency domain using FFT %
@@ -233,6 +244,11 @@ for kk = 1:n.Trial
     % Calculate coherence %
     [head.cohr.mag,head.cohr.f] = mscohere(pat.Pos , head.Pos ,[],[] , head.Freq , head.Fs);
 	[wing.cohr.mag,wing.cohr.f] = mscohere(pat.Pos , wing.Pos ,[],[] , wing.Freq , wing.Fs);
+	%-----------------------------------------------------------------------------------------------------------------------------
+    % Calculate cross-correlation %
+    [cross.pat2head.cc,cross.pat2head.lag,cross.pat2head.delay]     = CrossCorr(pat.Pos,head.Pos,head.Fs);
+  	[cross.pat2wing.cc,cross.pat2wing.lag,cross.pat2wing.delay]     = CrossCorr(pat.Pos,wing.Pos,head.Fs);
+	[cross.head2wing.cc,cross.head2wing.lag,cross.head2wing.delay]	= CrossCorr(head.Pos,wing.Pos,head.Fs);
     %-----------------------------------------------------------------------------------------------------------------------------
     % Store data in cells %
   	% PATTERN
@@ -285,12 +301,43 @@ for kk = 1:n.Trial
     % BODE
     BODE.head2wing.GAIN         {FD.idxFly(kk),1}{FD.idxFreq(kk),1}(:,end+1) = bode.head2wing.Gain;
 	BODE.head2wing.PhaseDiff  	{FD.idxFly(kk),1}{FD.idxFreq(kk),1}(:,end+1) = bode.head2wing.PhaseDiff;
+  	% CROSS-CORRELATION
+    CROSS.pat2head.cc   	{FD.idxFly(kk),1}{FD.idxFreq(kk),1}(:,end+1) = cross.pat2head.cc;
+	CROSS.pat2wing.cc       {FD.idxFly(kk),1}{FD.idxFreq(kk),1}(:,end+1) = cross.pat2wing.lag;
+   	CROSS.head2wing.cc      {FD.idxFly(kk),1}{FD.idxFreq(kk),1}(:,end+1) = cross.head2wing.cc;
+  	CROSS.pat2head.lag   	{FD.idxFly(kk),1}{FD.idxFreq(kk),1}(:,end+1) = cross.pat2head.lag;
+	CROSS.pat2wing.lag     	{FD.idxFly(kk),1}{FD.idxFreq(kk),1}(:,end+1) = cross.pat2wing.lag;
+   	CROSS.head2wing.lag   	{FD.idxFly(kk),1}{FD.idxFreq(kk),1}(:,end+1) = cross.head2wing.lag;
+	CROSS.pat2head.delay   	{FD.idxFly(kk),1}{FD.idxFreq(kk),1}(:,end+1) = cross.pat2head.delay;
+	CROSS.pat2wing.delay   	{FD.idxFly(kk),1}{FD.idxFreq(kk),1}(:,end+1) = cross.pat2wing.delay;
+   	CROSS.head2wing.delay  	{FD.idxFly(kk),1}{FD.idxFreq(kk),1}(:,end+1) = cross.head2wing.delay;
+
 end
 clear jj kk a b t_p t_v hAngles data  wing pat bode tt
 disp('LOADING DONE')
 disp('Bad Trial:')
 disp(count)
 pause(3)
+%%
+close all
+for kk = 1:n.Fly
+    for jj = 1:n.Freq
+        figure (1) ; hold on
+        plot(unq.Freq(jj),CROSS.pat2head.delay{kk}{jj},'ok')
+        figure (2)
+        subplot(n.Freq,1,jj) ; hold on
+        plot(CROSS.pat2head.lag{kk}{jj},CROSS.pat2head.cc{kk}{jj})
+        for ii = 1:size(CROSS.pat2head.cc{kk}{jj},2)
+%             [pks,locs] = findpeaks(CROSS.pat2head.cc{kk}{jj}(:,ii));
+%             sort(pks,'descend')
+%             idx = locs(pks==max(pks))
+%             plot(CROSS.pat2head.lag{kk}{jj}(idx,ii),pks(1),'g*')
+        [cc,idx] = max(abs(CROSS.pat2head.cc{kk}{jj}(:,ii)));
+        plot(CROSS.pat2head.lag{kk}{jj}(idx,ii),CROSS.pat2head.cc{kk}{jj}(idx,ii),'g*')
+        xlim([-1 1])
+        end
+    end
+end
 %% FLY Stats by Fly %%
 %---------------------------------------------------------------------------------------------------------------------------------
 for kk = 1:n.Fly
@@ -372,7 +419,7 @@ for kk = 1:n.Fly
         WING.FlyMean.PhaseDiff 	{kk,1}(:,jj)	= circ_mean(WING.PhaseDiff{kk}{jj},[],2)';
         % BODE
      	BODE.FlyMean.head2wing.GAIN         {kk,1}(:,jj)	= mean(BODE.head2wing.GAIN{kk}{jj},2);
-     	BODE.FlyMean.head2wing.PhaseDiff	{kk,1}(:,jj) 	= circ_mean(BODE.head2wing.PhaseDiff{kk}{jj},[],2)';        
+     	BODE.FlyMean.head2wing.PhaseDiff	{kk,1}(:,jj) 	= circ_mean(BODE.head2wing.PhaseDiff{kk}{jj},[],2)';
     % STD
     %-----------------------------------------------------------------------------------------------------------------------------
         % PATTERN
@@ -411,7 +458,7 @@ for kk = 1:n.Fly
         WING.FlySTD.PhaseDiff  	{kk,1}(:,jj)	= circ_std(WING.PhaseDiff{kk}{jj},[],[],2);
         % BODE
      	BODE.FlySTD.head2wing.GAIN          {kk,1}(:,jj)	= std(BODE.head2wing.GAIN{kk}{jj},0,2);
-     	BODE.FlySTD.head2wing.PhaseDiff     {kk,1}(:,jj) 	= circ_std(BODE.head2wing.PhaseDiff{kk}{jj},[],[],2);           
+     	BODE.FlySTD.head2wing.PhaseDiff     {kk,1}(:,jj) 	= circ_std(BODE.head2wing.PhaseDiff{kk}{jj},[],[],2);
     end
 end
 clear kk jj

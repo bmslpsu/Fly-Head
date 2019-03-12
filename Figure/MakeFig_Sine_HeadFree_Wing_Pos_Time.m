@@ -1,4 +1,4 @@
-function [] = MakeFig_Sine_HeadFree_Head_Pos_Time(amp,root,figNum)
+function [] = MakeFig_Sine_HeadFree_Wing_Pos_Time(amp,root,figNum)
 %% MakeFig_Sine_HeadFree_Head_Pos_Time: time domain sinusoid plot for all amplitudes & frequencies
 %   INPUTS:
 %       amp     : amplitudes to plot
@@ -8,17 +8,17 @@ function [] = MakeFig_Sine_HeadFree_Head_Pos_Time(amp,root,figNum)
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
 % % EXAMPLE INPUT %
-root = 'E:\EXPERIMENTS\Experiment_Sinusoid\DATA\';
-figNum = 1;
-amp = 1:5;
+% root = 'E:\EXPERIMENTS\Experiment_Sinusoid\DATA\';
+% figNum = 1;
+% amp = 1:5;
 %---------------------------------------------------------------------------------------------------------------------------------
-filename = 'Sine_HeadFree_Head_Pos_Time'; % name of figure to save
+filename = 'Sine_HeadFree_Wing_Pos_Time'; % name of figure to save
 HeadFree{1} = load([root 'Sine_HeadFree_3.75_DATA_.mat'],'PAT','WING','HEAD','BODE','n','unq');
 HeadFree{2} = load([root 'Sine_HeadFree_7.5_DATA_.mat'],'PAT','WING','HEAD','BODE','n','unq');
 HeadFree{3} = load([root 'Sine_HeadFree_11.25_DATA_.mat'],'PAT','WING','HEAD','BODE','n','unq');
 HeadFree{4} = load([root 'Sine_HeadFree_15_DATA_.mat'],'PAT','WING','HEAD','BODE','n','unq');
 HeadFree{5} = load([root 'Sine_HeadFree_18.75_DATA_.mat'],'PAT','WING','HEAD','BODE','n','unq');
-%%
+
 CList = {'k','b','r','g','c'}';
 legList = (string(num2cell(3.75*amp)));
 
@@ -30,24 +30,24 @@ for mm = length(amp):-1:1
 %     for kk = 1:HeadFree{amp(mm)}.n.Fly
 %         for jj = 1:HeadFree{amp(mm)}.n.Freq
 %             subplot(HeadFree{amp(mm)}.n.Freq,1,jj) ; hold on
-%             h.Trial = plot(HeadFree{amp(mm)}.HEAD.Time{kk}{jj},HeadFree{amp(mm)}.HEAD.Pos{kk}{jj},'Color',[0.5 0.5 0.5],'LineWidth',1); % trials
+%             h.Trial = plot(HeadFree{amp(mm)}.WING.Time{kk}{jj},HeadFree{amp(mm)}.WING.Pos{kk}{jj},'Color',[0.5 0.5 0.5],'LineWidth',1); % trials
 %             for ii = 1:length(h.Trial)
 %                 h.Trial(ii).Color(4) = 0.25;
 %             end
-%             h.Fly = plot(HeadFree{amp(mm)}.HEAD.FlyMed.Time{kk}(:,jj),HeadFree{amp(mm)}.HEAD.FlyMed.Pos{kk}(:,jj),'LineWidth',2); % flys
+%             h.Fly = plot(HeadFree{amp(mm)}.WING.FlyMed.Time{kk}(:,jj),HeadFree{amp(mm)}.WING.FlyMed.Pos{kk}(:,jj),'LineWidth',2); % flys
 %             h.Fly.Color(4) = 0.5;
 %         end
 %     end
     for jj = 1:HeadFree{amp(mm)}.n.Freq
         subplot(HeadFree{amp(mm)}.n.Freq,1,jj) ; hold on
         title([num2str(HeadFree{amp(mm)}.unq.Freq(jj)) ' Hz'],'Interpreter','latex','FontSize',15)
-            [h.patch,h.med{jj,mm}] = PlotPatch(HeadFree{amp(mm)}.HEAD.GrandMed.Pos(:,jj),HeadFree{amp(mm)}.HEAD.GrandSTD.Pos(:,jj),...
-                HeadFree{amp(mm)}.HEAD.GrandMed.Time(:,jj),2,HeadFree{amp(mm)}.n.Fly,CList{amp(mm)},[0.4 0.4 0.6],0.5,2); % all flys
+            [h.patch,h.med{jj,mm}] = PlotPatch(HeadFree{amp(mm)}.WING.GrandMed.Pos(:,jj),HeadFree{amp(mm)}.WING.GrandSTD.Pos(:,jj),...
+                HeadFree{amp(mm)}.WING.GrandMed.Time(:,jj),2,HeadFree{amp(mm)}.n.Fly,CList{amp(mm)},[0.4 0.4 0.6],0.5,2); % all flys
             h.med{jj,mm}.Color(4) = 0.5;
             delete(h.patch)
 
             xlim([0 10])
-            ylim([-20 20])
+            ylim([-2 2])
             if jj==HeadFree{amp(mm)}.n.Freq
                 xlabel('Time (s)','Interpreter','latex','FontSize',15)
             end
@@ -55,7 +55,7 @@ for mm = length(amp):-1:1
                 xticks(0)
                 xticklabels('')
             end
-            ylabel('Head($^{\circ}$)','Interpreter','latex','FontSize',15)
+            ylabel('Wing(V)','Interpreter','latex','FontSize',15)
     end
 end
 subplot(HeadFree{amp(1)}.n.Freq,1,1)
