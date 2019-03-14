@@ -13,8 +13,8 @@ function [PAT,WING,HEAD,BODE,FD,T,n,unq] = MakeData_Sine_HeadFree(rootdir,Amp)
 %       unq   	: unique fields
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
-Amp = 15;
-rootdir = 'E:\EXPERIMENTS\Experiment_Sinusoid\';
+% Amp = 15;
+% rootdir = 'H:\EXPERIMENTS\Experiment_Sinusoid\';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ clear temp jj
 %---------------------------------------------------------------------------------------------------------------------------------
 unq.Fly = sort(unique(FD.Fly)); % original # of each unique fly
 n.Fly = length(unq.Fly); % # flies
-FD.trialFly = cell(n.Fly,2);
+FD.trialFly = cell(n.Fly,1);
 for kk = 1:n.Fly
     FD.trialFly{kk,1} = unq.Fly(kk);  % fly # label
 	FD.trialFly{kk,2} = length(find(FD.Fly==unq.Fly(kk))); % # trials per fly
@@ -318,26 +318,7 @@ disp('LOADING DONE')
 disp('Bad Trial:')
 disp(count)
 pause(3)
-%%
-close all
-for kk = 1:n.Fly
-    for jj = 1:n.Freq
-        figure (1) ; hold on
-        plot(unq.Freq(jj),CROSS.pat2head.delay{kk}{jj},'ok')
-        figure (2)
-        subplot(n.Freq,1,jj) ; hold on
-        plot(CROSS.pat2head.lag{kk}{jj},CROSS.pat2head.cc{kk}{jj})
-        for ii = 1:size(CROSS.pat2head.cc{kk}{jj},2)
-%             [pks,locs] = findpeaks(CROSS.pat2head.cc{kk}{jj}(:,ii));
-%             sort(pks,'descend')
-%             idx = locs(pks==max(pks))
-%             plot(CROSS.pat2head.lag{kk}{jj}(idx,ii),pks(1),'g*')
-        [cc,idx] = max(abs(CROSS.pat2head.cc{kk}{jj}(:,ii)));
-        plot(CROSS.pat2head.lag{kk}{jj}(idx,ii),CROSS.pat2head.cc{kk}{jj}(idx,ii),'g*')
-        xlim([-1 1])
-        end
-    end
-end
+
 %% FLY Stats by Fly %%
 %---------------------------------------------------------------------------------------------------------------------------------
 for kk = 1:n.Fly
@@ -381,6 +362,16 @@ for kk = 1:n.Fly
         % BODE
      	BODE.FlyMed.head2wing.GAIN          {kk,1}(:,jj)	= median(BODE.head2wing.GAIN{kk}{jj},2);
      	BODE.FlyMed.head2wing.PhaseDiff     {kk,1}(:,jj) 	= circ_median(BODE.head2wing.PhaseDiff{kk}{jj},2)';
+        % CROSS
+        CROSS.FlyMed.pat2head.cc        {kk,1}(:,jj)	= median(CROSS.pat2head.cc{kk}{jj},2);
+        CROSS.FlyMed.pat2wing.cc        {kk,1}(:,jj)	= median(CROSS.pat2wing.cc{kk}{jj},2);
+        CROSS.FlyMed.head2wing.cc       {kk,1}(:,jj)	= median(CROSS.head2wing.cc{kk}{jj},2);
+       	CROSS.FlyMed.pat2head.lag       {kk,1}(:,jj)	= median(CROSS.pat2head.lag{kk}{jj},2);
+        CROSS.FlyMed.pat2wing.lag       {kk,1}(:,jj)	= median(CROSS.pat2wing.lag{kk}{jj},2);
+        CROSS.FlyMed.head2wing.lag      {kk,1}(:,jj)	= median(CROSS.head2wing.lag{kk}{jj},2);
+       	CROSS.FlyMed.pat2head.delay     {kk,1}(:,jj)	= median(CROSS.pat2head.delay{kk}{jj},2);
+        CROSS.FlyMed.pat2wing.delay     {kk,1}(:,jj)	= median(CROSS.pat2wing.delay{kk}{jj},2);
+        CROSS.FlyMed.head2wing.delay	{kk,1}(:,jj)	= median(CROSS.head2wing.delay{kk}{jj},2);        
 	% MEAN
     %-----------------------------------------------------------------------------------------------------------------------------
         % PATTERN
@@ -420,6 +411,16 @@ for kk = 1:n.Fly
         % BODE
      	BODE.FlyMean.head2wing.GAIN         {kk,1}(:,jj)	= mean(BODE.head2wing.GAIN{kk}{jj},2);
      	BODE.FlyMean.head2wing.PhaseDiff	{kk,1}(:,jj) 	= circ_mean(BODE.head2wing.PhaseDiff{kk}{jj},[],2)';
+     	% CROSS
+        CROSS.FlyMean.pat2head.cc        {kk,1}(:,jj)	= mean(CROSS.pat2head.cc{kk}{jj},2);
+        CROSS.FlyMean.pat2wing.cc        {kk,1}(:,jj)	= mean(CROSS.pat2wing.cc{kk}{jj},2);
+        CROSS.FlyMean.head2wing.cc       {kk,1}(:,jj)	= mean(CROSS.head2wing.cc{kk}{jj},2);
+       	CROSS.FlyMean.pat2head.lag       {kk,1}(:,jj)	= mean(CROSS.pat2head.lag{kk}{jj},2);
+        CROSS.FlyMean.pat2wing.lag       {kk,1}(:,jj)	= mean(CROSS.pat2wing.lag{kk}{jj},2);
+        CROSS.FlyMean.head2wing.lag      {kk,1}(:,jj)	= mean(CROSS.head2wing.lag{kk}{jj},2);
+       	CROSS.FlyMean.pat2head.delay     {kk,1}(:,jj)	= mean(CROSS.pat2head.delay{kk}{jj},2);
+        CROSS.FlyMean.pat2wing.delay     {kk,1}(:,jj)	= mean(CROSS.pat2wing.delay{kk}{jj},2);
+        CROSS.FlyMean.head2wing.delay	{kk,1}(:,jj)	= mean(CROSS.head2wing.delay{kk}{jj},2);   
     % STD
     %-----------------------------------------------------------------------------------------------------------------------------
         % PATTERN
@@ -459,6 +460,16 @@ for kk = 1:n.Fly
         % BODE
      	BODE.FlySTD.head2wing.GAIN          {kk,1}(:,jj)	= std(BODE.head2wing.GAIN{kk}{jj},0,2);
      	BODE.FlySTD.head2wing.PhaseDiff     {kk,1}(:,jj) 	= circ_std(BODE.head2wing.PhaseDiff{kk}{jj},[],[],2);
+        % CROSS
+        CROSS.FlySTD.pat2head.cc        {kk,1}(:,jj)	= std(CROSS.pat2head.cc{kk}{jj},0,2);
+        CROSS.FlySTD.pat2wing.cc        {kk,1}(:,jj)	= std(CROSS.pat2wing.cc{kk}{jj},0,2);
+        CROSS.FlySTD.head2wing.cc       {kk,1}(:,jj)	= std(CROSS.head2wing.cc{kk}{jj},0,2);
+       	CROSS.FlySTD.pat2head.lag       {kk,1}(:,jj)	= std(CROSS.pat2head.lag{kk}{jj},0,2);
+        CROSS.FlySTD.pat2wing.lag       {kk,1}(:,jj)	= std(CROSS.pat2wing.lag{kk}{jj},0,2);
+        CROSS.FlySTD.head2wing.lag      {kk,1}(:,jj)	= std(CROSS.head2wing.lag{kk}{jj},0,2);
+       	CROSS.FlySTD.pat2head.delay     {kk,1}(:,jj)	= std(CROSS.pat2head.delay{kk}{jj},0,2);
+        CROSS.FlySTD.pat2wing.delay     {kk,1}(:,jj)	= std(CROSS.pat2wing.delay{kk}{jj},0,2);
+        CROSS.FlySTD.head2wing.delay	{kk,1}(:,jj)	= std(CROSS.head2wing.delay{kk}{jj},0,2);  
     end
 end
 clear kk jj
@@ -503,6 +514,16 @@ for jj = 1:n.Freq
         
         BODE.FlyAmpMed.head2wing.GAIN       {jj,1}(:,kk)    = BODE.FlyMed.head2wing.GAIN{kk}(:,jj);
         BODE.FlyAmpMed.head2wing.PhaseDiff  {jj,1}(:,kk)    = BODE.FlyMed.head2wing.PhaseDiff{kk}(:,jj);
+        
+        CROSS.FlyAmpMed.pat2head.cc         {jj,1}(:,kk)	= CROSS.FlyMed.pat2head.cc{kk}(:,jj);
+        CROSS.FlyAmpMed.pat2wing.cc         {jj,1}(:,kk)	= CROSS.FlyMed.pat2wing.cc{kk}(:,jj);
+        CROSS.FlyAmpMed.head2wing.cc        {jj,1}(:,kk)	= CROSS.FlyMed.head2wing.cc{kk}(:,jj);
+       	CROSS.FlyAmpMed.pat2head.lag        {jj,1}(:,kk)	= CROSS.FlyMed.pat2head.lag{kk}(:,jj);
+        CROSS.FlyAmpMed.pat2wing.lag        {jj,1}(:,kk)	= CROSS.FlyMed.pat2wing.lag{kk}(:,jj);
+        CROSS.FlyAmpMed.head2wing.lag       {jj,1}(:,kk)	= CROSS.FlyMed.head2wing.lag{kk}(:,jj);
+       	CROSS.FlyAmpMed.pat2head.delay      {jj,1}(:,kk)	= CROSS.FlyMed.pat2head.delay{kk}(:,jj);
+        CROSS.FlyAmpMed.pat2wing.delay      {jj,1}(:,kk)	= CROSS.FlyMed.pat2wing.delay{kk}(:,jj);
+        CROSS.FlyAmpMed.head2wing.delay     {jj,1}(:,kk)	= CROSS.FlyMed.head2wing.delay{kk}(:,jj);
 	% MEAN
     %-----------------------------------------------------------------------------------------------------------------------------
         PAT.FlyAmpMean.Time        	{jj,1}(:,kk)  	= PAT.FlyMean.Time{kk}(:,jj);
@@ -540,6 +561,16 @@ for jj = 1:n.Freq
         
         BODE.FlyAmpMean.head2wing.GAIN          {jj,1}(:,kk)    = BODE.FlyMean.head2wing.GAIN{kk}(:,jj);
         BODE.FlyAmpMean.head2wing.PhaseDiff     {jj,1}(:,kk)    = BODE.FlyMean.head2wing.PhaseDiff{kk}(:,jj);
+        
+        CROSS.FlyAmpMean.pat2head.cc        {jj,1}(:,kk)	= CROSS.FlyMean.pat2head.cc{kk}(:,jj);
+        CROSS.FlyAmpMean.pat2wing.cc        {jj,1}(:,kk)	= CROSS.FlyMean.pat2wing.cc{kk}(:,jj);
+        CROSS.FlyAmpMean.head2wing.cc       {jj,1}(:,kk)	= CROSS.FlyMean.head2wing.cc{kk}(:,jj);
+       	CROSS.FlyAmpMean.pat2head.lag       {jj,1}(:,kk)	= CROSS.FlyMean.pat2head.lag{kk}(:,jj);
+        CROSS.FlyAmpMean.pat2wing.lag       {jj,1}(:,kk)	= CROSS.FlyMean.pat2wing.lag{kk}(:,jj);
+        CROSS.FlyAmpMean.head2wing.lag      {jj,1}(:,kk)	= CROSS.FlyMean.head2wing.lag{kk}(:,jj);
+       	CROSS.FlyAmpMean.pat2head.delay     {jj,1}(:,kk)	= CROSS.FlyMean.pat2head.delay{kk}(:,jj);
+        CROSS.FlyAmpMean.pat2wing.delay     {jj,1}(:,kk)	= CROSS.FlyMean.pat2wing.delay{kk}(:,jj);
+        CROSS.FlyAmpMean.head2wing.delay	{jj,1}(:,kk)	= CROSS.FlyMean.head2wing.delay{kk}(:,jj);
 	% STD
     %-----------------------------------------------------------------------------------------------------------------------------
         PAT.FlyAmpSTD.Time        	{jj,1}(:,kk)  	= PAT.FlySTD.Time{kk}(:,jj);
@@ -577,6 +608,16 @@ for jj = 1:n.Freq
         
         BODE.FlyAmpSTD.head2wing.GAIN       {jj,1}(:,kk)    = BODE.FlySTD.head2wing.GAIN{kk}(:,jj);
         BODE.FlyAmpSTD.head2wing.PhaseDiff  {jj,1}(:,kk)    = BODE.FlySTD.head2wing.PhaseDiff{kk}(:,jj);
+        
+        CROSS.FlyAmpSTD.pat2head.cc         {jj,1}(:,kk)	= CROSS.FlySTD.pat2head.cc{kk}(:,jj);
+        CROSS.FlyAmpSTD.pat2wing.cc         {jj,1}(:,kk)	= CROSS.FlySTD.pat2wing.cc{kk}(:,jj);
+        CROSS.FlyAmpSTD.head2wing.cc        {jj,1}(:,kk)	= CROSS.FlySTD.head2wing.cc{kk}(:,jj);
+       	CROSS.FlyAmpSTD.pat2head.lag        {jj,1}(:,kk)	= CROSS.FlySTD.pat2head.lag{kk}(:,jj);
+        CROSS.FlyAmpSTD.pat2wing.lag        {jj,1}(:,kk)	= CROSS.FlySTD.pat2wing.lag{kk}(:,jj);
+        CROSS.FlyAmpSTD.head2wing.lag       {jj,1}(:,kk)	= CROSS.FlySTD.head2wing.lag{kk}(:,jj);
+       	CROSS.FlyAmpSTD.pat2head.delay      {jj,1}(:,kk)	= CROSS.FlySTD.pat2head.delay{kk}(:,jj);
+        CROSS.FlyAmpSTD.pat2wing.delay      {jj,1}(:,kk)	= CROSS.FlySTD.pat2wing.delay{kk}(:,jj);
+        CROSS.FlyAmpSTD.head2wing.delay 	{jj,1}(:,kk)	= CROSS.FlySTD.head2wing.delay{kk}(:,jj);
     end
 end
 clear kk jj
@@ -619,6 +660,17 @@ clear kk jj
 
     BODE.GrandMed.head2wing.GAIN        = cell2mat((cellfun(@(x) median(x,2),BODE.FlyAmpMed.head2wing.GAIN ,'UniformOutput',false))');
     BODE.GrandMed.head2wing.PhaseDiff 	= cell2mat((cellfun(@(x) circ_median(x,2),BODE.FlyAmpMed.head2wing.PhaseDiff ,'UniformOutput',false)))';
+    
+	CROSS.GrandMed.pat2head.cc  	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.pat2head.cc ,'UniformOutput',false))');
+	CROSS.GrandMed.pat2wing.cc  	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.pat2wing.cc ,'UniformOutput',false))');
+	CROSS.GrandMed.head2wing.cc   	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.head2wing.cc ,'UniformOutput',false))');
+	CROSS.GrandMed.pat2head.lag  	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.pat2head.lag ,'UniformOutput',false))');
+	CROSS.GrandMed.pat2wing.lag  	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.pat2wing.lag ,'UniformOutput',false))');
+	CROSS.GrandMed.head2wing.lag  	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.head2wing.lag ,'UniformOutput',false))');
+	CROSS.GrandMed.pat2head.delay  	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.pat2head.delay ,'UniformOutput',false))');
+	CROSS.GrandMed.pat2wing.delay 	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.pat2wing.delay ,'UniformOutput',false))');
+	CROSS.GrandMed.head2wing.delay 	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.head2wing.cc ,'UniformOutput',false))');    
+    
 % MEAN
 %---------------------------------------------------------------------------------------------------------------------------------
     PAT.GrandMean.Time        	= cell2mat((cellfun(@(x) mean(x,2),PAT.FlyAmpMean.Time,'UniformOutput',false))');
@@ -655,48 +707,68 @@ clear kk jj
     WING.GrandMean.PhaseDiff  	= cell2mat((cellfun(@(x) circ_mean(x,[],2),WING.FlyAmpMean.PhaseDiff,'UniformOutput',false)'));
   	
     BODE.GrandMean.head2wing.GAIN       = cell2mat((cellfun(@(x) mean(x,2),BODE.FlyAmpMean.head2wing.GAIN ,'UniformOutput',false))');
-  	BODE.GrandMean.head2wing.PhaseDiff 	= cell2mat((cellfun(@(x) circ_mean(x,[],2),BODE.FlyAmpMean.head2wing.PhaseDiff ,'UniformOutput',false)')); 
+  	BODE.GrandMean.head2wing.PhaseDiff 	= cell2mat((cellfun(@(x) circ_mean(x,[],2),BODE.FlyAmpMean.head2wing.PhaseDiff ,'UniformOutput',false)'));
+    
+	CROSS.GrandMean.pat2head.cc  	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMean.pat2head.cc ,'UniformOutput',false))');
+	CROSS.GrandMean.pat2wing.cc  	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMean.pat2wing.cc ,'UniformOutput',false))');
+	CROSS.GrandMean.head2wing.cc   	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMean.head2wing.cc ,'UniformOutput',false))');
+	CROSS.GrandMean.pat2head.lag  	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpSTD.pat2head.lag ,'UniformOutput',false))');
+	CROSS.GrandMean.pat2wing.lag  	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMean.pat2wing.lag ,'UniformOutput',false))');
+	CROSS.GrandMean.head2wing.lag  	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMean.head2wing.lag ,'UniformOutput',false))');
+	CROSS.GrandMean.pat2head.delay 	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMean.pat2head.delay ,'UniformOutput',false))');
+	CROSS.GrandMean.pat2wing.delay 	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMean.pat2wing.delay ,'UniformOutput',false))');
+	CROSS.GrandMean.head2wing.delay	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMean.head2wing.cc ,'UniformOutput',false))');    
 % STD
 %---------------------------------------------------------------------------------------------------------------------------------
-    PAT.GrandSTD.Time           = cell2mat((cellfun(@(x) std(x,0,2),PAT.FlyAmpSTD.Time,'UniformOutput',false))');
-    PAT.GrandSTD.Pos            = cell2mat((cellfun(@(x) std(x,0,2),PAT.FlyAmpSTD.Pos,'UniformOutput',false))');
-    PAT.GrandSTD.Vel            = cell2mat((cellfun(@(x) std(x,0,2),PAT.FlyAmpSTD.Vel,'UniformOutput',false))');
-    PAT.GrandSTD.Freq           = cell2mat((cellfun(@(x) std(x,0,2),PAT.FlyAmpSTD.Freq,'UniformOutput',false))');
-    PAT.GrandSTD.Mag            = cell2mat((cellfun(@(x) std(x,0,2),PAT.FlyAmpSTD.Mag,'UniformOutput',false))');
-    PAT.GrandSTD.Phase          = cell2mat((cellfun(@(x) circ_std(x,[],[],2),PAT.FlyAmpSTD.Phase,'UniformOutput',false))');
+    PAT.GrandSTD.Time           = cell2mat((cellfun(@(x) std(x,0,2),PAT.FlyAmpMed.Time,'UniformOutput',false))');
+    PAT.GrandSTD.Pos            = cell2mat((cellfun(@(x) std(x,0,2),PAT.FlyAmpMed.Pos,'UniformOutput',false))');
+    PAT.GrandSTD.Vel            = cell2mat((cellfun(@(x) std(x,0,2),PAT.FlyAmpMed.Vel,'UniformOutput',false))');
+    PAT.GrandSTD.Freq           = cell2mat((cellfun(@(x) std(x,0,2),PAT.FlyAmpMed.Freq,'UniformOutput',false))');
+    PAT.GrandSTD.Mag            = cell2mat((cellfun(@(x) std(x,0,2),PAT.FlyAmpMed.Mag,'UniformOutput',false))');
+    PAT.GrandSTD.Phase          = cell2mat((cellfun(@(x) circ_std(x,[],[],2),PAT.FlyAmpMed.Phase,'UniformOutput',false))');
 
-    HEAD.GrandSTD.Time          = cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpSTD.Time,'UniformOutput',false))');
-    HEAD.GrandSTD.Pos           = cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpSTD.Pos,'UniformOutput',false))');
-    HEAD.GrandSTD.Vel           = cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpSTD.Vel,'UniformOutput',false))');
-    HEAD.GrandSTD.Freq          = cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpSTD.Freq,'UniformOutput',false))');
-    HEAD.GrandSTD.Mag           = cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpSTD.Mag,'UniformOutput',false))');
-    HEAD.GrandSTD.Phase      	= cell2mat((cellfun(@(x) circ_std(x,[],[],2),HEAD.FlyAmpSTD.Phase,'UniformOutput',false))');
-    HEAD.GrandSTD.COHR.Freq     = cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpSTD.COHR.Freq,'UniformOutput',false))');
-    HEAD.GrandSTD.COHR.Mag      = cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpSTD.COHR.Mag,'UniformOutput',false))');
-    HEAD.GrandSTD.GAIN      	= cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpSTD.GAIN,'UniformOutput',false))');
-    HEAD.GrandSTD.PhaseDiff  	= cell2mat((cellfun(@(x) circ_std(x,[],[],2),HEAD.FlyAmpSTD.PhaseDiff,'UniformOutput',false))');
-    HEAD.GrandSTD.Err.Pos      	= cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpSTD.Err.Pos,'UniformOutput',false))');
-    HEAD.GrandSTD.Err.Freq    	= cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpSTD.Err.Freq ,'UniformOutput',false))');
-    HEAD.GrandSTD.Err.Mag      	= cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpSTD.Err.Mag ,'UniformOutput',false))');
-    HEAD.GrandSTD.Err.Phase    	= cell2mat((cellfun(@(x) circ_std(x,[],[],2),HEAD.FlyAmpSTD.Err.Phase ,'UniformOutput',false))');
+    HEAD.GrandSTD.Time          = cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.Time,'UniformOutput',false))');
+    HEAD.GrandSTD.Pos           = cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.Pos,'UniformOutput',false))');
+    HEAD.GrandSTD.Vel           = cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.Vel,'UniformOutput',false))');
+    HEAD.GrandSTD.Freq          = cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.Freq,'UniformOutput',false))');
+    HEAD.GrandSTD.Mag           = cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.Mag,'UniformOutput',false))');
+    HEAD.GrandSTD.Phase      	= cell2mat((cellfun(@(x) circ_std(x,[],[],2),HEAD.FlyAmpMed.Phase,'UniformOutput',false))');
+    HEAD.GrandSTD.COHR.Freq     = cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.COHR.Freq,'UniformOutput',false))');
+    HEAD.GrandSTD.COHR.Mag      = cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.COHR.Mag,'UniformOutput',false))');
+    HEAD.GrandSTD.GAIN      	= cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.GAIN,'UniformOutput',false))');
+    HEAD.GrandSTD.PhaseDiff  	= cell2mat((cellfun(@(x) circ_std(x,[],[],2),HEAD.FlyAmpMed.PhaseDiff,'UniformOutput',false))');
+    HEAD.GrandSTD.Err.Pos      	= cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.Err.Pos,'UniformOutput',false))');
+    HEAD.GrandSTD.Err.Freq    	= cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.Err.Freq ,'UniformOutput',false))');
+    HEAD.GrandSTD.Err.Mag      	= cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.Err.Mag ,'UniformOutput',false))');
+    HEAD.GrandSTD.Err.Phase    	= cell2mat((cellfun(@(x) circ_std(x,[],[],2),HEAD.FlyAmpMed.Err.Phase ,'UniformOutput',false))');
 
-    WING.GrandSTD.Time          = cell2mat((cellfun(@(x) std(x,0,2),WING.FlyAmpSTD.Time,'UniformOutput',false))');
-    WING.GrandSTD.Pos           = cell2mat((cellfun(@(x) std(x,0,2),WING.FlyAmpSTD.Pos,'UniformOutput',false))');
-    WING.GrandSTD.Vel           = cell2mat((cellfun(@(x) std(x,0,2),WING.FlyAmpSTD.Vel,'UniformOutput',false))');
-    WING.GrandSTD.Freq          = cell2mat((cellfun(@(x) std(x,0,2),WING.FlyAmpSTD.Freq,'UniformOutput',false))');
-    WING.GrandSTD.Mag           = cell2mat((cellfun(@(x) std(x,0,2),WING.FlyAmpSTD.Mag,'UniformOutput',false))');
-    WING.GrandSTD.Phase      	= cell2mat((cellfun(@(x) circ_std(x,[],[],2),WING.FlyAmpSTD.Phase,'UniformOutput',false))');
-    WING.GrandSTD.COHR.Freq     = cell2mat((cellfun(@(x) std(x,0,2),WING.FlyAmpSTD.COHR.Freq,'UniformOutput',false))');
-    WING.GrandSTD.COHR.Mag      = cell2mat((cellfun(@(x) std(x,0,2),WING.FlyAmpSTD.COHR.Mag,'UniformOutput',false))');
-    WING.GrandSTD.GAIN      	= cell2mat((cellfun(@(x) std(x,0,2),WING.FlyAmpSTD.GAIN,'UniformOutput',false))');
-    WING.GrandSTD.PhaseDiff  	= cell2mat((cellfun(@(x) circ_std(x,[],[],2),WING.FlyAmpSTD.PhaseDiff,'UniformOutput',false))');
+    WING.GrandSTD.Time          = cell2mat((cellfun(@(x) std(x,0,2),WING.FlyAmpMed.Time,'UniformOutput',false))');
+    WING.GrandSTD.Pos           = cell2mat((cellfun(@(x) std(x,0,2),WING.FlyAmpMed.Pos,'UniformOutput',false))');
+    WING.GrandSTD.Vel           = cell2mat((cellfun(@(x) std(x,0,2),WING.FlyAmpMed.Vel,'UniformOutput',false))');
+    WING.GrandSTD.Freq          = cell2mat((cellfun(@(x) std(x,0,2),WING.FlyAmpMed.Freq,'UniformOutput',false))');
+    WING.GrandSTD.Mag           = cell2mat((cellfun(@(x) std(x,0,2),WING.FlyAmpMed.Mag,'UniformOutput',false))');
+    WING.GrandSTD.Phase      	= cell2mat((cellfun(@(x) circ_std(x,[],[],2),WING.FlyAmpMed.Phase,'UniformOutput',false))');
+    WING.GrandSTD.COHR.Freq     = cell2mat((cellfun(@(x) std(x,0,2),WING.FlyAmpMed.COHR.Freq,'UniformOutput',false))');
+    WING.GrandSTD.COHR.Mag      = cell2mat((cellfun(@(x) std(x,0,2),WING.FlyAmpMed.COHR.Mag,'UniformOutput',false))');
+    WING.GrandSTD.GAIN      	= cell2mat((cellfun(@(x) std(x,0,2),WING.FlyAmpMed.GAIN,'UniformOutput',false))');
+    WING.GrandSTD.PhaseDiff  	= cell2mat((cellfun(@(x) circ_std(x,[],[],2),WING.FlyAmpMed.PhaseDiff,'UniformOutput',false))');
     
     BODE.GrandSTD.head2wing.GAIN        = cell2mat((cellfun(@(x) std(x,0,2),BODE.FlyAmpMed.head2wing.GAIN ,'UniformOutput',false))');
     BODE.GrandSTD.head2wing.PhaseDiff 	= cell2mat((cellfun(@(x) circ_std(x,[],[],2),BODE.FlyAmpMed.head2wing.PhaseDiff ,'UniformOutput',false))');
     
+	CROSS.GrandSTD.pat2head.cc  	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.pat2head.cc ,'UniformOutput',false))');
+	CROSS.GrandSTD.pat2wing.cc  	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.pat2wing.cc ,'UniformOutput',false))');
+	CROSS.GrandSTD.head2wing.cc   	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.head2wing.cc ,'UniformOutput',false))');
+	CROSS.GrandSTD.pat2head.lag  	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.pat2head.lag ,'UniformOutput',false))');
+	CROSS.GrandSTD.pat2wing.lag  	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.pat2wing.lag ,'UniformOutput',false))');
+	CROSS.GrandSTD.head2wing.lag  	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.head2wing.lag ,'UniformOutput',false))');
+	CROSS.GrandSTD.pat2head.delay 	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.pat2head.delay ,'UniformOutput',false))');
+	CROSS.GrandSTD.pat2wing.delay 	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.pat2wing.delay ,'UniformOutput',false))');
+	CROSS.GrandSTD.head2wing.delay	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.head2wing.cc ,'UniformOutput',false))');        
+    
 %% Save ouputs as structure %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
-save([rootdir 'DATA\' filename '.mat'],'PAT','WING','HEAD','BODE','FD','T','n','unq')
+save([rootdir 'DATA\' filename '.mat'],'PAT','WING','HEAD','BODE','CROSS','FD','T','n','unq')
 disp('DONE')
 end
