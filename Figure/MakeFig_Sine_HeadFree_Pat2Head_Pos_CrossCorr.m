@@ -8,9 +8,9 @@ function [] = MakeFig_Sine_HeadFree_Pat2Head_Pos_CrossCorr(amp,root,figNum)
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
-% root = 'H:\EXPERIMENTS\Experiment_Sinusoid\DATA\';
-% figNum = 1;
-% amp = 4;
+root = 'F:\EXPERIMENTS\Experiment_Sinusoid\DATA\';
+figNum = 1;
+amp = 4;
 %---------------------------------------------------------------------------------------------------------------------------------
 filename = 'Sine_HeadFree_Pat2Head_Pos_CrossCorr'; % name of figure to save
 HeadFree{1} = load([root 'Sine_HeadFree_3.75_DATA_.mat'],'PAT','WING','HEAD','BODE','CROSS','n','unq');
@@ -62,8 +62,8 @@ subplot(HeadFree{amp(1)}.n.Freq,1,1)
 h.leg = legend([h.med{1,:}],legList);
 title(h.leg,['Amplitude (' char(176) ')'])
 
-saveas(FIG,[root 'FIGURE\' filename '.fig']); % save .fig file
-print(gcf,[root 'FIGURE\' filename],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
-disp('Saved to')
-disp(root)
+% saveas(FIG,[root 'FIGURE\' filename '.fig']); % save .fig file
+% print(gcf,[root 'FIGURE\' filename],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
+% disp('Saved to')
+% disp(root)
 end
