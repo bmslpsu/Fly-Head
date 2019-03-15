@@ -8,9 +8,9 @@ function [] = MakeFig_Sine_HeadFree_Head_Pos_Time(amp,root,figNum)
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
-% root = 'H:\EXPERIMENTS\Experiment_Sinusoid\DATA\';
-% figNum = 1;
-% amp = 1:5;
+root = 'H:\EXPERIMENTS\Experiment_Sinusoid\DATA\';
+figNum = 1;
+amp = 1:5;
 %---------------------------------------------------------------------------------------------------------------------------------
 filename = 'Sine_HeadFree_Head_Pos_Time'; % name of figure to save
 HeadFree{1} = load([root 'Sine_HeadFree_3.75_DATA_.mat'],'PAT','WING','HEAD','BODE','n','unq');

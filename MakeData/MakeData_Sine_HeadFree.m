@@ -33,9 +33,10 @@ PATH.daq = root.daq;
 %---------------------------------------------------------------------------------------------------------------------------------
 % Read in data from head file names
 n.Trial     = length(FILES);        % total # of trials
+FD.Amp      = Amp;                  % amplitude [deg]
 FD.Fly      = zeros(n.Trial,1); 	% fly #
 FD.Trial    = zeros(n.Trial,1);     % trial #
-FD.Freq      = zeros(n.Trial,1);     % amplitude [deg]
+FD.Freq   	= zeros(n.Trial,1);     % frequency [Hz]
 for jj = 1:n.Trial
     temp = textscan(char(FILES{jj}), '%s', 'delimiter', '_.'); temp = temp{1} ; % read individual strings into temp variable
     FD.Fly(jj,1)    = str2double(temp{2}); % store fly #
@@ -47,6 +48,7 @@ for jj = 1:n.Trial
         FD.Freq(jj,1) = str2double(temp{6});
     end
 end
+FD.Vel   	= FD.Amp *2*pi*FD.Freq;	% velocity [deg/s]
 clear temp jj
 %% Set up indexing convention for files %%
 % Normalize to start at fly#1 and increment by 1 for each fly & trial
@@ -74,9 +76,10 @@ for kk = 1:n.Fly
    pp = pp+FD.trialFly{kk,2};
 end
 % Make indexing array for amplitudes
-unq.Freq 	= sort(unique(FD.Freq));	% find all unique amplitudes
-n.Freq       = length(unq.Freq);  	% # of unique amplitudes
-FD.idxFreq   = zeros(n.Trial,1);     % amplitude index
+unq.Freq	= sort(unique(FD.Freq));	%  all unique frequencies
+unq.Vel     = sort(unique(FD.Vel));     %  all unique velocities
+n.Freq    	= length(unq.Freq);         % # of unique frequencies/velocities
+FD.idxFreq 	= zeros(n.Trial,1);         % frequency index
 for kk = 1:n.Freq
    FD.idxFreq(FD.Freq == unq.Freq(kk)) = kk; % frequency index
 end
@@ -89,8 +92,10 @@ clear pp kk
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Loading...')
 % Preallocate data cells
-WING.ALL.Pos = cell(n.Freq,1);
-HEAD.ALL.Pos = cell(n.Freq,1);
+PAT.ALL.Pos     = cell(n.Freq,1);
+WING.ALL.Pos    = cell(n.Freq,1);
+HEAD.ALL.Pos    = cell(n.Freq,1);
+CROSS.ALL       = [];
 for kk = 1:n.Fly
     for jj = 1:n.Freq
         % PATTERN Data
@@ -152,13 +157,17 @@ for kk = 1:n.Fly
         CROSS.head2wing.lag{kk,1}{jj,1}     = [];
         CROSS.pat2head.delay{kk,1}{jj,1}    = [];
         CROSS.pat2wing.delay{kk,1}{jj,1}    = [];
-        CROSS.head2wing.delay{kk,1}{jj,1}   = [];        
+        CROSS.head2wing.delay{kk,1}{jj,1}   = [];
+        CROSS.pat2head.maxCC{kk,1}{jj,1}    = [];
+        CROSS.pat2wing.maxCC{kk,1}{jj,1}    = [];
+        CROSS.head2wing.maxCC{kk,1}{jj,1}   = [];  
     end
 end
 % Store data in organized cells
 tt = (0:1/200:10)';
 tt = tt(1:end-1);
 count = 0;
+pp = 0;
 for kk = 1:n.Trial
     disp(kk)
     % Load HEAD & DAQ data %
@@ -172,19 +181,10 @@ for kk = 1:n.Trial
         fprintf('Low WBF: Fly %i Trial %i \n',FD.Fly(kk),FD.Trial(kk))
         count = count + 1;
         continue
+    else
+        pp = pp + 1;
     end
 	%-----------------------------------------------------------------------------------------------------------------------------
-	% Get pattern data from DAQ %
-    pat.Time        = t_p; % pattern time from DAQ [s]
-    pat.n           = length(pat.Time); % # of samples for pat data
-    pat.Fs          = 1/mean(diff(pat.Time)); % pattern sampling frequency [Hz]
-    pat.Pos         = panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]  
-    pat.Pos         = FitPanel(pat.Pos,pat.Time,tt); % fit panel data
-    pat.Time        = tt; % set new panel time
-	pat.Vel         = [diff(pat.Pos)/(1/pat.Fs) ; 0]; % pattern velocity [deg/s]
-    pat.VelMean     = mean(abs(pat.Vel)); % mean pattern velocity [deg/s]
-	pat.VelSTD      = mean(abs(pat.Vel)); % STD pattern velocity [deg/s]
-    %-----------------------------------------------------------------------------------------------------------------------------
     % Get head data %
 	head.Time       = t_v; % store head time vector [s]
     head.n          = length(head.Time); % # of samples for wing data
@@ -196,6 +196,17 @@ for kk = 1:n.Trial
     head.Vel        = filtfilt(b,a,[diff(head.Pos)./diff(head.Time) ; 0]); % calculte hea vecloity and filter again [deg/s]
     head.VelMean    = mean(abs(head.Vel)); % mean head velocity [deg/s]
     head.VelSTD     = std(abs(head.Vel)); % STD pattern velocity [deg/s]
+	%-----------------------------------------------------------------------------------------------------------------------------
+	% Get pattern data from DAQ %
+    pat.Time        = t_p; % pattern time from DAQ [s]
+    pat.n           = length(pat.Time); % # of samples for pat data
+    pat.Fs          = 1/mean(diff(pat.Time)); % pattern sampling frequency [Hz]
+    pat.Pos         = panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]  
+    pat.Pos         = FitPanel(pat.Pos,pat.Time,tt); % fit panel data
+    pat.Time        = tt; % set new panel time
+	pat.Vel         = [diff(pat.Pos)/(1/pat.Fs) ; 0]; % pattern velocity [deg/s]
+    pat.VelMean     = mean(abs(pat.Vel)); % mean pattern velocity [deg/s]
+	pat.VelSTD      = mean(abs(pat.Vel)); % STD pattern velocity [deg/s]
   	%-----------------------------------------------------------------------------------------------------------------------------
     % Get wing data from DAQ %
     wing.Time       = t_p; % wing time [s]
@@ -228,16 +239,16 @@ for kk = 1:n.Trial
 	[head.Err.Freq , head.Err.Mag, head.Err.Phase]  = FFT(head.Time,head.Err.Pos);
 	%-----------------------------------------------------------------------------------------------------------------------------
     % Calculate magnitude & phase at input frequency %
-    [head.MAG,head.PHASE] = Get_IO_Freq(head.Freq,head.Mag,head.Phase,FD.Freq(kk),0.2,false);
-    [wing.MAG,wing.PHASE] = Get_IO_Freq(wing.Freq,wing.Mag,wing.Phase,FD.Freq(kk));
- 	[pat.MAG,pat.PHASE] = Get_IO_Freq(pat.Freq,pat.Mag,pat.Phase,FD.Freq(kk),0.2,false);
-  	[head.Err.MAG,head.Err.PHASE] = Get_IO_Freq(head.Err.Freq,head.Err.Mag,head.Err.Phase,FD.Freq(kk));
+    [head.MAG,head.PHASE]           = Get_IO_Freq(head.Freq,head.Mag,head.Phase,FD.Freq(kk),0.2,false);
+    [wing.MAG,wing.PHASE]           = Get_IO_Freq(wing.Freq,wing.Mag,wing.Phase,FD.Freq(kk));
+ 	[pat.MAG,pat.PHASE]             = Get_IO_Freq(pat.Freq,pat.Mag,pat.Phase,FD.Freq(kk),0.2,false);
+  	[head.Err.MAG,head.Err.PHASE]   = Get_IO_Freq(head.Err.Freq,head.Err.Mag,head.Err.Phase,FD.Freq(kk));
 	%-----------------------------------------------------------------------------------------------------------------------------
     % Calculate BODE at input frequency %
-    head.GAIN       = head.MAG./pat.MAG;
-    head.PhaseDiff  = head.PHASE - pat.PHASE;
-	wing.GAIN       = wing.MAG./head.Err.MAG;
-    wing.PhaseDiff  = wing.PHASE - head.Err.PHASE;
+    head.GAIN                   = head.MAG./pat.MAG;
+    head.PhaseDiff              = head.PHASE - pat.PHASE;
+	wing.GAIN                   = wing.MAG./head.Err.MAG;
+    wing.PhaseDiff              = wing.PHASE - head.Err.PHASE;
     bode.head2wing.Gain         = wing.MAG./head.MAG;
     bode.head2wing.PhaseDiff    = wing.PHASE - head.PHASE;
     %-----------------------------------------------------------------------------------------------------------------------------
@@ -246,12 +257,13 @@ for kk = 1:n.Trial
 	[wing.cohr.mag,wing.cohr.f] = mscohere(pat.Pos , wing.Pos ,[],[] , wing.Freq , wing.Fs);
 	%-----------------------------------------------------------------------------------------------------------------------------
     % Calculate cross-correlation %
-    [cross.pat2head.cc,cross.pat2head.lag,cross.pat2head.delay]     = CrossCorr(pat.Pos,head.Pos,head.Fs);
-  	[cross.pat2wing.cc,cross.pat2wing.lag,cross.pat2wing.delay]     = CrossCorr(pat.Pos,wing.Pos,head.Fs);
-	[cross.head2wing.cc,cross.head2wing.lag,cross.head2wing.delay]	= CrossCorr(head.Pos,wing.Pos,head.Fs);
+    [cross.pat2head.cc  ,cross.pat2head.lag  ,cross.pat2head.maxCC ,cross.pat2head.delay]       = CrossCorr(pat.Pos,head.Pos,head.Fs);
+  	[cross.pat2wing.cc  ,cross.pat2wing.lag  ,cross.pat2wing.maxCC ,cross.pat2wing.delay]       = CrossCorr(pat.Pos,wing.Pos,head.Fs);
+	[cross.head2wing.cc ,cross.head2wing.lag ,cross.head2wing.maxCC ,cross.head2wing.delay]     = CrossCorr(head.Pos,wing.Pos,head.Fs);
     %-----------------------------------------------------------------------------------------------------------------------------
     % Store data in cells %
   	% PATTERN
+	PAT.ALL.Pos     {FD.idxFreq(kk)}(:,end+1) = pat.Pos;
 	PAT.Time        {FD.idxFly(kk),1}{FD.idxFreq(kk),1}(:,end+1) = pat.Time;
 	PAT.Pos         {FD.idxFly(kk),1}{FD.idxFreq(kk),1}(:,end+1) = pat.Pos;
 	PAT.Vel         {FD.idxFly(kk),1}{FD.idxFreq(kk),1}(:,end+1) = pat.Vel;
@@ -311,7 +323,21 @@ for kk = 1:n.Trial
 	CROSS.pat2head.delay   	{FD.idxFly(kk),1}{FD.idxFreq(kk),1}(:,end+1) = cross.pat2head.delay;
 	CROSS.pat2wing.delay   	{FD.idxFly(kk),1}{FD.idxFreq(kk),1}(:,end+1) = cross.pat2wing.delay;
    	CROSS.head2wing.delay  	{FD.idxFly(kk),1}{FD.idxFreq(kk),1}(:,end+1) = cross.head2wing.delay;
-
+	CROSS.pat2head.maxCC   	{FD.idxFly(kk),1}{FD.idxFreq(kk),1}(:,end+1) = cross.pat2head.maxCC;
+	CROSS.pat2wing.maxCC   	{FD.idxFly(kk),1}{FD.idxFreq(kk),1}(:,end+1) = cross.pat2wing.maxCC;
+   	CROSS.head2wing.maxCC  	{FD.idxFly(kk),1}{FD.idxFreq(kk),1}(:,end+1) = cross.head2wing.maxCC;
+    
+    CROSS.ALL(pp,1)     = FD.Amp;
+	CROSS.ALL(pp,2)     = FD.Fly(kk);
+    CROSS.ALL(pp,3)     = FD.Freq(kk);
+  	CROSS.ALL(pp,4)     = FD.Vel(kk);
+    CROSS.ALL(pp,5)     = FD.Trial(kk);
+	CROSS.ALL(pp,6)     = cross.pat2head.delay;
+    CROSS.ALL(pp,7)     = cross.pat2wing.delay;
+    CROSS.ALL(pp,8)     = cross.head2wing.delay;
+    CROSS.ALL(pp,9)     = cross.pat2head.maxCC;
+    CROSS.ALL(pp,10)    = cross.pat2wing.maxCC;
+    CROSS.ALL(pp,11)    = cross.head2wing.maxCC;
 end
 clear jj kk a b t_p t_v hAngles data  wing pat bode tt
 disp('LOADING DONE')
@@ -371,7 +397,10 @@ for kk = 1:n.Fly
         CROSS.FlyMed.head2wing.lag      {kk,1}(:,jj)	= median(CROSS.head2wing.lag{kk}{jj},2);
        	CROSS.FlyMed.pat2head.delay     {kk,1}(:,jj)	= median(CROSS.pat2head.delay{kk}{jj},2);
         CROSS.FlyMed.pat2wing.delay     {kk,1}(:,jj)	= median(CROSS.pat2wing.delay{kk}{jj},2);
-        CROSS.FlyMed.head2wing.delay	{kk,1}(:,jj)	= median(CROSS.head2wing.delay{kk}{jj},2);        
+        CROSS.FlyMed.head2wing.delay	{kk,1}(:,jj)	= median(CROSS.head2wing.delay{kk}{jj},2);
+       	CROSS.FlyMed.pat2head.maxCC     {kk,1}(:,jj)	= median(CROSS.pat2head.maxCC{kk}{jj},2);
+        CROSS.FlyMed.pat2wing.maxCC     {kk,1}(:,jj)	= median(CROSS.pat2wing.maxCC{kk}{jj},2);
+        CROSS.FlyMed.head2wing.maxCC	{kk,1}(:,jj)	= median(CROSS.head2wing.maxCC{kk}{jj},2);
 	% MEAN
     %-----------------------------------------------------------------------------------------------------------------------------
         % PATTERN
@@ -412,15 +441,18 @@ for kk = 1:n.Fly
      	BODE.FlyMean.head2wing.GAIN         {kk,1}(:,jj)	= mean(BODE.head2wing.GAIN{kk}{jj},2);
      	BODE.FlyMean.head2wing.PhaseDiff	{kk,1}(:,jj) 	= circ_mean(BODE.head2wing.PhaseDiff{kk}{jj},[],2)';
      	% CROSS
-        CROSS.FlyMean.pat2head.cc        {kk,1}(:,jj)	= mean(CROSS.pat2head.cc{kk}{jj},2);
-        CROSS.FlyMean.pat2wing.cc        {kk,1}(:,jj)	= mean(CROSS.pat2wing.cc{kk}{jj},2);
-        CROSS.FlyMean.head2wing.cc       {kk,1}(:,jj)	= mean(CROSS.head2wing.cc{kk}{jj},2);
-       	CROSS.FlyMean.pat2head.lag       {kk,1}(:,jj)	= mean(CROSS.pat2head.lag{kk}{jj},2);
-        CROSS.FlyMean.pat2wing.lag       {kk,1}(:,jj)	= mean(CROSS.pat2wing.lag{kk}{jj},2);
-        CROSS.FlyMean.head2wing.lag      {kk,1}(:,jj)	= mean(CROSS.head2wing.lag{kk}{jj},2);
-       	CROSS.FlyMean.pat2head.delay     {kk,1}(:,jj)	= mean(CROSS.pat2head.delay{kk}{jj},2);
-        CROSS.FlyMean.pat2wing.delay     {kk,1}(:,jj)	= mean(CROSS.pat2wing.delay{kk}{jj},2);
-        CROSS.FlyMean.head2wing.delay	{kk,1}(:,jj)	= mean(CROSS.head2wing.delay{kk}{jj},2);   
+        CROSS.FlyMean.pat2head.cc      	{kk,1}(:,jj)	= mean(CROSS.pat2head.cc{kk}{jj},2);
+        CROSS.FlyMean.pat2wing.cc    	{kk,1}(:,jj)	= mean(CROSS.pat2wing.cc{kk}{jj},2);
+        CROSS.FlyMean.head2wing.cc    	{kk,1}(:,jj)	= mean(CROSS.head2wing.cc{kk}{jj},2);
+       	CROSS.FlyMean.pat2head.lag    	{kk,1}(:,jj)	= mean(CROSS.pat2head.lag{kk}{jj},2);
+        CROSS.FlyMean.pat2wing.lag    	{kk,1}(:,jj)	= mean(CROSS.pat2wing.lag{kk}{jj},2);
+        CROSS.FlyMean.head2wing.lag    	{kk,1}(:,jj)	= mean(CROSS.head2wing.lag{kk}{jj},2);
+       	CROSS.FlyMean.pat2head.delay   	{kk,1}(:,jj)	= mean(CROSS.pat2head.delay{kk}{jj},2);
+        CROSS.FlyMean.pat2wing.delay   	{kk,1}(:,jj)	= mean(CROSS.pat2wing.delay{kk}{jj},2);
+        CROSS.FlyMean.head2wing.delay  	{kk,1}(:,jj)	= mean(CROSS.head2wing.delay{kk}{jj},2);
+        CROSS.FlyMean.pat2head.maxCC   	{kk,1}(:,jj)	= mean(CROSS.pat2head.maxCC{kk}{jj},2);
+        CROSS.FlyMean.pat2wing.maxCC  	{kk,1}(:,jj)	= mean(CROSS.pat2wing.maxCC{kk}{jj},2);
+        CROSS.FlyMean.head2wing.maxCC	{kk,1}(:,jj)	= mean(CROSS.head2wing.maxCC{kk}{jj},2);
     % STD
     %-----------------------------------------------------------------------------------------------------------------------------
         % PATTERN
@@ -469,7 +501,10 @@ for kk = 1:n.Fly
         CROSS.FlySTD.head2wing.lag      {kk,1}(:,jj)	= std(CROSS.head2wing.lag{kk}{jj},0,2);
        	CROSS.FlySTD.pat2head.delay     {kk,1}(:,jj)	= std(CROSS.pat2head.delay{kk}{jj},0,2);
         CROSS.FlySTD.pat2wing.delay     {kk,1}(:,jj)	= std(CROSS.pat2wing.delay{kk}{jj},0,2);
-        CROSS.FlySTD.head2wing.delay	{kk,1}(:,jj)	= std(CROSS.head2wing.delay{kk}{jj},0,2);  
+        CROSS.FlySTD.head2wing.delay	{kk,1}(:,jj)	= std(CROSS.head2wing.delay{kk}{jj},0,2);
+        CROSS.FlySTD.pat2head.maxCC     {kk,1}(:,jj)	= std(CROSS.pat2head.maxCC{kk}{jj},0,2);
+        CROSS.FlySTD.pat2wing.maxCC     {kk,1}(:,jj)	= std(CROSS.pat2wing.maxCC{kk}{jj},0,2);
+        CROSS.FlySTD.head2wing.maxCC	{kk,1}(:,jj)	= std(CROSS.head2wing.maxCC{kk}{jj},0,2);
     end
 end
 clear kk jj
@@ -524,6 +559,9 @@ for jj = 1:n.Freq
        	CROSS.FlyAmpMed.pat2head.delay      {jj,1}(:,kk)	= CROSS.FlyMed.pat2head.delay{kk}(:,jj);
         CROSS.FlyAmpMed.pat2wing.delay      {jj,1}(:,kk)	= CROSS.FlyMed.pat2wing.delay{kk}(:,jj);
         CROSS.FlyAmpMed.head2wing.delay     {jj,1}(:,kk)	= CROSS.FlyMed.head2wing.delay{kk}(:,jj);
+     	CROSS.FlyAmpMed.pat2head.maxCC      {jj,1}(:,kk)	= CROSS.FlyMed.pat2head.maxCC{kk}(:,jj);
+        CROSS.FlyAmpMed.pat2wing.maxCC      {jj,1}(:,kk)	= CROSS.FlyMed.pat2wing.maxCC{kk}(:,jj);
+        CROSS.FlyAmpMed.head2wing.maxCC     {jj,1}(:,kk)	= CROSS.FlyMed.head2wing.maxCC{kk}(:,jj);
 	% MEAN
     %-----------------------------------------------------------------------------------------------------------------------------
         PAT.FlyAmpMean.Time        	{jj,1}(:,kk)  	= PAT.FlyMean.Time{kk}(:,jj);
@@ -571,6 +609,9 @@ for jj = 1:n.Freq
        	CROSS.FlyAmpMean.pat2head.delay     {jj,1}(:,kk)	= CROSS.FlyMean.pat2head.delay{kk}(:,jj);
         CROSS.FlyAmpMean.pat2wing.delay     {jj,1}(:,kk)	= CROSS.FlyMean.pat2wing.delay{kk}(:,jj);
         CROSS.FlyAmpMean.head2wing.delay	{jj,1}(:,kk)	= CROSS.FlyMean.head2wing.delay{kk}(:,jj);
+     	CROSS.FlyAmpMean.pat2head.maxCC     {jj,1}(:,kk)	= CROSS.FlyMean.pat2head.maxCC{kk}(:,jj);
+        CROSS.FlyAmpMean.pat2wing.maxCC     {jj,1}(:,kk)	= CROSS.FlyMean.pat2wing.maxCC{kk}(:,jj);
+        CROSS.FlyAmpMean.head2wing.maxCC	{jj,1}(:,kk)	= CROSS.FlyMean.head2wing.maxCC{kk}(:,jj);
 	% STD
     %-----------------------------------------------------------------------------------------------------------------------------
         PAT.FlyAmpSTD.Time        	{jj,1}(:,kk)  	= PAT.FlySTD.Time{kk}(:,jj);
@@ -618,6 +659,9 @@ for jj = 1:n.Freq
        	CROSS.FlyAmpSTD.pat2head.delay      {jj,1}(:,kk)	= CROSS.FlySTD.pat2head.delay{kk}(:,jj);
         CROSS.FlyAmpSTD.pat2wing.delay      {jj,1}(:,kk)	= CROSS.FlySTD.pat2wing.delay{kk}(:,jj);
         CROSS.FlyAmpSTD.head2wing.delay 	{jj,1}(:,kk)	= CROSS.FlySTD.head2wing.delay{kk}(:,jj);
+     	CROSS.FlyAmpSTD.pat2head.maxCC      {jj,1}(:,kk)	= CROSS.FlySTD.pat2head.maxCC{kk}(:,jj);
+        CROSS.FlyAmpSTD.pat2wing.maxCC      {jj,1}(:,kk)	= CROSS.FlySTD.pat2wing.maxCC{kk}(:,jj);
+        CROSS.FlyAmpSTD.head2wing.maxCC 	{jj,1}(:,kk)	= CROSS.FlySTD.head2wing.maxCC{kk}(:,jj);
     end
 end
 clear kk jj
@@ -669,8 +713,10 @@ clear kk jj
 	CROSS.GrandMed.head2wing.lag  	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.head2wing.lag ,'UniformOutput',false))');
 	CROSS.GrandMed.pat2head.delay  	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.pat2head.delay ,'UniformOutput',false))');
 	CROSS.GrandMed.pat2wing.delay 	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.pat2wing.delay ,'UniformOutput',false))');
-	CROSS.GrandMed.head2wing.delay 	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.head2wing.cc ,'UniformOutput',false))');    
-    
+	CROSS.GrandMed.head2wing.delay 	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.head2wing.delay ,'UniformOutput',false))');    
+	CROSS.GrandMed.pat2head.maxCC  	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.pat2head.maxCC ,'UniformOutput',false))');
+	CROSS.GrandMed.pat2wing.maxCC 	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.pat2wing.maxCC ,'UniformOutput',false))');
+	CROSS.GrandMed.head2wing.maxCC 	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.head2wing.maxCC ,'UniformOutput',false))');
 % MEAN
 %---------------------------------------------------------------------------------------------------------------------------------
     PAT.GrandMean.Time        	= cell2mat((cellfun(@(x) mean(x,2),PAT.FlyAmpMean.Time,'UniformOutput',false))');
@@ -717,7 +763,10 @@ clear kk jj
 	CROSS.GrandMean.head2wing.lag  	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMean.head2wing.lag ,'UniformOutput',false))');
 	CROSS.GrandMean.pat2head.delay 	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMean.pat2head.delay ,'UniformOutput',false))');
 	CROSS.GrandMean.pat2wing.delay 	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMean.pat2wing.delay ,'UniformOutput',false))');
-	CROSS.GrandMean.head2wing.delay	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMean.head2wing.cc ,'UniformOutput',false))');    
+	CROSS.GrandMean.head2wing.delay	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMean.head2wing.delay ,'UniformOutput',false))');
+	CROSS.GrandMean.pat2head.maxCC 	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMean.pat2head.maxCC ,'UniformOutput',false))');
+	CROSS.GrandMean.pat2wing.maxCC 	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMean.pat2wing.maxCC ,'UniformOutput',false))');
+	CROSS.GrandMean.head2wing.maxCC	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMean.head2wing.maxCC ,'UniformOutput',false))');
 % STD
 %---------------------------------------------------------------------------------------------------------------------------------
     PAT.GrandSTD.Time           = cell2mat((cellfun(@(x) std(x,0,2),PAT.FlyAmpMed.Time,'UniformOutput',false))');
@@ -764,7 +813,10 @@ clear kk jj
 	CROSS.GrandSTD.head2wing.lag  	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.head2wing.lag ,'UniformOutput',false))');
 	CROSS.GrandSTD.pat2head.delay 	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.pat2head.delay ,'UniformOutput',false))');
 	CROSS.GrandSTD.pat2wing.delay 	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.pat2wing.delay ,'UniformOutput',false))');
-	CROSS.GrandSTD.head2wing.delay	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.head2wing.cc ,'UniformOutput',false))');        
+	CROSS.GrandSTD.head2wing.delay	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.head2wing.delay ,'UniformOutput',false))');
+	CROSS.GrandSTD.pat2head.maxCC 	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.pat2head.maxCC ,'UniformOutput',false))');
+	CROSS.GrandSTD.pat2wing.maxCC 	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.pat2wing.maxCC ,'UniformOutput',false))');
+	CROSS.GrandSTD.head2wing.maxCC	= cell2mat((cellfun(@(x) median(x,2),CROSS.FlyAmpMed.head2wing.maxCC ,'UniformOutput',false))');
     
 %% Save ouputs as structure %%
 %---------------------------------------------------------------------------------------------------------------------------------
