@@ -1,8 +1,8 @@
 function [PAT,WING,HEAD,BODE,FD,T,n,unq] = MakeData_Sine_HeadFree(rootdir,Amp)
 %% MakeData_Sine_HeadFree: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
 %   INPUTS:
-%       root        : root directory
-%       Amp         : sinusoid amplitude, set's directory
+%       root  	: root directory
+%       Amp   	: sinusoid amplitude, set's directory
 %   OUTPUTS:
 %       PAT     : pattern structure
 %       WING   	: wings structure
@@ -13,8 +13,8 @@ function [PAT,WING,HEAD,BODE,FD,T,n,unq] = MakeData_Sine_HeadFree(rootdir,Amp)
 %       unq   	: unique fields
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
-Amp = 15;
-rootdir = 'H:\EXPERIMENTS\Experiment_Sinusoid\';
+% Amp = 15;
+% rootdir = 'H:\EXPERIMENTS\Experiment_Sinusoid\';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -29,65 +29,20 @@ FILES = FILES';
 
 PATH.daq = root.daq;
 
-%% Process File Data %%
-%---------------------------------------------------------------------------------------------------------------------------------
-% Read in data from head file names
-n.Trial     = length(FILES);        % total # of trials
-FD.Amp      = Amp;                  % amplitude [deg]
-FD.Fly      = zeros(n.Trial,1); 	% fly #
-FD.Trial    = zeros(n.Trial,1);     % trial #
-FD.Freq   	= zeros(n.Trial,1);     % frequency [Hz]
-for jj = 1:n.Trial
-    temp = textscan(char(FILES{jj}), '%s', 'delimiter', '_.'); temp = temp{1} ; % read individual strings into temp variable
-    FD.Fly(jj,1)    = str2double(temp{2}); % store fly #
-    FD.Trial(jj,1)  = str2double(temp{4}); % store trial #
-    
-    if ~isnan(str2double(temp{7}))
-        FD.Freq(jj,1) = str2double([temp{6} '.' temp{7}]); % store amplitude
-    else
-        FD.Freq(jj,1) = str2double(temp{6});
-    end
-end
-FD.Vel   	= FD.Amp *2*pi*FD.Freq;	% velocity [deg/s]
-clear temp jj
-%% Set up indexing convention for files %%
-% Normalize to start at fly#1 and increment by 1 for each fly & trial
-%---------------------------------------------------------------------------------------------------------------------------------
-unq.Fly = sort(unique(FD.Fly)); % original # of each unique fly
-n.Fly = length(unq.Fly); % # flies
-FD.trialFly = cell(n.Fly,1);
-for kk = 1:n.Fly
-    FD.trialFly{kk,1} = unq.Fly(kk);  % fly # label
-	FD.trialFly{kk,2} = length(find(FD.Fly==unq.Fly(kk))); % # trials per fly
-end
-% Make indexing array for flies
-FD.newFly = (1:n.Fly)';
-FD.idxFly = zeros(n.Fly,1);
-pp = 1;
-for kk = 1:n.Fly
-    FD.idxFly(pp:pp+FD.trialFly{kk,2}-1,1) = FD.newFly(kk); % fly index
-    pp = pp + FD.trialFly{kk,2};
-end
-% Make indexing array for trials
-pp = 1;
-FD.idxTrial = zeros(n.Trial,1);
-for kk = 1:n.Fly
-   FD.idxTrial(pp:pp+FD.trialFly{kk,2}-1) = 1:FD.trialFly{kk,2}; % trial index
-   pp = pp+FD.trialFly{kk,2};
-end
-% Make indexing array for amplitudes
-unq.Freq	= sort(unique(FD.Freq));	%  all unique frequencies
-unq.Vel     = sort(unique(FD.Vel));     %  all unique velocities
-n.Freq    	= length(unq.Freq);         % # of unique frequencies/velocities
-FD.idxFreq 	= zeros(n.Trial,1);         % frequency index
-for kk = 1:n.Freq
-   FD.idxFreq(FD.Freq == unq.Freq(kk)) = kk; % frequency index
-end
+[D,I,N,U] = GetFileData(FILES,'Fly','Trial','Freq');
+n.Fly       = N{1,1};
+n.Freq      = N{1,3};
+n.Trial     = N{1,4};
+unq.Fly     = U{:,1}{1};
+unq.Freq    = U{:,3}{1};
+FD.Amp      = Amp;
+FD.Fly      = D{:,1};
+FD.Trial 	= D{:,2};
+FD.Freq 	= D{:,3};
+FD.idxFly   = I{:,1};
+FD.idxFreq	= I{:,3};
+FD.Vel      = FD.Freq*2*pi*FD.Amp;
 
-fprintf('Total Flies''s: %i \n',n.Fly) ; fprintf('Total Trials''s: %i \n',n.Trial)
-T = cell2table(FD.trialFly,'VariableNames',{'Fly','Trials'});
-disp(T)
-clear pp kk
 %% Get Data %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Loading...')
