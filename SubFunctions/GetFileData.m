@@ -1,5 +1,5 @@
 function [D,I,N,U] = GetFileData(FILES,varargin)
-%% MakeIdx: Parses file name data and returns tables with relevant information
+%% GetFileData: Parse file name data and returns tables with relevant information, lets user load files if no input is specified
 %   INPUTS:
 %       FILES       :   file cells in the form "var1_val1_var2_val2_..._varn_valn". The first variable is
 %                       the control group & the second is the repetions, the rest are categories
@@ -11,6 +11,16 @@ function [D,I,N,U] = GetFileData(FILES,varargin)
 %       N           :   # table
 %       U           :   unique variable #'s table
 %---------------------------------------------------------------------------------------------------------------------------------
+% Let user load files if no input is specified
+if ~nargin
+    [files, ~] = uigetfile({'*', 'files'}, 'Select files', 'MultiSelect','on');
+    if ischar(files)
+        FILES{1} = files;
+    else
+        FILES = files';
+    end
+    clear files
+end
 % Get file data
 n.file = length(FILES);
 [~,filename,~] = fileparts(FILES{1}); % remove file extension from file name
