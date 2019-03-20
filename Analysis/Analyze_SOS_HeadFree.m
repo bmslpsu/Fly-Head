@@ -1,5 +1,6 @@
 showplot.Time  = 1;
 showplot.Freq  = 1;
+npeaks = 6 ;             % Number of sine waves in pattern
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
 root.pat = '/Users/akb427/Documents/MATLAB/Research/Sum-of-Sine';
@@ -65,20 +66,44 @@ for kk = 1:nFly % # of flys
         HEAD.Time{kk,1}       = [];
         HEAD.Pos{kk,1}        = [];
         HEAD.Freq{kk,1}       = [];
-        HEAD.Mag{kk,1}     	= [];
-        HEAD.Phase{kk,1}     = [];
+        HEAD.Mag{kk,1}     	  = [];
+        HEAD.Phase{kk,1}      = [];
+        HEAD.Peak.Mag{kk,1}   = [];
+        HEAD.Peak.Freq{kk,1}  = [];
+        HEAD.Peak.Phase{kk,1} = [];
+        
+        ERROR.Time{kk,1}      = [];
+        ERROR.Pos{kk,1}      = [];
+        ERROR.Freq{kk,1}      = [];
+        ERROR.Mag{kk,1}      = [];
+        ERROR.Phase{kk,1}      = [];
+        ERROR.Peak.Mag{kk,1}      =[];
+        ERROR.Peak.Freq{kk,1}      =[];
+        ERROR.Peak.Phase{kk,1}      =[];
         
         PAT.Time{kk,1}       = [];
         PAT.Pos{kk,1}        = [];
         PAT.Freq{kk,1}       = [];
-        PAT.Mag{kk,1}     	= [];
+        PAT.Mag{kk,1}        = [];
         PAT.Phase{kk,1}      = [];
+        PAT.Peak.Mag{kk,1}      =[];
+        PAT.Peak.Freq{kk,1}      =[];
+        PAT.Peak.Phase{kk,1}      =[];
         
         WING.Time{kk,1}      = [];
-        WING.Pos{kk,1}        = [];
+        WING.Pos{kk,1}       = [];
         WING.Freq{kk,1}      = [];
-        WING.Mag{kk,1}    	= [];
+        WING.Mag{kk,1}    	 = [];
         WING.Phase{kk,1}     = [];
+        WING.Peak.Mag{kk,1}         =[];
+        WING.Peak.Freq{kk,1}        =[];
+        WING.Peak.Phase{kk,1}       =[];
+        
+        BODE.Mag.HeadPat{kk,1}          =[];
+        BODE.Mag.WingError{kk,1}        =[];
+        BODE.Freq{kk,1}                 =[];
+        BODE.Phase.HeadPat{kk,1}        =[];
+        BODE.Phase.WingError{kk,1}      =[];
 end
 % Save time & frequency domain data in cells %
 for kk = 1:nTrial
@@ -114,19 +139,26 @@ for kk = 1:nTrial
     if min(wing.f)<180
         fprintf('Low WBF: Fly %i Trial %i \n',Fly(kk),Trial(kk))
     end
+    
 %-----------------------------------------------------------------------------------------------------------------------------
-      % Get pattern data from DAQ %
+% Get pattern data from DAQ %
     pat.Full.Time = t_p;
     pat.Full.Pos  = 3.75*round((96/10)*(data(:,2)' - mean(data(:,2))))'; % get pattern x-pos: subtract mean and convert to deg
 
     interval = floor(length(pat.Full.Time)/length(head.Time));
     pat.Pos  = pat.Full.Pos(1:interval:end-1);
 	pat.Time = pat.Full.Time(1:interval:end-1);
+    
+%-----------------------------------------------------------------------------------------------------------------------------
+      % Compute Error in Time Domain %
+      error.Pos = pat.Pos-head.Pos;
+      error.Time = pat.Time;
 %-----------------------------------------------------------------------------------------------------------------------------
      % Convert head, wings, & pattern data to frequency domain %
     [head.Freq , head.Mag, head.Phase]   = FFT(head.Time,head.Pos);
     [wing.Freq , wing.Mag , wing.Phase]  = FFT(wing.Time,wing.Pos);
     [pat.Freq  , pat.Mag  , pat.Phase ]  = FFT(pat.Time,pat.Pos);
+    [error.Freq, error.Mag, error.Phase] = FFT(error.Time,error.Pos);
     
     head.Freq   = head.Freq(SI:EI);
     head.Mag    = head.Mag(SI:EI);
@@ -139,21 +171,44 @@ for kk = 1:nTrial
     pat.Freq   = pat.Freq(SI:EI);
     pat.Mag    = pat.Mag(SI:EI);
     pat.Phase  = pat.Phase(SI:EI);
+    
+    error.Freq   = error.Freq(SI:EI);
+    error.Mag    = error.Mag(SI:EI);
+    error.Phase  = error.Phase(SI:EI);
+%-----------------------------------------------------------------------------------------------------------------------------
+    % Find Peak Frequencies & Phases %
+
+    [pat.Peak.Mag,pat.Peak.Loc] = maxk(pat.Mag,npeaks);
+    [pat.Peak.Loc,ind1] = sort(pat.Peak.Loc);
+    pat.Peak.Mag = pat.Peak.Mag(ind1);
+    pat.Peak.Freq = pat.Freq(pat.Peak.Loc);
+    pat.Peak.Phase = pat.Phase(pat.Peak.Loc);
+    
+    [head.Peak.Freq, head.Peak.Mag, head.Peak.Phase] = SOSPeakFinder(npeaks, pat.Peak.Freq, head.Freq, head.Mag, head.Phase );
+    [error.Peak.Freq, error.Peak.Mag, error.Peak.Phase] = SOSPeakFinder(npeaks, pat.Peak.Freq, error.Freq, error.Mag, error.Phase);
+    [wing.Peak.Freq, wing.Peak.Mag, wing.Peak.Phase] = SOSPeakFinder(npeaks, pat.Peak.Freq, wing.Freq, wing.Mag, wing.Phase);
+    
 %-----------------------------------------------------------------------------------------------------------------------------
     % Store data in cells %
     % Head
-	HEAD.Time     {idxFly(kk),1}(:,end+1) = head.Time;
-	HEAD.Pos  	  {idxFly(kk),1}(:,end+1) = head.Pos;
-	HEAD.Freq   {idxFly(kk),1}(:,end+1) = head.Freq;
-	HEAD.Mag 	{idxFly(kk),1}(:,end+1) = head.Mag;
-	HEAD.Phase	{idxFly(kk),1}(:,end+1) = head.Phase;
+	HEAD.Time     {idxFly(kk),1}(:,end+1)       = head.Time;
+	HEAD.Pos  	  {idxFly(kk),1}(:,end+1)       = head.Pos;
+	HEAD.Freq   {idxFly(kk),1}(:,end+1)         = head.Freq;
+	HEAD.Mag 	{idxFly(kk),1}(:,end+1)         = head.Mag;
+	HEAD.Phase	{idxFly(kk),1}(:,end+1)         = head.Phase;
+    HEAD.Peak.Freq {idxFly(kk),1}(:,end+1)      = head.Peak.Freq;
+    HEAD.Peak.Mag {idxFly(kk),1}(:,end+1)       = head.Peak.Mag;
+    HEAD.Peak.Phase {idxFly(kk),1}(:,end+1)     = head.Peak.Phase;
     
     % Pattern
-	PAT.Time  	{idxFly(kk),1}(:,end+1) = pat.Full.Time;
-	PAT.Pos    	{idxFly(kk),1}(:,end+1) = pat.Pos;
-    PAT.Freq  	{idxFly(kk),1}(:,end+1) = pat.Freq;
-	PAT.Mag    	{idxFly(kk),1}(:,end+1) = pat.Mag;
-	PAT.Phase	{idxFly(kk),1}(:,end+1) = pat.Phase;
+	PAT.Time  	{idxFly(kk),1}(:,end+1)     = pat.Time;
+	PAT.Pos    	{idxFly(kk),1}(:,end+1)     = pat.Pos;
+    PAT.Freq  	{idxFly(kk),1}(:,end+1)     = pat.Freq;
+	PAT.Mag    	{idxFly(kk),1}(:,end+1)     = pat.Mag;
+	PAT.Phase	{idxFly(kk),1}(:,end+1)     = pat.Phase;
+    PAT.Peak.Freq {idxFly(kk),1}(:,end+1)   = pat.Peak.Freq;
+    PAT.Peak.Mag {idxFly(kk),1}(:,end+1)    = pat.Peak.Mag;
+    PAT.Peak.Phase {idxFly(kk),1}(:,end+1)  = pat.Peak.Phase;
     
     % Wings
 	WING.Pos	{idxFly(kk),1}(:,end+1) = wing.Pos;
@@ -161,6 +216,20 @@ for kk = 1:nTrial
 	WING.Freq  {idxFly(kk),1}(:,end+1) = wing.Freq;
 	WING.Mag    {idxFly(kk),1}(:,end+1) = wing.Mag;
 	WING.Phase {idxFly(kk),1}(:,end+1) = wing.Phase;
+    HEAD.Peak.Freq {idxFly(kk),1}(:,end+1) = wing.Peak.Freq;
+    HEAD.Peak.Mag {idxFly(kk),1}(:,end+1) = wing.Peak.Mag;
+    HEAD.Peak.Phase {idxFly(kk),1}(:,end+1) = wing.Peak.Phase;
+    
+    % Error
+    ERROR.Time{idxFly(kk),1}(:,end+1)           = error.Time;
+    ERROR.Pos{idxFly(kk),1}(:,end+1)            = error.Pos;
+    ERROR.Freq{idxFly(kk),1}(:,end+1)           = error.Freq;
+    ERROR.Mag{idxFly(kk),1}(:,end+1)            = error.Mag;
+    ERROR.Phase{idxFly(kk),1}(:,end+1)          = error.Phase;
+    ERROR.Peak.Mag{idxFly(kk),1}(:,end+1)       = error.Peak.Mag;
+    ERROR.Peak.Freq{idxFly(kk),1}(:,end+1)      = error.Peak.Freq;
+    ERROR.Peak.Phase{idxFly(kk),1}(:,end+1)     = error.Peak.Phase;
+     
 %-----------------------------------------------------------------------------------------------------------------------------
     colmn = 4; 
     if showplot.Time
@@ -190,8 +259,17 @@ for kk = 1:nTrial
                 xlim([0.5 11.5])
                 box on    
     end
-    %-----------------------------------------------------------------------------------------------------------------------------
+%-----------------------------------------------------------------------------------------------------------------------------
+    % Calculate Bode Data %
+    BODE.Mag.HeadPat{idxFly(kk),1}(:,end+1)             = head.Peak.Mag./pat.Peak.Mag;
+    BODE.Mag.WingError{idxFly(kk),1}(:,end+1)           = wing.Peak.Mag./error.Peak.Mag;
+    BODE.Freq{idxFly(kk),1}(:,end+1)                   = pat.Peak.Freq;
+    BODE.Phase.HeadPat{idxFly(kk),1}(:,end+1)           = head.Peak.Phase- pat.Peak.Phase;
+    BODE.Phase.WingError{idxFly(kk),1}(:,end+1)         = wing.Peak.Phase - error.Peak.Phase;
+%-----------------------------------------------------------------------------------------------------------------------------
 end
+
+
 disp('DONE')
 
     
