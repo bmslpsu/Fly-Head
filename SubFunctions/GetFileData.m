@@ -114,10 +114,10 @@ N.Properties.VariableNames = [varnames,'file'];
 U = splitvars(table(unq));
 U.Properties.VariableNames = varnames;
 
-fprintf('Total Files: %i \n',n.file)
-fprintf('Total %s: %i \n',varnames{1},nn(1))
+fprintf('Files: %i \n',n.file)
+fprintf('%s: %i \n',varnames{1},nn(1))
 for kk = 3:n.catg
-    fprintf('Total %s: %i \n',varnames{kk},nn(kk))
+    fprintf('%s: %i \n',varnames{kk},nn(kk))
 end
 T = table(idx{1} , cell2mat(reps(:,1)));
 T.Properties.VariableNames = varnames(1:2);
