@@ -1,4 +1,4 @@
-function [PAT,WING,HEAD,BODE,CROSS,D,I,N,U] = MakeData_Sine_HeadFree(rootdir,Amp)
+function [PAT,WING,HEAD,BODE,CROSS,D,I,N,U] = MakeData_Sine_HeadFree_Intervals(rootdir,Amp)
 %% MakeData_Sine_HeadFree: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
 %   INPUTS:
 %       root  	: root directory
@@ -13,12 +13,12 @@ function [PAT,WING,HEAD,BODE,CROSS,D,I,N,U] = MakeData_Sine_HeadFree(rootdir,Amp
 %       unq   	: unique fields
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
-% Amp = 15;
-% rootdir = 'H:\EXPERIMENTS\Experiment_Sinusoid\';
+Amp = 15;
+rootdir = 'H:\EXPERIMENTS\Experiment_Sinusoid\';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
-filename = ['Sine_HeadFree_' num2str(Amp) '_DATA_' ] ;
+filename = ['Sine_HeadFree_Interval' num2str(Amp) '_DATA_' ] ;
 root.daq = [rootdir num2str(Amp) '\'];
 root.ang = [root.daq '\Vid\Angles\'];
 

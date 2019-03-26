@@ -1,4 +1,4 @@
-function [] = MakeFig_Sine_HeadFree_Head_Pos_BODE(amp,root,figNum)
+function [] = MakeFig_Sine_HeadFree_Wing_Pos_BODE(amp,root,figNum)
 %% MakeFig_Chirp_HeadFree_Head_Pos_BODE:
 %   INPUTS:
 %       amp     : amplitude indicies to plot
@@ -12,7 +12,7 @@ function [] = MakeFig_Sine_HeadFree_Head_Pos_BODE(amp,root,figNum)
 % root = 'H:\EXPERIMENTS\Experiment_Sinusoid\DATA\';
 % figNum = 1;
 %---------------------------------------------------------------------------------------------------------------------------------
-filename = 'Sine_HeadFree_Head_Pos_BODE'; % name of figure to save
+filename = 'Sine_HeadFree_Wing_Pos_BODE'; % name of figure to save
 HeadFree = cell(length(amp),1);
 for jj = 1:length(amp)
     HeadFree{jj} = load([root 'Sine_HeadFree_' num2str(3.75*amp(jj)) '_DATA_.mat'],...
@@ -28,22 +28,22 @@ for jj = 1:length(amp)
     for kk = 1:HeadFree{amp(jj)}.N{1,1}
         for ii = 1:HeadFree{amp(jj)}.N{1,3}
             subplot(2,length(amp),jj) ; hold on
-            h.med = plot( HeadFree{amp(jj)}.U{1,3}{1}(ii) , HeadFree{amp(jj)}.HEAD.GAIN{kk}{ii} ,'*','Color',[0.5 0.5 0.5],...
+            h.med = plot( HeadFree{amp(jj)}.U{1,3}{1}(ii) , HeadFree{amp(jj)}.WING.GAIN{kk}{ii} ,'*','Color',[0.5 0.5 0.5],...
                 'LineWidth',1);
             subplot(2,length(amp),jj+length(amp)) ; hold on
-            h.med = plot( HeadFree{amp(jj)}.U{1,3}{1}(ii) , HeadFree{amp(jj)}.HEAD.PhaseDiff{kk}{ii} ,'*','Color',[0.5 0.5 0.5],...
+            h.med = plot( HeadFree{amp(jj)}.U{1,3}{1}(ii) , HeadFree{amp(jj)}.WING.PhaseDiff{kk}{ii} ,'*','Color',[0.5 0.5 0.5],...
                 'LineWidth',1);            
         end
         % MAGNITUDE
         subplot(2,length(amp),jj) ; hold on
-            SE = 2*HeadFree{amp(jj)}.HEAD.FlySTD.GAIN{kk}/1;
+            SE = 2*HeadFree{amp(jj)}.WING.FlySTD.GAIN{kk}/1;
             SE = SE.*0;
-            h.med = errorbar( HeadFree{amp(jj)}.U{1,3}{1} , HeadFree{amp(jj)}.HEAD.FlyMed.GAIN{kk} , SE ,'-o',...
+            h.med = errorbar( HeadFree{amp(jj)}.U{1,3}{1} , HeadFree{amp(jj)}.WING.FlyMed.GAIN{kk} , SE ,'-o',...
                 'LineWidth',1);
         subplot(2,length(amp),jj+length(amp)) ; hold on
         % PHASE    
-            SE = (2*HeadFree{amp(jj)}.HEAD.FlySTD.PhaseDiff{kk}/1);
-            h.med = errorbar( HeadFree{amp(jj)}.U{1,3}{1} , (HeadFree{amp(jj)}.HEAD.FlyMed.PhaseDiff{kk}) , SE ,'LineWidth',1);
+            SE = (2*HeadFree{amp(jj)}.WING.FlySTD.PhaseDiff{kk}/1);
+            h.med = errorbar( HeadFree{amp(jj)}.U{1,3}{1} , (HeadFree{amp(jj)}.WING.FlyMed.PhaseDiff{kk}) , SE ,'LineWidth',1);
     end
 end
 
@@ -51,11 +51,11 @@ for jj = 1:length(amp)
     % MAGNITUDE
 	subplot(2,length(amp),jj) ; hold on
     title([num2str(legList{jj}) '$^{\circ}$'],'Interpreter','latex','FontSize',15)
-        SE = 2*HeadFree{amp(jj)}.HEAD.GrandSTD.GAIN/HeadFree{amp(jj)}.N{1,1};
-        h.med = errorbar( HeadFree{amp(jj)}.U{1,3}{1} , HeadFree{amp(jj)}.HEAD.GrandMed.GAIN , SE ,'k','LineWidth',3);
+        SE = 2*HeadFree{amp(jj)}.WING.GrandSTD.GAIN/HeadFree{amp(jj)}.N{1,1};
+        h.med = errorbar( HeadFree{amp(jj)}.U{1,3}{1} , HeadFree{amp(jj)}.WING.GrandMed.GAIN , SE ,'k','LineWidth',3);
         
      	xlim([0 12])
-        ylim([0 1])
+        ylim([0 0.3])
         if jj==1
             ylabel('Head Gain(${\circ}/{\circ}$)','Interpreter','latex','FontSize',15)
         end
@@ -67,8 +67,8 @@ for jj = 1:length(amp)
         xticklabels('')
     % PHASE    
     subplot(2,length(amp),jj+length(amp)) ; hold on
-        MED = HeadFree{amp(jj)}.HEAD.GrandMed.PhaseDiff;
-        SE = 3*HeadFree{amp(jj)}.HEAD.GrandSTD.PhaseDiff/HeadFree{amp(jj)}.N{1,1};
+        MED = HeadFree{amp(jj)}.WING.GrandMed.PhaseDiff;
+        SE = 3*HeadFree{amp(jj)}.WING.GrandSTD.PhaseDiff/HeadFree{amp(jj)}.N{1,1};
         h.phase = errorbar( HeadFree{amp(jj)}.U{1,3}{1} , MED , SE ,'k','LineWidth',3);
         plot([0 15],[0 0],'Color',[0.5 0.5 0.5],'LineStyle','--')
      	xlim([0 12.5])
