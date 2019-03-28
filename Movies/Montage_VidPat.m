@@ -1,5 +1,5 @@
 function [MOV] = Montage_VidPat(rootdir,rootpat,export,vidFs)
-%% MakePosFunction_Chirp: makes chirp position function
+%% Montage_VidPat: makes chirp position function
 %   INPUT:
 %       rootdir     : directory containing DAQ,VID,ANGLE files
 %       rootpat     : directory containing PATTERN files
