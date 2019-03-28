@@ -1,8 +1,7 @@
-function [MOV] = Montage_VidPat(rootdir,rootpat,vidFs,export)
-%% Montage_VidPat: makes movie for fly in rigid tether >>> included fly video, head tracking, wing tracking, 
-%                    pattern position and plots of data
+function [MOV] = simulation_movie(rootdir,rootpat,export,vidFs)
+%% simulation_movie: on
 %   INPUT:
-%       rootdir     : directory containing DAQ,VID,ANGLE files
+%       rootdir     : export directory
 %       rootpat     : directory containing PATTERN files
 %       vidFs       : video display FPS
 %       export      : boolean (1=export video to images)
@@ -13,19 +12,11 @@ function [MOV] = Montage_VidPat(rootdir,rootpat,vidFs,export)
 % clear ; clc ; close all
 % export = true;
 % vidFs = 50;
-% rootdir = 'H:\EXPERIMENTS\Experiment_Sinusoid\15\';
 % rootpat = 'Q:\Box Sync\Git\Arena\Patterns\';
 %---------------------------------------------------------------------------------------------------------------------------------
 % Set directories
 root.pat    =  rootpat; % pattern location
-root.daq    =  rootdir; % pattern position location (DAQ file)
-root.vid    = [root.daq 'Vid\']; % video location
-root.head   = [root.vid 'Angles\']; % head angles location
-root.wing   = [root.vid 'WingAngles\']; % wing angles location
 
-% Select angle file
-[FILE.ang, ~] = uigetfile({'*.mat', 'DAQ-files'}, ...
-    'Select ANGLE file', root.head, 'MultiSelect','off');
 % Select pattern file
 [FILE.pat, ~] = uigetfile({'*.mat', 'DAQ-files'}, ...
     'Select PATTERN file', root.pat, 'MultiSelect','off');
@@ -34,21 +25,110 @@ root.wing   = [root.vid 'WingAngles\']; % wing angles location
 disp('Loading Data...')
 data = [];
 load([root.pat  FILE.pat],'pattern') % load pattern
-load([root.daq  FILE.ang],'data','t_p') % load pattern position
-load([root.vid  FILE.ang],'vidData','t_v') % load video
-load([root.head FILE.ang],'hAngles','hCenter') % load angles
 disp('DONE')
 
 % Create directories
-[~,dirName,~] = fileparts([root.head FILE.ang]); % get file name
-root.mov = [root.daq 'Movie\']; % movie directory
-root.image = [root.daq 'Movie\' dirName]; % image directory
+[~,dirName,~] = fileparts([rootdir 'TEST_v0']); % get file name
+root.mov = [rootdir 'Movie\']; % movie directory
+root.image = [rootdir 'Movie\' dirName]; % image directory
 mkdir(root.image) % create directory for export images
+%%
+close all;clc
 
+body.e = 0.9;
+head.e = 0.2;
+
+body.L = 10;
+head.L = 4;
+
+r = 0.7;
+body.center = [0,0];
+ang.body = (0:360);
+% tt = 0:0.01:10;
+% ang.body = 45*sin(2*pi*1*tt);
+ang.head = 0*linspace(ang.body(1),ang.body(end),length(ang.body));
+
+figure (1) ; clf ; hold on ; axis equal
+set(gcf,'Color','w')
+axis off
+axis(10*[-1 1 -1 1])
+for kk = 1:length(ang.body)
+    body.top(1) = body.center(1) + body.L*(1-r)*sind(ang.body(kk));
+    body.top(2) = body.center(2) + body.L*(1-r)*cosd(ang.body(kk));
+    
+ 	body.bot(1) = body.center(1) - body.L*r*sind(ang.body(kk));
+	body.bot(2) = body.center(2) - body.L*r*cosd(ang.body(kk));
+    
+    xx = [body.center(1) body.top(1) body.bot(1)];
+    yy = [body.center(2) body.top(2) body.bot(2)];
+    
+    a = 1/2*sqrt((body.top(1)-body.bot(1))^2+(body.top(2)-body.bot(2))^2);
+    b = a*sqrt(1-body.e^2);
+    t = linspace(0,2*pi);
+    X = a*cos(t);
+    Y = b*sin(t);
+    w = atan2(body.bot(2)-body.top(2),body.bot(1)-body.top(1));
+    x = (body.top(1)+body.bot(1))/2 + X*cos(w) - Y*sin(w);
+    y = (body.top(2)+body.bot(2))/2 + X*sin(w) + Y*cos(w);
+    h3 = plot(x,y,'k-','LineWidth',2);
+ 	h7 = patch(x,y,'b');
+    
+    h2 = plot(xx,yy,'-k','LineWidth',2);  
+    
+	head.top(1) = body.top(1) + head.L*sind(ang.head(kk));
+    head.top(2) = body.top(2) + head.L*cosd(ang.head(kk));
+    
+	xx = [body.top(1) , body.top(1) + head.L*sind(ang.head(kk))/2];
+    yy = [body.top(2) , body.top(2) + head.L*cosd(ang.head(kk))/2];
+    
+	a = 1/2*sqrt((head.top(1)-body.top(1))^2+(head.top(2)-body.top(2))^2);
+    b = a*sqrt(1-head.e^2);
+    t = linspace(pi/2,(3/2)*pi);
+    X = a*cos(t);
+    Y = b*sin(t);
+    w = atan2(body.top(2)-head.top(2),body.top(1)-head.top(1));
+    x = (body.top(1)) + X*cos(w) - Y*sin(w);
+    y = (body.top(2)) + X*sin(w) + Y*cos(w);
+    
+    h6 = patch([x x(1)],[y y(1)],'r');
+	h5 = plot([x x(1)],[y y(1)],'-k','LineWidth',2);
+ 	h4 = plot(xx,yy,'-k','LineWidth',2);
+
+	h1 = plot(body.top(1),body.top(2),'-ko','MarkerSize',5,'MarkerFaceColor','k');
+
+    h9 = plot(head.top(1),head.top(2),'-ko','MarkerSize',5,'MarkerFaceColor','g');
+    
+    h8 = plot(body.center(1),body.center(2),'-ko','MarkerSize',5,'MarkerFaceColor','k');
+
+    pause(0.01)
+    
+	delete(h1)
+    delete(h2)
+    delete(h3)
+  	delete(h4)
+    delete(h5)
+    delete(h6)
+	delete(h7)
+    delete(h8)
+    delete(h9)
+end
+close
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%
 % Get video, pattern, position, & angles data 
-Fly.vid = squeeze(vidData); % raw trial video data
-Fly.time = t_v; % video time
-Fly.Fs = round(1/mean(diff(Fly.time)));
 [Fly.xP,Fly.yP,nFrame] = size(Fly.vid ); % get size of video
 center = [round(Fly.yP/2) , round(Fly.xP/2)+45]; % center point for pattern & fly
 radius.center = floor(max([Fly.yP Fly.xP])/1.45); % radius of pattern
@@ -90,7 +170,7 @@ pp = 1;
 iter = round(Fly.Fs/vidFs);
 disp('Exporting Video...')
 for jj = 1:iter:nFrame % for each frame    
-	pat = pattern.Pats(1,:,round(Pat.int(jj)),4); % top row of pattern
+	pat = pattern.Pats(1,:,round(Pat.int(jj)),4); % body.top row of pattern
 	patS = circshift(pat,[0 0]); % shift pattern to fly reference frame
     
     I = find(patS~=0);
