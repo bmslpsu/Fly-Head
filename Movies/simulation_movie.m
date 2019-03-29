@@ -1,256 +1,121 @@
-function [MOV] = simulation_movie(rootdir,rootpat,export,vidFs)
-%% simulation_movie: on
+function [] = simulation_movie(bodyAng,headAng,refAng,tout,varargin)
+%% simulation_movie:
 %   INPUT:
-%       rootdir     : export directory
-%       rootpat     : directory containing PATTERN files
-%       vidFs       : video display FPS
-%       export      : boolean (1=export video to images)
+%       bodyAng     : body angles
+%       headAng     : head angles
+%       refAng      : reference angles
+%       tout        : time vector
+%       rootdir     : directory to save movie >>> varargin{1} 
 %   OUTPUT:
-%       MOV         : structure containing movie 
+%       -
 %---------------------------------------------------------------------------------------------------------------------------------
 % Example Input %
-% clear ; clc ; close all
-% export = true;
-% vidFs = 50;
-% rootpat = 'Q:\Box Sync\Git\Arena\Patterns\';
 %---------------------------------------------------------------------------------------------------------------------------------
-% Set directories
-root.pat    =  rootpat; % pattern location
-
-% Select pattern file
-[FILE.pat, ~] = uigetfile({'*.mat', 'DAQ-files'}, ...
-    'Select PATTERN file', root.pat, 'MultiSelect','off');
-
-% Load data
-disp('Loading Data...')
-data = [];
-load([root.pat  FILE.pat],'pattern') % load pattern
-disp('DONE')
-
-% Create directories
-[~,dirName,~] = fileparts([rootdir 'TEST_v0']); % get file name
-root.mov = [rootdir 'Movie\']; % movie directory
-root.image = [rootdir 'Movie\' dirName]; % image directory
-mkdir(root.image) % create directory for export images
-%%
-close all;clc
-
-body.e = 0.9;
-head.e = 0.2;
-
-body.L = 10;
-head.L = 4;
-
-r = 0.7;
-body.center = [0,0];
-ang.body = (0:360);
-% tt = 0:0.01:10;
-% ang.body = 45*sin(2*pi*1*tt);
-ang.head = 0*linspace(ang.body(1),ang.body(end),length(ang.body));
-
-figure (1) ; clf ; hold on ; axis equal
-set(gcf,'Color','w')
-axis off
-axis(10*[-1 1 -1 1])
-for kk = 1:length(ang.body)
-    body.top(1) = body.center(1) + body.L*(1-r)*sind(ang.body(kk));
-    body.top(2) = body.center(2) + body.L*(1-r)*cosd(ang.body(kk));
-    
- 	body.bot(1) = body.center(1) - body.L*r*sind(ang.body(kk));
-	body.bot(2) = body.center(2) - body.L*r*cosd(ang.body(kk));
-    
-    xx = [body.center(1) body.top(1) body.bot(1)];
-    yy = [body.center(2) body.top(2) body.bot(2)];
-    
-    a = 1/2*sqrt((body.top(1)-body.bot(1))^2+(body.top(2)-body.bot(2))^2);
-    b = a*sqrt(1-body.e^2);
-    t = linspace(0,2*pi);
-    X = a*cos(t);
-    Y = b*sin(t);
-    w = atan2(body.bot(2)-body.top(2),body.bot(1)-body.top(1));
-    x = (body.top(1)+body.bot(1))/2 + X*cos(w) - Y*sin(w);
-    y = (body.top(2)+body.bot(2))/2 + X*sin(w) + Y*cos(w);
-    h3 = plot(x,y,'k-','LineWidth',2);
- 	h7 = patch(x,y,'b');
-    
-    h2 = plot(xx,yy,'-k','LineWidth',2);  
-    
-	head.top(1) = body.top(1) + head.L*sind(ang.head(kk));
-    head.top(2) = body.top(2) + head.L*cosd(ang.head(kk));
-    
-	xx = [body.top(1) , body.top(1) + head.L*sind(ang.head(kk))/2];
-    yy = [body.top(2) , body.top(2) + head.L*cosd(ang.head(kk))/2];
-    
-	a = 1/2*sqrt((head.top(1)-body.top(1))^2+(head.top(2)-body.top(2))^2);
-    b = a*sqrt(1-head.e^2);
-    t = linspace(pi/2,(3/2)*pi);
-    X = a*cos(t);
-    Y = b*sin(t);
-    w = atan2(body.top(2)-head.top(2),body.top(1)-head.top(1));
-    x = (body.top(1)) + X*cos(w) - Y*sin(w);
-    y = (body.top(2)) + X*sin(w) + Y*cos(w);
-    
-    h6 = patch([x x(1)],[y y(1)],'r');
-	h5 = plot([x x(1)],[y y(1)],'-k','LineWidth',2);
- 	h4 = plot(xx,yy,'-k','LineWidth',2);
-
-	h1 = plot(body.top(1),body.top(2),'-ko','MarkerSize',5,'MarkerFaceColor','k');
-
-    h9 = plot(head.top(1),head.top(2),'-ko','MarkerSize',5,'MarkerFaceColor','g');
-    
-    h8 = plot(body.center(1),body.center(2),'-ko','MarkerSize',5,'MarkerFaceColor','k');
-
-    pause(0.01)
-    
-	delete(h1)
-    delete(h2)
-    delete(h3)
-  	delete(h4)
-    delete(h5)
-    delete(h6)
-	delete(h7)
-    delete(h8)
-    delete(h9)
-end
-close
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%%
-% Get video, pattern, position, & angles data 
-[Fly.xP,Fly.yP,nFrame] = size(Fly.vid ); % get size of video
-center = [round(Fly.yP/2) , round(Fly.xP/2)+45]; % center point for pattern & fly
-radius.center = floor(max([Fly.yP Fly.xP])/1.45); % radius of pattern
-radius.width = 10; % radius display width
-rin  = radius.center - radius.width;
-rout = radius.center + radius.width;
-x1 = center(1);
-y1 = center(2);
-sA = 3.75 * pi/180; % angle pixel subtends
-Pat.pos = round((96/10)*(data(:,2)-mean(0))); % pattern position
-Pat.time = t_p; % pattern time
-Pat.int = interp1(Pat.time, Pat.pos, Fly.time, 'nearest'); % interpolate pattern to match fly video
-
-% Get head rotation point if not found
-if exist('hCenter','var')~=1 
-    figure ; clf ; hold ; title('Select head rotation point, press space when done')
-    imshow(Fly.vid(:,:,1))
-    hp = impoint();
-    pause
-    hCenter = getPosition(hp);
-end
-
-% Create structure to store frames
-MOV(1:nFrame) = struct('cdata', [], 'colormap',[]);
-
-% Create video object
-VID = VideoWriter([root.mov dirName '.avi'],'Uncompressed AVI');
-VID.FrameRate = vidFs;
-open(VID)
-
-FIG = figure ; clf % main figure window for display & export
-set(gcf, 'color', 'k');
-set(FIG, 'Renderer','OpenGL');
-set(FIG, 'Position',[100, 100, 16*40, 16*50]);
-subplot(12,1,1:8) ; cla ; hold on; axis square % for fly & pattern vid
-subplot(12,1,9:10)  ; cla ; hold on ; h1 = animatedline('Color','g','LineWidth',2); % for pattern angle
-subplot(12,1,11:12) ; cla ; hold on ; h2 = animatedline('Color','b','LineWidth',2); % for head angle
-pp = 1;
-iter = round(Fly.Fs/vidFs);
-disp('Exporting Video...')
-for jj = 1:iter:nFrame % for each frame    
-	pat = pattern.Pats(1,:,round(Pat.int(jj)),4); % body.top row of pattern
-	patS = circshift(pat,[0 0]); % shift pattern to fly reference frame
-    
-    I = find(patS~=0);
-    theta = (I.*3.75) .* (2*pi/360); % lit pixels
-    theta_ALL = deg2rad(3.75*(1:96));
-
-	Frame = Fly.vid(:,:,jj); % current raw frame
-    DISP = Frame; % video frame to display
-    
-    % Display fly video
-    subplot(12,1,1:8) ; cla ; hold on; axis square
-    imshow(DISP); hold on
-    hTipX = hCenter(1) + rout*sind(hAngles(jj));
-    hTipY = hCenter(2) - rout*cosd(hAngles(jj));
-    plot([hCenter(1),hTipX],[hCenter(2),hTipY],'-b','LineWidth',2)
-    plot(hCenter(1),hCenter(2),'oc','MarkerSize',2)
-    plot(x1,y1,'r.','MarkerSize',1) % display center point
-
-    % Make pattern ring
-    for kk = 1:length(theta_ALL)
-        xin = x1 + rin*cos(theta_ALL(kk));
-        xout = x1 + rout*cos(theta_ALL(kk));
-        xinN = x1 + rin*cos(theta_ALL(kk) + sA);
-        xoutN = x1 + rout*cos(theta_ALL(kk) + sA);
-        yin = y1 + rin*sin(theta_ALL(kk));
-        yout = y1 + rout*sin(theta_ALL(kk));
-        yinN = y1 + rin*sin(theta_ALL(kk) + sA);
-        youtN = y1 + rout*sin(theta_ALL(kk) + sA);
-        
-        if sum(ismember(theta, theta_ALL(kk))) == 1 % if lit
-            patch([xout, xoutN, xinN, xin], [yout, youtN,yinN, yin],'g','linestyle','none',...
-                'FaceAlpha',pat(kk)*(1/(2^(pattern.gs_val)-1)));
-        else % if dark
-            patch([xout, xoutN, xinN, xin], [yout, youtN,yinN, yin],'k','linestyle','none');
-        end
+% clear ; clc ; close all
+% tout = 0:(1/100):5;
+% bodyAng = 40*sin(2*pi*1*tt + 0);
+% headAng = 40*sin(2*pi*2*tt + 0);
+% rootdir = 'Q:\Box Sync\Research';
+%---------------------------------------------------------------------------------------------------------------------------------
+vidFs = 100; % video frame rate [Hz]
+if nargin==5
+    export = true;
+    root.mov = [varargin{1} '\mov'];
+    [status,msg,~] = mkdir(root.mov); % create directory for .mat files
+    if status
+        warning(msg)
+        disp(['Folder located: ' root.mov])
+    else
+        error('Directory not created')
     end
+    VID = VideoWriter([root.mov '\TEST' '.avi'],'Uncompressed AVI'); % create video object
+    VID.FrameRate = vidFs;
+    open(VID)
+elseif nargin<5
+    export = false;
+else
+    error('Too may inputs')
+end
+
+% Body geometry
+body.center = [0,0];
+body.L = 40;
+body.ratio = 0.7;
+body.ecc = 0.9;
+body.C = [0 0 1];
+
+% Head geometry
+head.L = 15;
+head.ratio = 0.5;
+head.ecc = 0.2;
+head.C = [1 0 0];
+
+% Time for video
+Ts = 1/vidFs;
+tt = tout(1):(1/vidFs):tout(end);
+
+% Transform kinematics into video time
+body.ang = interp1(tout, bodyAng, tt, 'nearest'); % interpolate body for video
+head_ang = interp1(tout, headAng, tt, 'nearest'); % interpolate head for video
+head.ang = body.ang + head_ang; % shift head angle to global coordinate frame
+ref.ang  = interp1(tout, refAng, tt, 'nearest'); % interpolate pattern for video
+ref.pos  = round((96/360)*ref.ang);
+ref.pos(ref.pos<=0) = ref.pos(ref.pos<=0) + 96;
+
+FIG = figure (1);
+FIG.Color = 'k';
+FIG.Position = [400 50 900 900];
+subplot(12,1,1:8) ; cla ; hold on ; axis square ; axis equal ; axis off ; axis(60*[-1 1 -1 1])
+subplot(12,1,9:12) ; cla ; hold on
+plot([0 tt(end)],[0 0],'Color',[0.5 0.5 0.5],'LineStyle','--')
+h1 = animatedline('Color','r','LineWidth',2); % for head angle
+h2 = animatedline('Color','b','LineWidth',2); % for body angle
+h3 = animatedline('Color',[0.5 0.2 0.9],'LineWidth',2,'LineStyle','-'); % for gaze angle
+h4 = animatedline('Color','g','LineWidth',2,'LineStyle','--'); % for pattern angle
+
+tic
+for kk = 1:length(body.ang)
+    subplot(12,1,1:8) ; hold on
+%     [~] = draw_pattern(ref.pos(kk),7,pattern,body.center,50,5);    
+	[h.body,body.top,~] = draw_ellipse(body.center,body.L,body.ratio,body.ecc,body.ang(kk),body.C);
+    [h.head,~,~] = draw_semi_ellipse(body.top,head.L,head.ratio,head.ecc,head.ang(kk),head.C);
+    [h.ref,~,~] = draw_ellipse_pattern(body.center,100,0.5,0,15,ref.ang(kk));
     
-    % Pattern plot
- 	subplot(12,1,9:10) ; hold on ; set(gca, 'color', 'w')
- 	ylabel('Display ($^{\circ}$)','Interpreter','latex','Color','w','FontSize',12);
-    xlim([0 round(Fly.time(end))])
-    ylim([-20 20])
+    subplot(12,1,9:12) ; hold on ; set(gca, 'color', 'w')
+ 	ylabel('deg','Color','w','FontSize',15)
+	xlabel('time (s)','Color','w','FontSize',15);
+    xlim([0 round(tt(end))])
+    maxY = 10*round(max(abs([ref.ang,head.ang]))/10);
+    intY = maxY/5;
+    ylim(1.1*maxY*[-1 1])
  	set(gca,'ycolor','w');
-    set(gca,'xcolor','k');
-    set(gca,'YTick',[-20 0 20])
-    set(gca,'XTick',0:1:round(Fly.time(end)))
-    addpoints(h1,t_v(jj),3.75*Pat.int(jj) - 3.75*mean(Pat.int))
-    drawnow
+    set(gca,'xcolor','w');
+    set(gca,'YTick',(-maxY:intY:maxY))
+    set(gca,'XTick',0:1:round(tt(end)))
+ 	addpoints(h1,tt(kk),head_ang(kk))
+ 	addpoints(h2,tt(kk),body.ang(kk))
+ 	addpoints(h3,tt(kk),head.ang(kk))
+   	addpoints(h4,tt(kk),ref.ang(kk))
     
-    % Head plot
-    subplot(12,1,11:12) ; hold on ; set(gca, 'color', 'w')
-	ylabel('Head ($^{\circ}$)','Interpreter','latex','Color','w','FontSize',12)
-  	xlabel('Time (s)','Interpreter','latex','Color','w','FontSize',12)    
-    xlim([0 round(Fly.time(end))])
-    ylim([-20 20])
- 	set(gca,'ycolor','w');
- 	set(gca,'xcolor','w');
-    set(gca,'YTick',[-20 0 20])
-    set(gca,'XTick',0:1:round(Fly.time(end)))
-    addpoints(h2,t_v(jj),hAngles(jj) - mean(hAngles))
-    drawnow
-    
-    % Store frame
-    MOV(pp) = getframe(FIG);
+    pause(Ts/2)
     
     if export
-        % Export frame to image
-        filename = sprintf('image%04d.jpg', pp);
-        export_fig(gcf, [root.image '\' filename], '-q95','-nocrop');
-        % Write frame to .avi
-        writeVideo(VID,getframe(FIG));
+        writeVideo(VID,getframe(FIG)); % write frame to .avi
     end
-    pp = pp + 1;
+    
+    if kk~=length(body.ang)
+        for jj = 1:length(h.body)
+            delete(h.body{jj})
+        end
+        for jj = 1:length(h.head)
+            delete(h.head{jj})
+        end
+        for jj = 1:length(h.ref)
+            delete(h.ref{jj})
+        end
+    end
 end
-disp('DONE')
-disp('Saving...')
-if export
-    close(VID) % close .avi
-    Fs = Fly.Fs;
-	save([root.mov dirName '.mat'],'MOV','Fs','-v7.3','-nocompression') % save movie as .mat file
-end
+toc
+
 disp('DONE')
 end
