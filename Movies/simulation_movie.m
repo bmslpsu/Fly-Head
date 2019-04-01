@@ -61,11 +61,11 @@ head.ang = interp1(tout, headAng, tt, 'nearest')'; % interpolate head for video
 gaze.ang = body.ang + head.ang; % shift head angle to global coordinate frame
 ref.ang  = interp1(tout, refAng, tt, 'nearest')'; % interpolate pattern for video
 head.top = body.L*body.ratio*[sind(body.ang) , cosd(body.ang)];
-fig.pos = (ref.radius)*[sind(ref.ang)  , cosd(ref.ang) ];
-% fig.L   = (ref.radius)*[sind(ref.ang)  , cosd(ref.ang) ] - head.top;
-% fig.L   = sqrt(fig.L(:,1).^(2) + fig.L(:,2).^(2));
-% fig.ang = atan(fig.L(1)./fig.L(2));
-% fig.pos = head.top + fig.L.*[sind(fig.ang),cosd(fig.ang)];
+fig.pos  = (ref.radius)*[sind(ref.ang)  , cosd(ref.ang) ];
+fig.ang  = atan2d((fig.pos(:,2)-head.top(:,2)),(fig.pos(:,1)-head.top(:,1)));
+fig.L    = sqrt((fig.pos(:,2)-head.top(:,2)).^(2) + (fig.pos(:,1)-head.top(:,1)).^(2));
+fig.pos  = head.top + fig.L.*[cosd(fig.ang)  , sind(fig.ang)];
+
 
 FIG = figure (1);
 FIG.Color = 'k';
@@ -85,8 +85,8 @@ for kk = 1:length(body.ang)
     subplot(12,1,1:8) ; hold on
         [h.body,body.top,~] = draw_ellipse(body.center,body.L,body.ratio,body.ecc,body.ang(kk),body.C);
         [h.head,head.top,~] = draw_semi_ellipse(body.top,head.L,head.ratio,head.ecc,gaze.ang(kk),head.C);
-        [h.ref,~,~] = draw_ellipse_pattern(body.top,2*ref.radius,0.5,0,15,ref.ang(kk));
-        [h.fig,~,~] = draw_ellipse(body.top+fig.pos(kk,:),fig.radius,0.5,0,ref.ang(kk),[0 0.9 0.9]);
+        [h.ref,~,~] = draw_ellipse_pattern(body.center,2*ref.radius,0.5,0,15,ref.ang(kk));
+        [h.fig,~,~] = draw_ellipse(fig.pos(kk,:),fig.radius,0.5,0,ref.ang(kk),[0 0.9 0.9]);
         [h.gaze,~]  = draw_gaze(head.top,ref.radius,30,gaze.ang(kk),[0.6 0.1 0.9]);
     subplot(12,1,9:12) ; hold on
         ylabel('deg','Color','w','FontSize',15)
