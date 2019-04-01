@@ -21,12 +21,12 @@ function [h,top,bot] = draw_semi_ellipse(center,L,ratio,ecc,ang,C)
 % C = [1 0 0];
 %---------------------------------------------------------------------------------------------------------------------------------
 % Top point
-top(1) = center(1) + L*(1-ratio)*sind(ang);
-top(2) = center(2) + L*(1-ratio)*cosd(ang);
+top(1) = center(1) + 2*L*(1-ratio)*sind(ang);
+top(2) = center(2) + 2*L*(1-ratio)*cosd(ang);
 
 % Bottom point
-bot(1) = center(1) - L*ratio*sind(ang);
-bot(2) = center(2) - L*ratio*cosd(ang);
+bot(1) = center(1) - 2*L*ratio*sind(ang);
+bot(2) = center(2) - 2*L*ratio*cosd(ang);
 
 % All [x,y] points defining ellipse
 xx = [center(1) top(1)];

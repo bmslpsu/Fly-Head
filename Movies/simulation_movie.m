@@ -18,7 +18,7 @@ function [] = simulation_movie(bodyAng,headAng,refAng,tout,varargin)
 % refAng = 0*bodyAng;
 % rootdir = 'C:\Users\boc5244\Box Sync\Research';
 %---------------------------------------------------------------------------------------------------------------------------------
-vidFs = 100; % video frame rate [Hz]
+vidFs = 50; % video frame rate [Hz]
 if nargin==6
     export = true;
     root.mov = varargin{1};
@@ -42,10 +42,14 @@ body.ecc = 0.9;
 body.C = [0 0 1];
 
 % Head geometry
-head.L = 15;
+head.L = 0.1875*body.L;
 head.ratio = 0.5;
 head.ecc = 0.2;
 head.C = [1 0 0];
+
+% Stimulus geometry
+ref.radius = 50;
+fig.radius = 10;
 
 % Time for video
 Ts = 1/vidFs;
@@ -53,21 +57,22 @@ tt = tout(1):(1/vidFs):tout(end);
 
 % Transform kinematics into video time
 body.ang = interp1(tout, bodyAng, tt, 'nearest')'; % interpolate body for video
-head_ang = interp1(tout, headAng, tt, 'nearest')'; % interpolate head for video
-head.ang = body.ang + head_ang; % shift head angle to global coordinate frame
+head.ang = interp1(tout, headAng, tt, 'nearest')'; % interpolate head for video
+gaze.ang = body.ang + head.ang; % shift head angle to global coordinate frame
 ref.ang  = interp1(tout, refAng, tt, 'nearest')'; % interpolate pattern for video
-% ref.pos  = round((96/360)*ref.ang);
-% ref.pos(ref.pos<=0) = ref.pos(ref.pos<=0) + 96;
-ref.radius = 100;
-fig.radius = 10;
-fig.pos  = (ref.radius/2)*[ sind(ref.ang)  , cosd(ref.ang) ];
-head.pos = (ref.radius/2)*[ sind(head.ang) , cosd(head.ang) ];
-
+head.top = body.L*body.ratio*[sind(body.ang) , cosd(body.ang)];
+fig.pos = (ref.radius)*[sind(ref.ang)  , cosd(ref.ang) ];
+% fig.L   = (ref.radius)*[sind(ref.ang)  , cosd(ref.ang) ] - head.top;
+% fig.L   = sqrt(fig.L(:,1).^(2) + fig.L(:,2).^(2));
+% fig.ang = atan(fig.L(1)./fig.L(2));
+% fig.pos = head.top + fig.L.*[sind(fig.ang),cosd(fig.ang)];
 
 FIG = figure (1);
 FIG.Color = 'k';
 FIG.Position = [400 50 900 900];
-subplot(12,1,1:8) ; cla ; hold on ; axis square ; axis equal ; axis off ; axis(60*[-1 1 -1 1]) ; set(gca, 'color', 'w')
+movegui(FIG,'center')
+subplot(12,1,1:8) ; cla ; hold on ; axis square ; axis equal ; axis off ; set(gca, 'color', 'w')
+axis(1.4*ref.radius*[-1 1 -1 1])
 subplot(12,1,9:12) ; cla ; hold on
 plot([0 tt(end)],[0 0],'Color',[0.5 0.5 0.5],'LineStyle','--')
 h1 = animatedline('Color','r','LineWidth',2); % for head angle
@@ -79,25 +84,24 @@ tic
 for kk = 1:length(body.ang)
     subplot(12,1,1:8) ; hold on
         [h.body,body.top,~] = draw_ellipse(body.center,body.L,body.ratio,body.ecc,body.ang(kk),body.C);
-        [h.head,head.top,~] = draw_semi_ellipse(body.top,head.L,head.ratio,head.ecc,head.ang(kk),head.C);
-        [h.ref,~,~] = draw_ellipse_pattern(body.center,ref.radius,0.5,0,15,ref.ang(kk));
-        [h.fig,~,~] = draw_ellipse(fig.pos(kk,:),fig.radius,0.5,0,ref.ang(kk),[0 0.9 0.9]);
-        [h.gaze,~]  = draw_gaze(head.top,(ref.radius/2)-head.L,30,head.ang(kk),[0.6 0.1 0.9]);
-    
+        [h.head,head.top,~] = draw_semi_ellipse(body.top,head.L,head.ratio,head.ecc,gaze.ang(kk),head.C);
+        [h.ref,~,~] = draw_ellipse_pattern(body.top,2*ref.radius,0.5,0,15,ref.ang(kk));
+        [h.fig,~,~] = draw_ellipse(body.top+fig.pos(kk,:),fig.radius,0.5,0,ref.ang(kk),[0 0.9 0.9]);
+        [h.gaze,~]  = draw_gaze(head.top,ref.radius,30,gaze.ang(kk),[0.6 0.1 0.9]);
     subplot(12,1,9:12) ; hold on
         ylabel('deg','Color','w','FontSize',15)
         xlabel('time (s)','Color','w','FontSize',15);
         xlim([0 round(tt(end))])
-        maxY = 10*round(max(abs([ref.ang;head.ang]))/10);
+        maxY = 10*round(max(abs([ref.ang;gaze.ang]))/10);
         intY = maxY/5;
         ylim(1.1*maxY*[-1 1])
         set(gca,'ycolor','w');
         set(gca,'xcolor','w');
         set(gca,'YTick',(-maxY:intY:maxY))
         set(gca,'XTick',0:1:round(tt(end)))
-        addpoints(h1,tt(kk),head_ang(kk))
+        addpoints(h1,tt(kk),head.ang(kk))
         addpoints(h2,tt(kk),body.ang(kk))
-        addpoints(h3,tt(kk),head.ang(kk))
+        addpoints(h3,tt(kk),gaze.ang(kk))
         addpoints(h4,tt(kk),ref.ang(kk))
     
     pause(Ts/4)
