@@ -1,13 +1,17 @@
 function [] = simulation_movie(bodyAng,headAng,refAng,tout,varargin)
-%% simulation_movie:
+%% simulation_movie: animates fly body + head kinematics & visual motion reference movment >> can also export animation as .avi
 %   INPUT:
 %       bodyAng     : body angles
 %       headAng     : head angles
 %       refAng      : reference angles
 %       tout        : time vector
-%       rootdir     : directory to save movie >>> varargin{1} 
+%       rootdir     : directory to save movie >>> varargin{1}
+%       filename  	: filename for movie >>> varargin{2} 
 %   OUTPUT:
 %       -
+%   USAGE:
+%       1. simulation_movie(bodyAng,headAng,refAng,tout)
+%       2. simulation_movie(bodyAng,headAng,refAng,tout,roo,filename)
 %---------------------------------------------------------------------------------------------------------------------------------
 % Example Input %
 %---------------------------------------------------------------------------------------------------------------------------------
