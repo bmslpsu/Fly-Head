@@ -7,7 +7,7 @@ function [] = MakeFig_Chirp_HeadFree_HeadvWing_Pos_Time(root,figNum)
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
 % % EXAMPLE INPUT %
-root = 'E:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\DATA\';
+root = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\DATA\';
 figNum = 1;
 %---------------------------------------------------------------------------------------------------------------------------------
 filename = 'Chirp_HeadFree_HeadvWing_Pos_Time'; % name of figure to save

@@ -1,149 +1,61 @@
-function [PAT,WING,HEAD,BODE,FD,T,n,unq] = MakeData_Chirp_HeadFree(rootdir,filename)
-%% MakeData_Chirp_HeadFree: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
+function [] = data2cell()
+%% data2cell: 
 %   INPUTS:
-%       root    : root directory
+%       -
 %   OUTPUTS:
-%       PAT     : pattern structure
-%       WING   	: wings structure
-%       HEAD  	: head structure
-%       FD      : file data
-%       T       : fly data table
-%       n       : field #'s 
-%       unq   	: unique fields
+%       -
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
-% rootdir = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\';
-% filename = 'Chirp_HeadFree_DATA';
+clear;close all;clc
+rootdir = 'H:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast\22.5\';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
-root.daq = rootdir;
-root.ang = [root.daq '\Vid\Angles\'];
-
 % Select files
-[FILES, PATH.ang] = uigetfile({'*.mat', 'DAQ-files'}, ...
-    'Select head angle trials', root.ang, 'MultiSelect','on');
+[FILES, PATH.daq] = uigetfile({'*.mat', 'DAQ-files'}, ...
+    'Select head angle trials', rootdir, 'MultiSelect','on');
 FILES = FILES';
 
-PATH.daq = root.daq;
+[~,I,N,~] = GetFileData(FILES);
+%%
+clc
 
-%% Process File Data %%
-%---------------------------------------------------------------------------------------------------------------------------------
-% Read in data from head file names
-n.Trial     = length(FILES);        % total # of trials
-FD.Fly      = zeros(n.Trial,1); 	% fly #
-FD.Trial    = zeros(n.Trial,1);     % trial #
-FD.Amp      = zeros(n.Trial,1);     % amplitude [deg]
-for jj = 1:n.Trial
-    temp = textscan(char(FILES{jj}), '%s', 'delimiter', '_.'); temp = temp{1} ; % read individual strings into temp variable
-    FD.Fly(jj,1)    = str2double(temp{2}); % store fly #
-    FD.Trial(jj,1)  = str2double(temp{4}); % store trial #
-    
-    if ~isnan(str2double(temp{7}))
-        FD.Amp(jj,1) = str2double([temp{6} '.' temp{7}]); % store amplitude
-    else
-        FD.Amp(jj,1) = str2double(temp{6});
+mainLabel = {'PAT','WING','HEAD'};
+maindataType = repmat({'cell'},1,length(mainLabel));
+subLabel = {'Time','WLeft','WRight','WBF','Position','PosMean','PosSTD','Velocity','VelMean','VelSTD',...
+    'Freq','Magnitude','Phase','Coherence'};
+subdataType = repmat({'cell'},1,length(subLabel));
+
+cellOrd = [1,3,2];
+FLY = cell(N{1,cellOrd(1)},1);
+for k1 = 1:N{1,cellOrd(1)}
+    for k2 = 1:N{1,cellOrd(2)}
+        for k3 = 1:N{1,cellOrd(3)}
+            FLY{k1,1}{k2,1}{k3,1} = table('Size',[1,length(mainLabel)],'VariableTypes',maindataType,'VariableNames',mainLabel);
+        end
     end
 end
-clear temp jj
-%% Set up indexing convention for files %%
-% Normalize to start at fly#1 and increment by 1 for each fly & trial
-%---------------------------------------------------------------------------------------------------------------------------------
-unq.Fly = sort(unique(FD.Fly)); % original # of each unique fly
-n.Fly = length(unq.Fly); % # flies
-FD.trialFly = cell(n.Fly,2);
-for kk = 1:n.Fly
-    FD.trialFly{kk,1} = unq.Fly(kk);  % fly # label
-	FD.trialFly{kk,2} = length(find(FD.Fly==unq.Fly(kk))); % # trials per fly
-end
-% Make indexing array for flies
-FD.newFly = (1:n.Fly)';
-FD.idxFly = zeros(n.Fly,1);
-pp = 1;
-for kk = 1:n.Fly
-    FD.idxFly(pp:pp+FD.trialFly{kk,2}-1,1) = FD.newFly(kk); % fly index
-    pp = pp + FD.trialFly{kk,2};
-end
-% Make indexing array for trials
-pp = 1;
-FD.idxTrial = zeros(n.Trial,1);
-for kk = 1:n.Fly
-   FD.idxTrial(pp:pp+FD.trialFly{kk,2}-1) = 1:FD.trialFly{kk,2}; % trial index
-   pp = pp+FD.trialFly{kk,2};
-end
-% Make indexing array for amplitudes
-unq.Amp 	= sort(unique(FD.Amp));	% find all unique amplitudes
-n.Amp       = length(unq.Amp);  	% # of unique amplitudes
-FD.idxAmp   = zeros(n.Trial,1);     % amplitude index
-for kk = 1:n.Amp
-   FD.idxAmp(FD.Amp == unq.Amp(kk)) = kk; % frequency index
+
+for k1 = 1:N{1,cellOrd(1)}
+    for k2 = 1:N{1,cellOrd(2)}
+        for k3 = 1:N{1,cellOrd(3)}
+            for k4 = 1:size(FLY{k1,1}{k2,1}{1,k3},2)
+                FLY{k1,1}{k2,1}{k3,1}{1,k4}{1} = table('Size',[1,length(subLabel)],'VariableTypes',subdataType,'VariableNames',subLabel);
+            end
+        end
+    end
 end
 
-fprintf('Total Flies''s: %i \n',n.Fly) ; fprintf('Total Trials''s: %i \n',n.Trial)
-T = cell2table(FD.trialFly,'VariableNames',{'Fly','Trials'});
-disp(T)
-clear pp kk
+disp('DONE')
+
 %% Get Data %%
 %---------------------------------------------------------------------------------------------------------------------------------
-disp('Loading...')
-% Preallocate data cells
-WING.ALL.Pos = cell(n.Amp,1);
-HEAD.ALL.Pos = cell(n.Amp,1);
-for kk = 1:n.Fly
-    for jj = 1:n.Amp
-        % PATTERN Data
-        PAT.Pos{kk,1}{jj,1}         = [];
-     	PAT.Time{kk,1}{jj,1}        = [];
-        PAT.Vel{kk,1}{jj,1}         = [];
-        PAT.VelMean{kk,1}{jj,1} 	= [];
-        PAT.VelSTD{kk,1}{jj,1}      = [];
-        PAT.Freq{kk,1}{jj,1}        = [];
-        PAT.Mag{kk,1}{jj,1}     	= [];
-        PAT.Phase{kk,1}{jj,1}       = [];
-        % WING Data
-        WING.Time{kk,1}{jj,1}       = [];
-        WING.Pos{kk,1}{jj,1}        = [];
-        WING.Vel{kk,1}{jj,1}        = [];
-        WING.VelMean{kk,1}{jj,1} 	= [];
-        WING.VelSTD{kk,1}{jj,1} 	= [];
-        WING.Freq{kk,1}{jj,1}       = [];
-        WING.Mag{kk,1}{jj,1}     	= [];
-        WING.Phase{kk,1}{jj,1}      = [];
-        WING.COHR.Freq{kk,1}{jj,1}  = [];
-        WING.COHR.Mag{kk,1}{jj,1}   = [];
-        WING.GAIN{kk,1}{jj,1}       = [];
-        WING.PHASE{kk,1}{jj,1}      = [];
-        % HEAD Data
-        HEAD.Time{kk,1}{jj,1}       = [];
-        HEAD.Pos{kk,1}{jj,1}        = [];
-        HEAD.Vel{kk,1}{jj,1}        = [];
-        HEAD.VelMean{kk,1}{jj,1}    = [];
-        HEAD.VelSTD{kk,1}{jj,1}     = [];
-        HEAD.Freq{kk,1}{jj,1}       = [];
-        HEAD.Mag{kk,1}{jj,1}      	= [];
-        HEAD.Phase{kk,1}{jj,1}      = [];
-    	HEAD.Err.Pos{kk,1}{jj,1}	= [];
-        HEAD.Err.Freq{kk,1}{jj,1}	= [];
-        HEAD.Err.Mag{kk,1}{jj,1}	= [];
-        HEAD.Err.Phase{kk,1}{jj,1}	= [];
-    	HEAD.COHR.Freq{kk,1}{jj,1}  = [];
-        HEAD.COHR.Mag{kk,1}{jj,1}   = [];
-        HEAD.GAIN{kk,1}{jj,1}       = [];
-        HEAD.PHASE{kk,1}{jj,1}      = [];
-        % BODE
-        BODE.head2wing.GAIN{kk,1}{jj,1}     = [];
-        BODE.head2wing.PHASE{kk,1}{jj,1}	= [];
-    end
-end
-% Store data in organized cells
-tt = (0:1/200:20)';
-tt = tt(1:end-1);
-for kk = 1:n.Trial
+clc
+for kk = 1:N{1,5}
     disp(kk)
     % Load HEAD & DAQ data %
     data = [];
 	load([PATH.daq   FILES{kk}],'data','t_p'); % load pattern x-position
-    load([PATH.ang   FILES{kk}],'hAngles','t_v'); % load head angles % time arrays
     %-----------------------------------------------------------------------------------------------------------------------------
     % Check WBF
 	wing.f = 100*(data(:,6)); % wing beat frequency
@@ -156,24 +68,12 @@ for kk = 1:n.Trial
     pat.Time        = t_p; % pattern time from DAQ [s]
     pat.n           = length(pat.Time); % # of samples for pat data
     pat.Fs          = 1/mean(diff(pat.Time)); % pattern sampling frequency [Hz]
-    pat.Pos         = panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]  
-    pat.Pos         = FitPanel(pat.Pos,pat.Time,tt); % fit panel data
-    pat.Time        = tt; % set new panel time
+    pat.Pos         = panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]
+    pat.PosMean     = mean(pat.Vel); % mean pattern velocity [deg/s]
+	pat.PosSTD      = mean(pat.Vel); % STD pattern velocity [deg/s]
 	pat.Vel         = [diff(pat.Pos)/(1/pat.Fs) ; 0]; % pattern velocity [deg/s]
     pat.VelMean     = mean(abs(pat.Vel)); % mean pattern velocity [deg/s]
 	pat.VelSTD      = mean(abs(pat.Vel)); % STD pattern velocity [deg/s]
-    %-----------------------------------------------------------------------------------------------------------------------------
-    % Get head data %
-	head.Time       = t_v; % store head time vector [s]
-    head.n          = length(head.Time); % # of samples for wing data
-    head.Fs         = 1/mean(diff(head.Time)); % sampling frequency [Hz]
-    head.Fc         = 20; % cutoff frequency [Hz]
-    [b,a]           = butter(2,head.Fc/(head.Fs/2),'low'); % 2nd-order low-pass butterworth filter
-    head.Pos        = filtfilt(b,a,hAngles); % filter head position [deg]
-    head.Pos        = head.Pos - mean(head.Pos); % subtract DC component [deg]
-    head.Vel        = filtfilt(b,a,[diff(head.Pos)./diff(head.Time) ; 0]); % calculte hea vecloity and filter again [deg/s]
-    head.VelMean    = mean(abs(head.Vel)); % mean head velocity [deg/s]
-    head.VelSTD     = std(abs(head.Vel)); % STD pattern velocity [deg/s]
   	%-----------------------------------------------------------------------------------------------------------------------------
     % Get wing data from DAQ %
     wing.Time       = t_p; % wing time [s]
@@ -186,85 +86,64 @@ for kk = 1:n.Trial
     wing.Pos        = wing.Left - wing.Right; % dWBA (L-R) [V]
   	wing.Pos        = wing.Pos - mean(wing.Pos); % subtract mean [V]
   	wing.Vel        = [diff(wing.Pos)./wing.Fs ; 0]; % dWBA velocity [V/s]
+	wing.PosMean    = mean(wing.Pos); % mean dWBA velocity [V/s]
+    wing.PosSTD     = std(wing.Pos); % STD dWBA velocity [V/s]
     wing.VelMean    = mean(abs(wing.Vel)); % mean dWBA velocity [V/s]
     wing.VelSTD     = std(abs(wing.Vel)); % STD dWBA velocity [V/s]
     %-----------------------------------------------------------------------------------------------------------------------------
-	% Decimate DAQ data to match head Fs %
-	wing.Time       = tt;
-	wing.Pos        = resample(wing.Pos,head.n,wing.n);
-	wing.Vel        = resample(wing.Vel,head.n,wing.n);
-    wing.Fs         = 200;
-	%-----------------------------------------------------------------------------------------------------------------------------
- 	head.Err.Pos    = pat.Pos - head.Pos; % calculate Error between head & pattern (retinal slip) [deg]
-    head.Err.Vel    = pat.Vel - head.Vel; % calculate Error between head & pattern (retinal slip) [deg/s]
-    %-----------------------------------------------------------------------------------------------------------------------------
     % Convert head, wings, & pattern data to frequency domain using FFT %
-    [head.Freq , head.Mag , head.Phase]             = FFT(head.Time,head.Pos);
     [wing.Freq , wing.Mag , wing.Phase]             = FFT(wing.Time,wing.Pos);
     [pat.Freq  , pat.Mag  , pat.Phase ]             = FFT(pat.Time,pat.Pos);
-	[head.Err.Freq , head.Err.Mag, head.Err.Phase]  = FFT(head.Time,head.Err.Pos);
     %-----------------------------------------------------------------------------------------------------------------------------
     % Calculate coherence %
-    [head.cohr.mag,head.cohr.f] = mscohere(pat.Pos , head.Pos ,[],[] , head.Freq , head.Fs);
 	[wing.cohr.mag,wing.cohr.f] = mscohere(pat.Pos , wing.Pos ,[],[] , wing.Freq , wing.Fs);
     %-----------------------------------------------------------------------------------------------------------------------------
-	% Calculate BODE gain & phase difference for head & wings %
-    head.GAIN   = medfilt1(head.Mag./pat.Mag,5);
-    head.PHASE  = medfilt1(-(pat.Phase - head.Phase),5);
- 	wing.GAIN   = medfilt1(wing.Mag./head.Err.Mag,5);
-    wing.PHASE  = medfilt1(-(head.Err.Phase - wing.Phase),5);
-    bode.head2wing.GAIN = medfilt1(wing.Mag./head.Mag,5);
-    bode.head2wing.PHASE = medfilt1(-(head.Phase - wing.Phase),5);
-    %-----------------------------------------------------------------------------------------------------------------------------
     % Store data in cells %
-  	% PATTERN
-	PAT.Time        {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = pat.Time;
-	PAT.Pos         {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = pat.Pos;
-	PAT.Vel         {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = pat.Vel;
-   	PAT.VelMean     {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = pat.VelMean;
-	PAT.VelSTD      {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = pat.VelSTD;
-    PAT.Freq        {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = pat.Freq;
-	PAT.Mag         {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = pat.Mag;
-	PAT.Phase       {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = pat.Phase;
-    % WINGS
-    WING.ALL.Pos    {FD.idxAmp(kk)}(:,end+1) = wing.Pos;
-	WING.Pos        {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.Pos;
-	WING.Time       {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.Time;
-	WING.Vel        {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.Vel;
-	WING.VelMean	{FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.VelMean;
-	WING.VelSTD     {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.VelSTD;
-	WING.Freq       {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.Freq;
-	WING.Mag        {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.Mag;
-	WING.Phase      {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.Phase;
-	WING.COHR.Freq  {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.cohr.f;
-    WING.COHR.Mag   {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.cohr.mag;
-	WING.GAIN       {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.GAIN;
-  	WING.PHASE      {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = wing.PHASE;
-    % HEAD
-    HEAD.ALL.Pos    {FD.idxAmp(kk)}(:,end+1) = head.Pos;
-	HEAD.Time       {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.Time;
-	HEAD.Pos        {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.Pos;
-    HEAD.Vel        {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.Vel;
-    HEAD.VelMean    {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.VelMean;
-    HEAD.VelSTD     {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.VelSTD;
-	HEAD.Err.Pos    {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.Err.Pos;
-    HEAD.Err.Freq 	{FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.Err.Freq;
-    HEAD.Err.Mag    {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.Err.Mag;
- 	HEAD.Err.Phase 	{FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.Err.Phase;
-	HEAD.Freq       {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.Freq;
-	HEAD.Mag        {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.Mag;
-	HEAD.Phase      {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.Phase;
-	HEAD.COHR.Freq  {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.cohr.f;
-    HEAD.COHR.Mag   {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.cohr.mag;
-    HEAD.GAIN       {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.GAIN;
-	HEAD.PHASE      {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = head.PHASE;
-    % BODE
-    BODE.head2wing.GAIN     {FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = bode.head2wing.GAIN;
- 	BODE.head2wing.PHASE  	{FD.idxFly(kk),1}{FD.idxAmp(kk),1}(:,end+1) = bode.head2wing.PHASE;
+    flyIdx = I{kk,1};
+    velIdx = I{kk,3};
+   
+    FLY{flyIdx,1}{velIdx,1}{1,end+1}{1}{:,1}{1} = pat.Time;
+    FLY{flyIdx,1}{velIdx,1}{1,trialIdx}{1}{:,2}{1} = pat.Pos;
+	FLY{flyIdx,1}{velIdx,1}{1,trialIdx}{1}{:,3}{1} = pat.PosMean;
+    FLY{flyIdx,1}{velIdx,1}{1,trialIdx}{1}{:,4}{1} = pat.PosSTD;
+    FLY{flyIdx,1}{velIdx,1}{1,trialIdx}{1}{:,5}{1} = pat.Vel;
+    FLY{flyIdx,1}{velIdx,1}{1,trialIdx}{1}{:,6}{1} = pat.VelMean;
+    FLY{flyIdx,1}{velIdx,1}{1,trialIdx}{1}{:,7}{1} = pat.Freq;
+    FLY{flyIdx,1}{velIdx,1}{1,trialIdx}{1}{:,8}{1} = pat.Mag;
+    
+    FLY{flyIdx,1}{velIdx,1}{1,trialIdx}{1}{:,1}{1} = wing.Time;
+    FLY{flyIdx,1}{velIdx,1}{1,trialIdx}{1}{:,2}{1} = wing.Pos;
+	FLY{flyIdx,1}{velIdx,1}{1,trialIdx}{1}{:,3}{1} = wing.PosMean;
+    FLY{flyIdx,1}{velIdx,1}{1,trialIdx}{1}{:,4}{1} = wing.PosSTD;
+    FLY{flyIdx,1}{velIdx,1}{1,trialIdx}{1}{:,5}{1} = wing.Vel;
+    FLY{flyIdx,1}{velIdx,1}{1,trialIdx}{1}{:,6}{1} = wing.VelMean;
+    FLY{flyIdx,1}{velIdx,1}{1,trialIdx}{1}{:,7}{1} = wing.Freq;
+    FLY{flyIdx,1}{velIdx,1}{1,trialIdx}{1}{:,8}{1} = wing.Mag;
+    FLY{flyIdx,1}{velIdx,1}{1,trialIdx}{1}{:,9}{1} = wing.cohr.mag;
+
 
 end
-clear jj kk a b t_p t_v hAngles data head wing pat bode tt
+% clear jj kk a b t_p t_v hAngles data head wing pat bode tt
 disp('LOADING DONE')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 %% FLY Stats by Fly %%
 %---------------------------------------------------------------------------------------------------------------------------------
 for kk = 1:n.Fly

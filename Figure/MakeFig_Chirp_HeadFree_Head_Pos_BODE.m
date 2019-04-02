@@ -7,7 +7,7 @@ function [] = MakeFig_Chirp_HeadFree_Head_Pos_BODE(root,figNum)
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
-root = 'H:\Experiment_HeadExcitation\Chirp\HeadFree\DATA\';
+root = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\DATA\';
 figNum = 1;
 %---------------------------------------------------------------------------------------------------------------------------------
 filename = 'Chirp_HeadFree_Head_Pos_BODE'; % name of figure to save
@@ -58,6 +58,7 @@ for jj = 1:HeadFree.n.Amp
     subplot(2,HeadFree.n.Amp,jj+HeadFree.n.Amp) ; hold on
         h.patch = PlotPatch(HeadFree.HEAD.GrandMean.PHASE(:,jj),HeadFree.HEAD.GrandSTD.PHASE(:,jj),...
             HeadFree.HEAD.GrandMean.Freq(:,jj),2,HeadFree.n.Fly,'k',[0.4 0.4 0.6],0.5,2); % all flys
+        plot([0 15],[0 0],'Color',[0.5 0.5 0.5])
      	xlim([0.1 12])
         ylim([-4 4])
         if jj==1
@@ -69,6 +70,13 @@ for jj = 1:HeadFree.n.Amp
         end
         xticks([0.1 2:2:12])
         xlabel('Frequency (Hz)','Interpreter','latex','FontSize',15)
+        
+%         ax.freq = gca;
+%         axpos.freq = ax.freq.Position;
+%         ax.vel = axes('Position',axpos.freq,'XAxisLocation','top','Color','r');
+%         ax.vel.XLim = [0 800];
+        
+        
 end
 
 saveas(FIG,[root 'FIGURE\' filename '.fig']); % save .fig file
