@@ -37,7 +37,7 @@ end
 % Body geometry
 body.center = [0,0];
 body.L = 40;
-body.ratio = 0.7;
+body.ratio = 1;
 body.ecc = 0.9;
 body.C = [0 0 1];
 
@@ -48,7 +48,7 @@ head.ecc = 0.2;
 head.C = [1 0 0];
 
 % Stimulus geometry
-ref.radius = 50;
+ref.radius = 65;
 fig.radius = 10;
 
 % Time for video
