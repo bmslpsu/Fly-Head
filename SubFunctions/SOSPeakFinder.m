@@ -9,8 +9,8 @@ VarPeakPhase = zeros(npeaks,1);
 
 for kk = 1:npeaks
     x = PatPeakFreq(kk);
-    xlow = x-.3;
-    xhigh = x+.3;
+    xlow = x-.1;
+    xhigh = x+.1;
     loc1 = find(VarFreq >= xlow  & VarFreq<= xhigh);
     VarPeakMag(kk,1) = max(VarMag(loc1));
     ind1 = find(VarMag == VarPeakMag(kk,1));
