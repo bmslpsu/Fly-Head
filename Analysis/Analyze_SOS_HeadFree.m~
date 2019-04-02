@@ -244,7 +244,12 @@ for kk = 1:nTrial
     end
                
     if showplot.Freq
-        figure(104)
+        if kk == 1
+            subplot(3,4,12)
+plot(0,0,  0,0,  0,0,  0,0)
+axis off
+legend('Series1','Series2','Series3','Series4')
+        figure (104)
             subplot(ceil(nTrial/colmn),colmn,kk) ; hold on
                 title(['Fly ' num2str(Fly(kk))])
                 plot(pat.Freq,  pat.Mag ,'k')
@@ -255,7 +260,6 @@ for kk = 1:nTrial
                 plot(wing.Peak.Freq, wing.Peak.Mag, 'ro')
                 xlim([0.5 11.5])
                 box on
-                hold off
         figure (105)
             subplot(ceil(nTrial/colmn),colmn,kk) ; hold on
                 title(['Fly ' num2str(Fly(kk))])
