@@ -63,47 +63,47 @@ SI = 1;
 EI = 241;
 % Preallocate data cells %
 for kk = 1:nFly % # of flys
-        HEAD.Time{kk,1}       = [];
-        HEAD.Pos{kk,1}        = [];
-        HEAD.Freq{kk,1}       = [];
-        HEAD.Mag{kk,1}     	  = [];
-        HEAD.Phase{kk,1}      = [];
-        HEAD.Peak.Mag{kk,1}   = [];
-        HEAD.Peak.Freq{kk,1}  = [];
-        HEAD.Peak.Phase{kk,1} = [];
+        HEAD.Time{kk,1}             = [];
+        HEAD.Pos{kk,1}              = [];
+        HEAD.Freq{kk,1}             = [];
+        HEAD.Mag{kk,1}              = [];
+        HEAD.Phase{kk,1}            = [];
+        HEAD.Peak.Mag{kk,1}         = [];
+        HEAD.Peak.Freq{kk,1}        = [];
+        HEAD.Peak.Phase{kk,1}       = [];
         
-        ERROR.Time{kk,1}        = [];
-        ERROR.Pos{kk,1}         = [];
-        ERROR.Freq{kk,1}        = [];
-        ERROR.Mag{kk,1}         = [];
-        ERROR.Phase{kk,1}       = [];
-        ERROR.Peak.Mag{kk,1}    = [];
-        ERROR.Peak.Freq{kk,1}   = [];
-        ERROR.Peak.Phase{kk,1}  = [];
+        ERROR.Time{kk,1}            = [];
+        ERROR.Pos{kk,1}             = [];
+        ERROR.Freq{kk,1}            = [];
+        ERROR.Mag{kk,1}             = [];
+        ERROR.Phase{kk,1}           = [];
+        ERROR.Peak.Mag{kk,1}        = [];
+        ERROR.Peak.Freq{kk,1}       = [];
+        ERROR.Peak.Phase{kk,1}      = [];
         
-        PAT.Time{kk,1}       = [];
-        PAT.Pos{kk,1}        = [];
-        PAT.Freq{kk,1}       = [];
-        PAT.Mag{kk,1}        = [];
-        PAT.Phase{kk,1}      = [];
-        PAT.Peak.Mag{kk,1}   = [];
-        PAT.Peak.Freq{kk,1}  = [];
-        PAT.Peak.Phase{kk,1} = [];
+        PAT.Time{kk,1}              = [];
+        PAT.Pos{kk,1}               = [];
+        PAT.Freq{kk,1}              = [];
+        PAT.Mag{kk,1}               = [];
+        PAT.Phase{kk,1}             = [];
+        PAT.Peak.Mag{kk,1}          = [];
+        PAT.Peak.Freq{kk,1}         = [];
+        PAT.Peak.Phase{kk,1}        = [];
         
-        WING.Time{kk,1}      = [];
-        WING.Pos{kk,1}       = [];
-        WING.Freq{kk,1}      = [];
-        WING.Mag{kk,1}    	 = [];
-        WING.Phase{kk,1}     = [];
-        WING.Peak.Mag{kk,1}         =[];
-        WING.Peak.Freq{kk,1}        =[];
-        WING.Peak.Phase{kk,1}       =[];
+        WING.Time{kk,1}             = [];
+        WING.Pos{kk,1}              = [];
+        WING.Freq{kk,1}             = [];
+        WING.Mag{kk,1}              = [];
+        WING.Phase{kk,1}            = [];
+        WING.Peak.Mag{kk,1}         = [];
+        WING.Peak.Freq{kk,1}        = [];
+        WING.Peak.Phase{kk,1}       = [];
         
-        BODE.Mag.HeadPat{kk,1}          =[];
-        BODE.Mag.WingError{kk,1}        =[];
-        BODE.Freq{kk,1}                 =[];
-        BODE.Phase.HeadPat{kk,1}        =[];
-        BODE.Phase.WingError{kk,1}      =[];
+        BODE.Mag.HeadPat{kk,1}      = [];
+        BODE.Mag.WingError{kk,1}    = [];
+        BODE.Freq{kk,1}             = [];
+        BODE.Phase.HeadPat{kk,1}    = [];
+        BODE.Phase.WingError{kk,1}  = [];
 end
 % Save time & frequency domain data in cells %
 for kk = 1:nTrial
@@ -114,28 +114,28 @@ for kk = 1:nTrial
 	load([PATH.pat   FILES{kk}]); % load pattern x-position
 %-----------------------------------------------------------------------------------------------------------------------------
 	% Get head data %
-	head.Time = t_v; % store head time vector
-    head.Fs = 1/mean(diff(head.Time)); % sampling frequency [Hz]
-    head.Fc = 20; % cutoff frequency [Hz]
-    [b,a] = butter(2,head.Fc/(head.Fs/2)); % butterworth filter
-    head.Pos = filtfilt(b,a,hAngles); % filter head position
-    head.Pos = head.Pos - mean(head.Pos); % subtract DC component
+	head.Time       = t_v; % store head time vector
+    head.Fs         = 1/mean(diff(head.Time)); % sampling frequency [Hz]
+    head.Fc         = 20; % cutoff frequency [Hz]
+    [b,a]           = butter(2,head.Fc/(head.Fs/2)); % butterworth filter
+    head.Pos        = filtfilt(b,a,hAngles); % filter head position
+    head.Pos        = head.Pos - mean(head.Pos); % subtract DC component
     % Get wing data from DAQ %
-  	K = 1; % WBA factor
+  	K               = 1; % WBA factor
     wing.Full.Time  = t_p; % wing time 
-    wing.Fs = 1/mean(diff(wing.Full.Time)); % sampling frequency [Hz]
-    wing.Fc = 20; % cutoff frequency [Hz]
-    [b,a] = butter(2,wing.Fc/(wing.Fs/2)); % butterworth filter
+    wing.Fs         = 1/mean(diff(wing.Full.Time)); % sampling frequency [Hz]
+    wing.Fc         = 20; % cutoff frequency [Hz]
+    [b,a]           = butter(2,wing.Fc/(wing.Fs/2)); % butterworth filter
 	wing.Left       = filtfilt(b,a,(data(:,4))); % left wing
     wing.Right      = filtfilt(b,a,(data(:,5))); % right wing
     wing.Full.Pos 	= (K*(wing.Left - wing.Right)); % WBA (L-R)
   	wing.Full.Pos   = wing.Full.Pos - mean(wing.Full.Pos); % subtract mean
     
-    interval = floor(length(wing.Full.Time)/length(head.Time));
-    wing.Pos  = wing.Full.Pos(1:interval:end-1);
-    wing.Time = wing.Full.Time(1:interval:end-1);
+    interval        = floor(length(wing.Full.Time)/length(head.Time));
+    wing.Pos        = wing.Full.Pos(1:interval:end-1);
+    wing.Time       = wing.Full.Time(1:interval:end-1);
            
- 	wing.f = 100*(data(:,6)); % wing beat frequency
+ 	wing.f          = 100*(data(:,6)); % wing beat frequency
     if min(wing.f)<180
         fprintf('Low WBF: Fly %i Trial %i \n',Fly(kk),Trial(kk))
     end
@@ -239,7 +239,6 @@ for kk = 1:nTrial
                 plot(pat.Time,pat.Pos,'k')
                 plot(head.Time,head.Pos,'b')
                 plot(wing.Time, wing.Pos, 'r')
-                legend('pat','head','wing')
                 box on
     end
                
@@ -262,9 +261,9 @@ for kk = 1:nTrial
                 plot(pat.Freq,  pat.Phase ,'k')
                 plot(pat.Peak.Freq, pat.Peak.Phase, 'ko')
                 plot(head.Freq, head.Phase ,'b')
-                plot(head.Peak.Freq, head.Peak.Mag, 'bo')
+                plot(head.Peak.Freq, head.Peak.Phase, 'bo')
                 plot(wing.Freq, wing.Phase,'r')
-                plot(wing.Peak.Freq, wing.Peak.Mag, 'ro')
+                plot(wing.Peak.Freq, wing.Peak.Phase, 'ro')
                 xlim([0.5 11.5])
                 box on    
     end
