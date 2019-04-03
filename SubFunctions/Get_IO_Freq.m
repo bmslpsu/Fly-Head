@@ -28,30 +28,32 @@ else
     error('Not Possible')
 end
 
-nFreq = length(uFreq); % # of frequencies to use
-MAG = nan(nFreq,1);
-PHASE = nan(nFreq,1);
+nFreq = length(uFreq);  % # of frequencies to use
+Ff      = nan(nFreq,1); % closest frequency that max mag occurs
+MAG     = nan(nFreq,1); % magnitude at frequencies
+PHASE   = nan(nFreq,1); % phase at frequencies
 for kk = 1:nFreq
     fRange = [uFreq(kk)-fTol , uFreq(kk)+fTol]; % frequency search range
     idxRange = Freq>=fRange(1) & Freq<=fRange(2); % index search range
     magRange = Mag(idxRange); % magnitude search range
     fIdx = Mag==max(magRange); % index of max magnitude
+    Ff(kk) = Freq(fIdx);
     
     MAG(kk) = max(magRange); % store magnitude at uFreq
     PHASE(kk) = Phase(fIdx); % store phase at uFreq
-    
-    if debug % plot magnitude & phase
-    figure ; clf
-        subplot(2,1,1) ; hold on ; ylabel('Magnitude')
-        plot(Freq,Mag,'*-b')
-        plot(uFreq(kk),MAG(kk),'or')
-        xlim([0 max(uFreq+1)])
+end
 
-        subplot(2,1,2) ; hold on ; ylabel('Phase')
-        plot(Freq,Phase,'*-b')
-        plot(uFreq(kk),PHASE(kk),'or')
-        xlim([0 max(uFreq+1)])
-        xlabel('Time')
-    end
+if debug % plot magnitude & phase
+figure ; clf
+    subplot(2,1,1) ; hold on ; ylabel('Magnitude')
+    plot(Freq,Mag,'*-b')
+    plot(Ff,MAG,'or')
+    xlim([0 max(uFreq+1)])
+
+    subplot(2,1,2) ; hold on ; ylabel('Phase')
+    plot(Freq,Phase,'*-b')
+    plot(Ff,PHASE,'or')
+    xlim([0 max(uFreq+1)])
+    xlabel('Time')
 end
 end
