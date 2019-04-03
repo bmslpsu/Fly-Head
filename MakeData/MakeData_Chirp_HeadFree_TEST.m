@@ -6,7 +6,7 @@ function [] = MakeData_Chirp_HeadFree_TEST(rootdir,filename)
 %       PAT     : pattern structure
 %       WING   	: wings structure
 %---------------------------------------------------------------------------------------------------------------------------------
-rootdir = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\';
+rootdir = 'F:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\';
 % filename = 'Chirp_HeadFree_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -101,61 +101,59 @@ for kk = 1:N{1,4}
 end
 clear jj kk pp qq ww n a b t_p t_v hAngles data head wing pat bode tt Head Pat Wing Err pat2head err2wing head2wing vars
 disp('LOADING DONE')
+
 %% Fly Statistics %%
 %---------------------------------------------------------------------------------------------------------------------------------
 FlyStat = cell(N{1,1},1);
 for kk = 1:N{1,1}
     FlyStat{kk} = cell(N{1,3},1);
     for jj = 1:N{1,3}
-        FlyStat{kk}{jj} = cell(length(DATA{kk}{jj}),1);
-        for ii = 1:length(DATA{kk}{jj})
-            FlyStat{kk}{jj}{ii,1} = nan(1,length(DATA{kk}{jj}{ii}));
-        end        
+        FlyStat{kk}{jj} = Stats(DATA{kk}{jj});
     end 
 end
 
-for kk = 1:N{1,1}
-    for jj = 1:N{1,3}
-        for ww = 1:size(DATA{kk}{jj},2)
-            data = [];
-            for ii = 1:size(DATA{kk}{jj},1)
-                obj = DATA{kk}{jj}{ii,ww};
-            	prop = properties(obj);
-                name = prop{1};
-                data(:,:,ii) = obj.(name);
-                
-                
-                
-%                 data = cell(length(prop),1);
-%                 for iprop = 1:length(prop)
-%                   name = prop{iprop};
-%                   val  = obj.(name);
-%                   data{iprop} = val;
-%                 end
-                
-            end          
-%             FlyStat{kk}{jj}{ii,ww} = nan;
-        end        
+%% Grand Statistics %%
+%---------------------------------------------------------------------------------------------------------------------------------
+GrandAll = cell(N{1,3},1);
+for jj = 1:N{1,3} 
+    GrandAll{jj} = cell(N{1,1},1);
+    for kk = 1:N{1,1}
+        GrandAll{jj}{kk} = FlyStat{kk}{jj};
     end 
 end
+
+%%
+GrandStat = cell(N{1,3},1);
+for jj = 1:N{1,3} 
+    GrandStat{jj} = cell(N{1,1},1);
+    for kk = 1:N{1,1}
+        for ii = 1:length(GrandAll{jj}{kk}.Mean)
+            temp = GrandAll{jj}{kk}.Mean{ii};
+            length(temp)
+            GrandStat{jj}{kk} = cell(1,length(temp));
+%             for ww = 1:length(temp)
+%                 GrandStat{jj}{ii}{ww}(:,:,kk) = 1;
+%             end
+        end
+    end 
+end
+
+
+
+
+
+
+
 
 
 
 %%
-
-
-for kk = 1:56
-   obj = ALL{kk,8};
-   data = obj.Coherence(:,1);
-   time = obj.BodeFv(:,1);
-   hold on
-   plot(time,data)
-   xlim([0 11.5])
-   ylim([0 1])
-    
+close all
+for kk = 1:N{1,1}
+   for jj = 1:1
+       figure (1) ; hold on
+       plot(FlyStat{kk}{jj}.Mean{3}{8}(:,1))
+   end
 end
-
-
-
 
 end

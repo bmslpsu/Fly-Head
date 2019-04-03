@@ -29,7 +29,10 @@ classdef IO_Class
         MaxCC               = []; % max cross correlation
         TimeDiff            = []; % time delay at max cross correlation
 
-        Corr                = struct('r',[],'m',[],'b',[]); % correlation r-value & linear fit coeeficents
+        r                   = []; % correlation r-valuets
+    	m                   = []; % linear fit slope
+        b                   = []; % linear fit y-intercept
+
     end
     
     methods
@@ -58,7 +61,7 @@ classdef IO_Class
                 [obj.CrossCorr(:,kk), obj.TimeLags(:,kk) ,obj.MaxCC(:,kk) ,obj.TimeDiff(:,kk)] ...
                     = CrossCorr(In.X(:,kk),Out.X(:,kk),In.Fs);
                 
-                [obj.Corr.r(1,kk),obj.Corr.m(1,kk),obj.Corr.b(1,kk)] = regression(In.X(:,kk),Out.X(:,kk),'one');
+                [obj.r(1,kk),obj.m(1,kk),obj.b(1,kk)] = regression(In.X(:,kk),Out.X(:,kk),'one');
             end
             
         end
