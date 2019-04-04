@@ -15,14 +15,14 @@ classdef IO_Class
         BodeGain            = []; % bode plot gain
         BodePhaseDiff       = []; % bode plot phase difference
         
-    	BodeIOFv            = []; % bode plot frequency vector
-        BodeIOGain          = []; % bode plot gain
-        BodeIOPhaseDiff     = []; % bode plot phase difference
+        IOFreq              = []; % frequency vector for specified frequencies
 
+        IOBodeGain          = []; % bode plot gain
+        IOBodePhaseDiff     = []; % bode plot phase difference
+        
         Coherence           = []; % coherence
      	CoherenceFV       	= []; % coherence frequency vector
         IOCoherence       	= []; % coherence at specified frequencies
-    	IOCoherenceFV      	= []; % coherence frequency vector at specified frequencies
         
         CrossCorr           = []; % cross correlation
         TimeLags            = []; % cross correlation time lags
@@ -50,19 +50,22 @@ classdef IO_Class
             obj.BodeFv              = In.Fv;
             obj.BodeGain            = Out.Mag ./ In.Mag;
             obj.BodePhaseDiff       = In.Phase - Out.Phase;
+          	
+            obj.IOFreq              = In.IOFreq;
+            obj.IOBodeGain          = Out.IOMag ./ In.IOMag;
+            obj.IOBodePhaseDiff     = In.IOPhase - Out.IOPhase;
             
-            obj.BodeIOFv            = In.IOFreq;
-            obj.BodeIOGain          = Out.IOMag ./ In.IOMag;
-            obj.BodeIOPhaseDiff     = In.IOPhase - Out.IOPhase;
 
             for kk = 1:size(In.X,2)
                 [obj.Coherence(:,kk),obj.CoherenceFV(:,kk)] = mscohere(In.X(:,kk) , Out.X(:,kk) ,[],[] , In.Fv(:,kk) , In.Fs);
-                
+                [obj.IOCoherence(:,kk)] = Get_IO_Cohr(obj.CoherenceFV(:,kk),obj.Coherence(:,kk),In.IOFreq);
+
                 [obj.CrossCorr(:,kk), obj.TimeLags(:,kk) ,obj.MaxCC(:,kk) ,obj.TimeDiff(:,kk)] ...
                     = CrossCorr(In.X(:,kk),Out.X(:,kk),In.Fs);
                 
                 [obj.r(1,kk),obj.m(1,kk),obj.b(1,kk)] = regression(In.X(:,kk),Out.X(:,kk),'one');
             end
+            
             
         end
     end
