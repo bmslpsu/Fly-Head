@@ -6,7 +6,7 @@ function [] = MakeData_Chirp_HeadFree_TEST(rootdir,filename)
 %       PAT     : pattern structure
 %       WING   	: wings structure
 %---------------------------------------------------------------------------------------------------------------------------------
-rootdir = 'F:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\';
+rootdir = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\';
 % filename = 'Chirp_HeadFree_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -99,7 +99,7 @@ for kk = 1:N{1,4}
         DATA{I{kk,1}}{I{kk,3}}{qq+1,ww} = vars{ww};
     end
 end
-clear jj kk pp qq ww n a b t_p t_v hAngles data head wing pat bode tt Head Pat Wing Err pat2head err2wing head2wing vars
+clear jj ii kk pp qq ww n a b t_p t_v hAngles data head wing pat bode tt Head Pat Wing Err pat2head err2wing head2wing vars
 disp('LOADING DONE')
 
 %% Fly Statistics %%
@@ -109,51 +109,52 @@ for kk = 1:N{1,1}
     FlyStat{kk} = cell(N{1,3},1);
     for jj = 1:N{1,3}
         FlyStat{kk}{jj} = Stats(DATA{kk}{jj});
+    end
+end
+
+FlyGroup = cell(N{1,3},1);
+for jj = 1:N{1,3} 
+    FlyGroup{jj} = cell(N{1,1},1);
+    for kk = 1:N{1,1}
+        FlyGroup{jj}{kk} = FlyStat{kk}{jj};
     end 
 end
 
 %% Grand Statistics %%
 %---------------------------------------------------------------------------------------------------------------------------------
-GrandAll = cell(N{1,3},1);
-for jj = 1:N{1,3} 
-    GrandAll{jj} = cell(N{1,1},1);
-    for kk = 1:N{1,1}
-        GrandAll{jj}{kk} = FlyStat{kk}{jj};
-    end 
-end
-
-%%
-GrandStat = cell(N{1,3},1);
-for jj = 1:N{1,3} 
-    GrandStat{jj} = cell(N{1,1},1);
-    for kk = 1:N{1,1}
-        for ii = 1:length(GrandAll{jj}{kk}.Mean)
-            temp = GrandAll{jj}{kk}.Mean{ii};
-            length(temp)
-            GrandStat{jj}{kk} = cell(1,length(temp));
-%             for ww = 1:length(temp)
-%                 GrandStat{jj}{ii}{ww}(:,:,kk) = 1;
-%             end
+Grand.All = cell(N{1,3},1);
+for jj = 1:N{1,3}
+    for ii = 1:length(FlyGroup{jj}{kk}.Mean)
+        for kk = 1:N{1,1}
+            prop = properties(FlyGroup{jj}{kk});
+            for qq = 2:length(prop)
+                name = prop{qq}; % get property name
+                for ww = 1:size(FlyGroup{jj}{kk}.(name),2)
+%                     space = size(FlyGroup{jj}{kk}.(name){ii,ww},3);
+                    Grand.All{jj}{qq-1,1}{ii,ww}(:,:,kk) = FlyGroup{jj}{kk}.(name){ii,ww};
+                end
+            end
         end
-    end 
+    end
 end
 
-
-
-
-
-
-
-
-
-
+for jj = 1:N{1,3}
+    for ii = 1:length(Grand.All{jj})
+        Grand.Mean      {jj,1}{ii,1}   	= cellfun(@(x) mean(x,3),       Grand.All{jj}{ii},'UniformOutput',false);
+        Grand.Median    {jj,1}{ii,1}    = cellfun(@(x) median(x,3),  	Grand.All{jj}{ii},'UniformOutput',false);
+        Grand.STD       {jj,1}{ii,1}   	= cellfun(@(x) std(x,0,3),      Grand.All{jj}{ii},'UniformOutput',false);
+        Grand.Var       {jj,1}{ii,1}   	= cellfun(@(x) var(x,0,3),      Grand.All{jj}{ii},'UniformOutput',false);
+        Grand.Max       {jj,1}{ii,1}	= cellfun(@(x) max(x,[],3),     Grand.All{jj}{ii},'UniformOutput',false);
+        Grand.Min       {jj,1}{ii,1}  	= cellfun(@(x) min(x,[],3),     Grand.All{jj}{ii},'UniformOutput',false);
+        Grand.Mode      {jj,1}{ii,1}  	= cellfun(@(x) mode(x,3),       Grand.All{jj}{ii},'UniformOutput',false);
+        Grand.Range     {jj,1}{ii,1} 	= cellfun(@(x) range(x,3),      Grand.All{jj}{ii},'UniformOutput',false);
+    end
+end
 %%
 close all
-for kk = 1:N{1,1}
-   for jj = 1:1
-       figure (1) ; hold on
-       plot(FlyStat{kk}{jj}.Mean{3}{8}(:,1))
-   end
+for jj = 1:N{1,3}
+   figure (1) ; hold on
+   plot(Grand.Mean{jj}{1}{5,1}(:,1),Grand.Mean{jj}{1}{6,1}(:,1))
 end
 
 end

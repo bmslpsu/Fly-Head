@@ -44,32 +44,21 @@ classdef Stats
                 obj_all{jj} = cat(3,OBJ{:,jj}); % concatenates object data cells in 3rd dimension
                 for ii = 1:length(obj_all{jj}) % cycle through properties
                     for kk = 1:nn(1) % cycle through the dimesnion to average
-                        obj.All{jj}{ii}(:,:,kk) = obj_all{jj}{ii}; % transform cell to array
+                        obj.All{ii,jj}(:,:,kk) = obj_all{jj}{ii}; % transform cell to array
                     end
                 end
-            end            
-
-            % Statistics calculations
-            obj.Mean   = cell(1,nn(2));
-            obj.Median = cell(1,nn(2));
-            obj.STD    = cell(1,nn(2));
-            obj.Var    = cell(1,nn(2));
-            obj.Max    = cell(1,nn(2));
-            obj.Min    = cell(1,nn(2));
-            obj.Mode 	= cell(1,nn(2));
-            obj.Range  = cell(1,nn(2));
-            for jj = 1:nn(2)
-                for ii = 1:length(obj.All{jj})
-                    obj.Mean        {jj}{ii} = mean     (obj.All{jj}{ii},3);
-                    obj.Median      {jj}{ii} = median   (obj.All{jj}{ii},3);
-                    obj.STD         {jj}{ii} = std      (obj.All{jj}{ii},0,3);
-                    obj.Var         {jj}{ii} = var      (obj.All{jj}{ii},0,3);
-                    obj.Max         {jj}{ii} = max      (obj.All{jj}{ii},[],3);
-                    obj.Min         {jj}{ii} = min      (obj.All{jj}{ii},[],3);
-                    obj.Mode     	{jj}{ii} = mode     (obj.All{jj}{ii},3);
-                    obj.Range   	{jj}{ii} = range  	(obj.All{jj}{ii},3);
-                end
             end
+            
+            % Statistics
+            obj.Mean    = cellfun(@(x) mean(x,3),   obj.All,'UniformOutput',false);
+            obj.Median  = cellfun(@(x) median(x,3), obj.All,'UniformOutput',false);
+            obj.STD     = cellfun(@(x) std(x,0,3),  obj.All,'UniformOutput',false);
+            obj.Var     = cellfun(@(x) var(x,0,3),  obj.All,'UniformOutput',false);
+            obj.Max     = cellfun(@(x) max(x,[],3), obj.All,'UniformOutput',false);
+            obj.Min     = cellfun(@(x) min(x,[],3), obj.All,'UniformOutput',false);
+            obj.Mode  	= cellfun(@(x) mode(x,3),   obj.All,'UniformOutput',false);
+            obj.Range 	= cellfun(@(x) range(x,3),  obj.All,'UniformOutput',false);
+
         end
     end
 end
