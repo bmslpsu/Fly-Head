@@ -107,15 +107,15 @@ colmn = 4;
     if showplot.Time
         figure (100)
             subplot(ceil(Number{1,2}/colmn),colmn,kk) ; hold on
-                title(['Fly ' num2str(Original(kk,1))])
-                plot(pat.Time,pat.Pos,'k')
-                plot(head.Time,head.Pos,'b')
+                title(['Fly ' num2str(Original{kk,1})])
+                plot(fly.Time,pat.Pos,'k')
+                plot(fly.Time,head.Pos,'b')
                 box on
     end      
     if showplot.Freq
         figure(104)
             subplot(ceil(Number{1,2}/colmn),colmn,kk) ; hold on
-                title(['Fly ' num2str(Original(kk,1))])
+                title(['Fly ' num2str(Original{kk,1})])
                 plot(pat.Freq,  pat.Mag ,'k')
                 plot(head.Freq, head.Mag,'b')
                 xlim([0.5 11.5])
@@ -123,7 +123,7 @@ colmn = 4;
                 hold off
         figure (105)
             subplot(ceil(Number{1,2}/colmn),colmn,kk) ; hold on
-                title(['Fly ' num2str(Original(kk,1))])
+                title(['Fly ' num2str(Original{kk,1})])
                 plot(pat.Freq,  pat.Phase ,'k')
                 plot(head.Freq, head.Phase ,'b')
                 xlim([0.5 11.5])
