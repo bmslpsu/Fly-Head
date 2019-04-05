@@ -49,11 +49,11 @@ classdef IO_Class
             
             obj.BodeFv              = In.Fv;
             obj.BodeGain            = Out.Mag ./ In.Mag;
-            obj.BodePhaseDiff       = In.Phase - Out.Phase;
+            obj.BodePhaseDiff       = -(In.Phase - Out.Phase);
           	
             obj.IOFreq              = In.IOFreq;
             obj.IOBodeGain          = Out.IOMag ./ In.IOMag;
-            obj.IOBodePhaseDiff     = In.IOPhase - Out.IOPhase;
+            obj.IOBodePhaseDiff     = -(In.IOPhase - Out.IOPhase);
             
 
             for kk = 1:size(In.X,2)

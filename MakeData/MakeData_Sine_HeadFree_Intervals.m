@@ -10,9 +10,7 @@ function [] = MakeData_Sine_HeadFree_Intervals(rootdir,Amp)
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
 Amp = 15;
-rootdir = 'F:\EXPERIMENTS\Experiment_Sinusoid\';
-
-nInt = 10;
+rootdir = 'H:\EXPERIMENTS\Experiment_Sinusoid\';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -50,7 +48,7 @@ for kk = 1:N{1,1}
     IO.err2wing{kk} = cell(N{1,3},1);
     IO.head2wing{kk} = cell(N{1,3},1);
 end
-
+nInt = 5;
 % Store data in cells
 count = 0;
 pp = 0;
@@ -92,7 +90,7 @@ for kk = 1:N{1,4}
     %-----------------------------------------------------------------------------------------------------------------------------
     qq = 0;
     interval = round(length(head.Time)/nInt);
- 	idx = size(PAT{I{:,1}(kk)}{I{:,3}(kk)},2);
+ 	idx = size(PAT{I{:,1}(kk)}{I{:,3}(kk)},1);
     for jj = 1:nInt
         span = (qq+1):qq+interval;
         % Objects
@@ -117,29 +115,53 @@ for kk = 1:N{1,4}
         
         % CELLS
         
-        PAT             {I{:,1}(kk)}{I{:,3}(kk)}{jj,idx+1} = Pat;
-        HEAD            {I{:,1}(kk)}{I{:,3}(kk)}{jj,idx+1} = Head;
-        WING            {I{:,1}(kk)}{I{:,3}(kk)}{jj,idx+1} = Wing;
-        ERR             {I{:,1}(kk)}{I{:,3}(kk)}{jj,idx+1} = Err;
-        IO.pat2head  	{I{:,1}(kk)}{I{:,3}(kk)}{jj,idx+1} = pat2head;
-        IO.err2wing 	{I{:,1}(kk)}{I{:,3}(kk)}{jj,idx+1} = err2wing;
-        IO.head2wing  	{I{:,1}(kk)}{I{:,3}(kk)}{jj,idx+1} = head2wing;
+        PAT             {I{:,1}(kk)}{I{:,3}(kk)}{idx+1,jj} = Pat;
+        HEAD            {I{:,1}(kk)}{I{:,3}(kk)}{idx+1,jj} = Head;
+        WING            {I{:,1}(kk)}{I{:,3}(kk)}{idx+1,jj} = Wing;
+        ERR             {I{:,1}(kk)}{I{:,3}(kk)}{idx+1,jj} = Err;
+        IO.pat2head  	{I{:,1}(kk)}{I{:,3}(kk)}{idx+1,jj} = pat2head;
+        IO.err2wing 	{I{:,1}(kk)}{I{:,3}(kk)}{idx+1,jj} = err2wing;
+        IO.head2wing  	{I{:,1}(kk)}{I{:,3}(kk)}{idx+1,jj} = head2wing;
         
         qq = qq + length(span);
     end
     %-----------------------------------------------------------------------------------------------------------------------------
 end
-clear jj kk pp qq a b t_p t_v hAngles data head wing pat bode tt root pat2head err2wing head2wing Freq span interval nInt
 disp('LOADING DONE')
 disp('Bad Trial:')
 disp(count)
 pause(3)
+clear jj kk pp qq a b t_p t_v hAngles data head wing pat bode tt root pat2head err2wing head2wing span interval idx ...
+    Head Wing Pat Err count Amp
 %%
 %---------------------------------------------------------------------------------------------------------------------------------
+FIG = figure (1) ; clf ; hold on
+FIG.Color = 'w';
+xlabel('Frequency (Hz)')
+ylabel('Phase (deg)')
+ALL = cell(N{1,3},nInt);
+cFlow = jet(nInt);
+for kk = 1:N{1,1}
+    for jj = 1:N{1,3}
+        for ii = 1:size(IO.pat2head{kk}{jj},1)
+            for ww = 1:size(IO.pat2head{kk}{jj},2)
+                ALL{jj,ww}(end+1,1) = IO.pat2head{kk}{jj}{ii,ww}.IOBodePhaseDiff(:,1);               
+                plot(IO.pat2head{kk}{jj}{ii,ww}.IOFreq(:,1),rad2deg(IO.pat2head{kk}{jj}{ii,ww}.IOBodePhaseDiff(:,1)),...
+                   '-+','Color',cFlow(ww,:))
+                xlim([0 4])
+                ylim([-100 300])
+            end           
+        end
+    end
+end
 
+ALL_Mean = cell2mat(cellfun(@(x) circ_mean(x,[],1),ALL,'UniformOutput',false));
 
-
-
+% figure (1) ; clf ; hold on
+% xlim([0 13])
+for ww = 1:nInt
+    plot(Freq,rad2deg(ALL_Mean(:,ww)),'Color',cFlow(ww,:),'LineWidth',3)
+end
 
 
 
