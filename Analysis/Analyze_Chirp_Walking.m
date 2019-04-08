@@ -1,4 +1,4 @@
-showplot.Time  = 1;     %% Need to fix data, does not allocate under correct amplitude
+showplot.Time  = 1;
 showplot.Freq  = 1;
 
 savename = 'Chirp_Walking_Data';
@@ -74,6 +74,9 @@ for kk = 1:Number{1,end} % all trials
     head.Pos        = head.Pos  (span);
 	head.Vel        = head.Vel  (span);
  	pat.Pos         = pat.Pos   (span);
+    
+    pat.Pos         = 3.75.*round(pat.Pos.*96/5);       % from voltage to degrees
+    
 
     [head.Freq , head.Mag, head.Phase]   = FFT(fly.Time,head.Pos);
     [pat.Freq  , pat.Mag  , pat.Phase]   = FFT(fly.Time,pat.Pos);
@@ -81,9 +84,11 @@ for kk = 1:Number{1,end} % all trials
     head.Freq   = head.Freq(SI:EI);
     head.Mag    = head.Mag(SI:EI);
     head.Phase  = head.Phase(SI:EI);
-    pat.Freq   = pat.Freq(SI:EI);
-    pat.Mag    = pat.Mag(SI:EI);
-    pat.Phase  = pat.Phase(SI:EI);
+    pat.Freq    = pat.Freq(SI:EI);
+    pat.Mag     = pat.Mag(SI:EI);
+    pat.Phase   = pat.Phase(SI:EI);
+    
+    head.Pos    = rad2deg(head.Pos);        % head angle to degrees
     
     TIME{Index{kk,1}}{Index{kk,3},1}(:,end+1)                   = fly.Time;
     
