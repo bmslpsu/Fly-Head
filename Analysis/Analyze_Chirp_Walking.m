@@ -1,9 +1,9 @@
-showplot.Time  = 1;
-showplot.Freq  = 1;
+showplot.Time  = 0;
+showplot.Freq  = 0;
 
 savename = 'Chirp_Walking_Data';
 
-rootdir = 'C:\Users\amb7595\Documents\Experimental Data\Walking Chirp\mat\';
+rootdir = 'W:\Research\Walking Chirp mat';
 [FILES, PATH] = uigetfile({'*.mat', 'DAQ-files'}, 'Select files', rootdir, 'MultiSelect','on');
 FILES = cellstr(FILES)'; % if only one character array >> store in cell
 
@@ -29,20 +29,25 @@ BODE.Phase.HeadPat  = cell(Number{1,1},1);
 
 for kk = 1:Number{1,1} % fly
     for jj = 1:Number{1,3} % Amplitude
-            TIME{kk,1}{jj,1}       = [];
-            HEAD.Pos{kk,1}{jj,1}   = [];
-            HEAD.Freq{kk,1}{jj,1}  = [];
-            HEAD.Mag{kk,1}{jj,1}   = [];
-            HEAD.Phase{kk,1}{jj,1} = [];
+            FLY.Time{kk,1}{jj,1}            = [];
             
-            PAT.Pos{kk,1}{jj,1}   = [];
-            PAT.Freq{kk,1}{jj,1}  = [];
-            PAT.Mag{kk,1}{jj,1}   = [];
-            PAT.Phase{kk,1}{jj,1} = [];
+            HEAD.Pos{kk,1}{jj,1}            = [];
+            HEAD.Freq{kk,1}{jj,1}           = [];
+            HEAD.Mag{kk,1}{jj,1}            = [];
+            HEAD.Phase{kk,1}{jj,1}          = [];
+            HEAD.COHR.Freq{kk,1}{jj,1}      = [];
+            HEAD.COHR.Mag{kk,1}{jj,1}       = [];
+            
+            PAT.Pos{kk,1}{jj,1}             = [];
+            PAT.Freq{kk,1}{jj,1}            = [];
+            PAT.Mag{kk,1}{jj,1}             = [];
+            PAT.Phase{kk,1}{jj,1}           = [];
             
             BODE.Mag.HeadPat{kk,1}{jj,1}    = [];
             BODE.Freq{kk,1}{jj,1}           = [];
             BODE.Phase.HeadPat{kk,1}{jj,1}  = [];
+            
+            
     end
 end
 fly = [];
@@ -88,30 +93,37 @@ for kk = 1:Number{1,end} % all trials
     pat.Mag     = pat.Mag(SI:EI);
     pat.Phase   = pat.Phase(SI:EI);
     
+    [head.cohr.mag, head.cohr.f] = mscohere(pat.Pos ,head.Pos,[],[],head.Freq,fly.Fs);  % Calculate coherence
+	
+    
     head.Pos    = rad2deg(head.Pos);        % head angle to degrees
     
-    TIME{Index{kk,1}}{Index{kk,3},1}(:,end+1)                   = fly.Time;
+    FLY.Time{Index{kk,1}}{Index{kk,3},1}(:,end+1)               = fly.Time;
     
     HEAD.Pos{Index{kk,1}}{Index{kk,3},1}(:,end+1)               = head.Pos;
     HEAD.Freq{Index{kk,1}}{Index{kk,3},1}(:,end+1)              = head.Freq;
     HEAD.Mag{Index{kk,1}}{Index{kk,3},1}(:,end+1)               = head.Mag;
     HEAD.Phase{Index{kk,1}}{Index{kk,3},1}(:,end+1)             = head.Phase;
+    
+    HEAD.COHR.Freq  {Index{kk,1}}{Index{kk,3},1}(:,end+1)       = head.cohr.f;
+    HEAD.COHR.Mag   {Index{kk,1}}{Index{kk,3},1}(:,end+1)       = head.cohr.mag;
   	
     PAT.Pos{Index{kk,1}}{Index{kk,3},1}(:,end+1)                = pat.Pos ;
     PAT.Freq{Index{kk,1}}{Index{kk,3},1}(:,end+1)               = pat.Freq ;
     PAT.Mag{Index{kk,1}}{Index{kk,3},1}(:,end+1)                = pat.Mag ;
     PAT.Phase{Index{kk,1}}{Index{kk,3},1}(:,end+1)              = pat.Phase ;
     
-    BODE.Mag.HeadPat{Index{kk,1}}{Index{kk,3},1}(:,end+1)       = head.Mag./pat.Mag;
+    BODE.Mag.HeadPat{Index{kk,1}}{Index{kk,3},1}(:,end+1)       = medfilt1(head.Mag./pat.Mag,1);
     BODE.Freq{Index{kk,1}}{Index{kk,3},1}(:,end+1)              = pat.Freq;
-    BODE.Phase.HeadPat{Index{kk,1}}{Index{kk,3},1}(:,end+1)     = head.Phase- pat.Phase;
+    BODE.Phase.HeadPat{Index{kk,1}}{Index{kk,3},1}(:,end+1)     = -1*medfilt1(pat.Phase - head.Phase,1);
+   
   %--------------------------------------------------------------------------------------------------------------------------------- 
 % Plot previews
 
 colmn = 4; 
     if showplot.Time
         figure (100)
-            subplot(ceil(Number{1,2}/colmn),colmn,kk) ; hold on
+            subplot(ceil(Number{1,4}/colmn),colmn,kk) ; hold on
                 title(['Fly ' num2str(Original{kk,1})])
                 plot(fly.Time,pat.Pos,'k')
                 plot(fly.Time,head.Pos,'b')
@@ -119,7 +131,7 @@ colmn = 4;
     end      
     if showplot.Freq
         figure(104)
-            subplot(ceil(Number{1,2}/colmn),colmn,kk) ; hold on
+            subplot(ceil(Number{1,4}/colmn),colmn,kk) ; hold on
                 title(['Fly ' num2str(Original{kk,1})])
                 plot(pat.Freq,  pat.Mag ,'k')
                 plot(head.Freq, head.Mag,'b')
@@ -127,7 +139,7 @@ colmn = 4;
                 box on
                 hold off
         figure (105)
-            subplot(ceil(Number{1,2}/colmn),colmn,kk) ; hold on
+            subplot(ceil(Number{1,4}/colmn),colmn,kk) ; hold on
                 title(['Fly ' num2str(Original{kk,1})])
                 plot(pat.Freq,  pat.Phase ,'k')
                 plot(head.Freq, head.Phase ,'b')
@@ -135,4 +147,69 @@ colmn = 4;
                 box on    
     end
 end
+
+
+
+%% Averages
+
+clc
+% for kk = 1:Number{1,1}
+%     for jj = 1:Number{1,3}
+%         
+%         TIME.FlyMed         	   	= zeros(length(TIME{kk}{jj}(:,1)),Number{1,3});
+%         
+%      	PAT.FlyMed.Freq         {kk,1}   	= zeros(length(PAT.Freq{kk}{jj}(:,1)),Number{1,3});
+%         PAT.FlyMed.Phase        {kk,1}   	= zeros(length(PAT.Phase{kk}{jj(:,1)}),Number{1,3});
+%         PAT.FlyMed.Mag          {kk,1}   	= zeros(length(PAT.Mag{kk}{jj}(:,1)),Number{1,3});
+%         PAT.FlyMed.Pos          {kk,1}   	= zeros(length(PAT.Pos{kk}{jj}(:,1)),Number{1,3});
+%         
+%      	HEAD.FlyMed.Freq        {kk,1}   	= zeros(length(HEAD.Freq{kk}{jj}(:,1)),Number{1,3});
+%         HEAD.FlyMed.Phase       {kk,1}   	= zeros(length(HEAD.Phase{kk}{jj}(:,1)),Number{1,3});
+%         HEAD.FlyMed.Mag         {kk,1}   	= zeros(length(HEAD.Mag{kk}{jj}(:,1)),Number{1,3});
+%         HEAD.FlyMed.Pos         {kk,1}   	= zeros(length(HEAD.Pos{kk}{jj}(:,1)),Number{1,3});
+%         
+%         BODE.FlyMed.Freq        {kk,1}      = zeros(length(HEAD.Freq{kk}{jj}(:,1)),Number{1,3});
+%         BODE.FlyMed.Phase       {kk,1}      = zeros(length(HEAD.Phase{kk}{jj}(:,1)),Number{1,3});
+%         BODE.FlyMed.Mag         {kk,1}      = zeros(length(HEAD.Mag{kk}{jj}(:,1)),Number{1,3});
+%     end
+% end
+
+
+for kk = 1:Number{1,1}
+  	for jj = 1:Number{1,3}
+        
+        FLY.Time.FlyMed         {kk}{:,jj}   	  = median(FLY.Time{kk}{jj},2);
+                
+     	PAT.FlyMed.Freq         {kk}(:,jj)        = median(PAT.Freq{kk}{jj},2);
+        PAT.FlyMed.Phase        {kk}(:,jj)        = median(PAT.Phase{kk}{jj},2);
+        PAT.FlyMed.Mag          {kk}(:,jj)        = median(PAT.Mag{kk}{jj},2);
+        PAT.FlyMed.Pos          {kk}(:,jj)        = median(PAT.Pos{kk}{jj},2);
+        
+     	HEAD.FlyMed.Freq        {kk}(:,jj)        = median(HEAD.Freq{kk}{jj},2);
+        HEAD.FlyMed.Phase       {kk}(:,jj)        = median(HEAD.Phase{kk}{jj},2);
+        HEAD.FlyMed.Mag         {kk}(:,jj)        = median(HEAD.Mag{kk}{jj},2);
+        HEAD.FlyMed.Pos         {kk}(:,jj)        = median(HEAD.Pos{kk}{jj},2);
+        
+        BODE.FlyMed.Freq        {kk,1}(:,jj)      = median(BODE.Freq{kk}{jj},2);
+        BODE.FlyMed.Phase       {kk,1}(:,jj)      = median(BODE.Phase{kk}{jj},2);
+        BODE.FlyMed.Mag         {kk,1}(:,jj)      = median(BODE.Mag{kk}{jj}, 2);
+    end
+end
+
+FLY.Time.GrandMed      = median(cat(3,FLY.Time.FlyMed{1}), 3);
+PAT.GrandMed.Freq  = median(cat(3,PAT.FlyMed.Freq{:}),3);
+PAT.GrandMed.Phase = median(cat(3,PAT.FlyMed.Phase{:}),3);
+PAT.GrandMed.Mag   = median(cat(3,PAT.FlyMed.Mag{:}),3);
+PAT.GrandMed.Pos   = median(cat(3,PAT.FlyMed.Pos{:}),3);
+
+HEAD.GrandMed.Freq  = median(cat(3,HEAD.FlyMed.Freq{:}),3);
+HEAD.GrandMed.Phase = median(cat(3,HEAD.FlyMed.Phase{:}),3);
+HEAD.GrandMed.Mag   = median(cat(3,HEAD.FlyMed.Mag{:}),3);
+HEAD.GrandMed.Pos   = median(cat(3,HEAD.FlyMed.Pos{:}),3);
+HEAD.GrandSTD.Pos   = std(cat(3,HEAD.FlyMed.Pos{:}),0,3);
+
+BODE.GrandMed.Freq  = median(cat(3,BODE.FlyMed.Freq{:}),3);
+BODE.GrandMed.Phase = median(cat(3,BODE.FlyMed.Phase{:}),3);
+BODE.GrandMed.Mag   = median(cat(3,BODE.FlyMed.Mag{:}),3);
+
 
