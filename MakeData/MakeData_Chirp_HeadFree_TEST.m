@@ -6,7 +6,7 @@ function [] = MakeData_Chirp_HeadFree_TEST(rootdir,filename)
 %       PAT     : pattern structure
 %       WING   	: wings structure
 %---------------------------------------------------------------------------------------------------------------------------------
-rootdir = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\';
+rootdir = 'F:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\';
 % filename = 'Chirp_HeadFree_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -119,7 +119,7 @@ for jj = 1:N{1,3}
         FlyGroup{jj}{kk} = FlyStat{kk}{jj};
     end 
 end
-
+clear jj ii
 %% Grand Statistics %%
 %---------------------------------------------------------------------------------------------------------------------------------
 Grand.All = cell(N{1,3},1);
@@ -150,6 +150,7 @@ for jj = 1:N{1,3}
         Grand.Range     {jj,1}{ii,1} 	= cellfun(@(x) range(x,3),      Grand.All{jj}{ii},'UniformOutput',false);
     end
 end
+clear kk jj ii qq ww
 %%
 close all
 for jj = 1:N{1,3}

@@ -1,4 +1,4 @@
-function [fitData] = FitPanel(X,t,t_new)
+function [fitData] = FitPanel(X,t,t_new,varargin)
 %% FitPanel: fits
 %   INPUTS:
 %       X       :   discrete arena position data
@@ -17,10 +17,12 @@ function [fitData] = FitPanel(X,t,t_new)
 % X = panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]
 % clear data t_p
 %---------------------------------------------------------------------------------------------------------------------------------
+	Xw = X;
+    Xw(Xw>180 & Xw<=360) = Xw(Xw>180 & Xw<=360) - 360; % wrapped
     thresh = 3; % velcoity threshold to detect panel transitions 
-    n = length(X); % length of signal
+    n = length(Xw); % length of signal
     IV = (1:n)'; % index vector
-    dX = [abs(diff(X)) ; 0]; % pattern velocity
+    dX = [abs(diff(Xw)) ; 0]; % pattern velocity
     mIdx = [IV(1) ; IV(dX>thresh) ; IV(end)]; % detect transition points
     if any(mIdx==n) && any(mIdx==1)
         mIdx = mIdx(2:end-1); % make sure last & 1st point are not detected, we will add it later
@@ -29,10 +31,10 @@ function [fitData] = FitPanel(X,t,t_new)
 	elseif any(mIdx==1)
         mIdx = mIdx(2:end); % make sure first point is not detected, we will add it later 
     end
-    mX = X(mIdx); % pattern position corresponding to transtion points
+    mX = Xw(mIdx); % pattern position corresponding to transtion points
 	mt = t(mIdx); % pattern time corresponding to transtion points
     m2Idx = [IV(1) ; mean([mIdx(1:end-1),mIdx(2:end)],2) ; IV(end)]; % peak indicies between transition points
-    m2X = X(round(m2Idx)); % peak pattern positions between transition points
+    m2X = Xw(round(m2Idx)); % peak pattern positions between transition points
   	m2t = t(round(m2Idx)); % peak times between transition points
 
     [xData, yData] = prepareCurveData( m2t, m2X ); % prepare data for fit
@@ -43,13 +45,18 @@ function [fitData] = FitPanel(X,t,t_new)
 
     fitData = fitPattern(t_new); % apply fit to new time vector
     
-%  	figure (1) ; clf ; hold on
-%         plot(t,X,'k')
-%     	plot(mt,mX,'g*')
-% %         plot(m2t,m2X,'r*')    
-%         plot(t_new,fitData,'b')
-%         xlim([0 t(end)])
-%         xlabel('Time (s)')
-%         ylabel('Pattern (deg)')
-%         legend('Panel','Peak Marker','Fit') 
+    % debug
+    if nargin==4
+        if varargin{1}==true
+            figure (1) ; clf ; hold on
+                plot(t,Xw,'k')
+%                 plot(mt,mX,'g*')
+                plot(m2t,m2X,'r*')    
+                plot(t_new,fitData,'b')
+                xlim([0 t(end)])
+                xlabel('Time (s)')
+                ylabel('Pattern (deg)')
+                legend('Panel','Peak Marker','Fit')
+        end
+    end
 end
