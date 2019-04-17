@@ -4,7 +4,7 @@ function [fitData] = FitPanel(X,t,t_new,varargin)
 %       X       :   discrete arena position data
 %       t       :   discrete arena time data
 %       t_new  	:   new time vector
-
+%       debug   :   if true, show plot
 %   OUTPUTS:
 %       fitData     :   fit data  
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -18,7 +18,7 @@ function [fitData] = FitPanel(X,t,t_new,varargin)
 % clear data t_p
 %---------------------------------------------------------------------------------------------------------------------------------
 	Xw = X;
-    Xw(Xw>180 & Xw<=360) = Xw(Xw>180 & Xw<=360) - 360; % wrapped
+%     Xw(Xw>180 & Xw<=360) = Xw(Xw>180 & Xw<=360) - 360; % wrapped
     thresh = 3; % velcoity threshold to detect panel transitions 
     n = length(Xw); % length of signal
     IV = (1:n)'; % index vector
