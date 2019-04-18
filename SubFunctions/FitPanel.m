@@ -27,20 +27,24 @@ m2Idx = [IV(1) ; mean([mIdx(1:end-1),mIdx(2:end)],2) ; IV(end)]; % peak indicies
 m2X = Xw(round(m2Idx)); % peak pattern positions between transition points
 m2t = t(round(m2Idx)); % peak times between transition points
 
-% Detect transition points not to fit & fix them
-dX = diff(m2X);
-dX_mean = mean(dX);
-dX_std = std(dX);
-dX_err_idx = abs(dX)>(dX_mean+2*dX_std) | circshift(abs(dX)>(dX_mean+1*dX_std),1);
-dX_err_time = m2t(dX_err_idx);
-dX_err = m2X(dX_err_idx);
-err_idx = find(dX_err_idx==1);
-for kk = 1:length(err_idx)
-    rng = 360 - m2X(err_idx(kk));
-    if rng>=360/2
-        m2X(err_idx(kk)) = min(m2X);
-    else
-        m2X(err_idx(kk)) = max(m2X);
+if nargin==4
+    if varargin{1}==true
+        % Detect transition points not to fit & fix them
+        dX = diff(m2X);
+        dX_mean = mean(dX);
+        dX_std = std(dX);
+        dX_err_idx = abs(dX)>(dX_mean+2*dX_std) | circshift(abs(dX)>(dX_mean+1*dX_std),1);
+        dX_err_time = m2t(dX_err_idx);
+        dX_err = m2X(dX_err_idx);
+        err_idx = find(dX_err_idx==1);
+        for kk = 1:length(err_idx)
+            rng = 360 - m2X(err_idx(kk));
+            if rng>=360/2
+                m2X(err_idx(kk)) = min(m2X);
+            else
+                m2X(err_idx(kk)) = max(m2X);
+            end
+        end
     end
 end
 
@@ -53,21 +57,25 @@ ft = 'linearinterp';
 
 fitData = fitPattern(t_new); % apply fit to new time vector
 
-% Detect transition points not from fit & fix them
-dX = diff(fitData);
-dX_mean = mean(dX);
-dX_std = std(dX);
-dX_err_idx = abs(dX)>(dX_mean+2*dX_std) | circshift(abs(dX)>(dX_mean+2*dX_std),1);
-dX_err_time = t_new(dX_err_idx);
-dX_err = fitData(dX_err_idx);
-err_idx = find(dX_err_idx==1);
-for kk = 1:length(err_idx)
-	idx = err_idx(kk);
-    for jj = kk:length(fitData)
-        if ~ismember(jj,err_idx(kk))
-            fitData(err_idx(kk)) = fitData(jj);
-        else
-            break
+if nargin==4
+    if varargin{1}==true
+        % Detect transition points not from fit & fix them
+        dX = diff(fitData);
+        dX_mean = mean(dX);
+        dX_std = std(dX);
+        dX_err_idx = abs(dX)>(dX_mean+2*dX_std) | circshift(abs(dX)>(dX_mean+2*dX_std),1);
+        dX_err_time = t_new(dX_err_idx);
+        dX_err = fitData(dX_err_idx);
+        err_idx = find(dX_err_idx==1);
+        for kk = 1:length(err_idx)
+%             idx = err_idx(kk);
+            for jj = kk:length(fitData)
+                if ~ismember(jj,err_idx(kk))
+                    fitData(err_idx(kk)) = fitData(jj);
+                else
+                    break
+                end
+            end
         end
     end
 end
@@ -75,13 +83,15 @@ end
 % fitData = rad2deg(wrapToPi(deg2rad(fitData)));
 
 % debug
-if nargin==4
-    if varargin{1}==true
+if nargin==5
+    if varargin{2}==true
         figure (1) ; clf ; hold on
             plot(t,Xw,'k')
 %                 plot(mt,mX,'g*')
             plot(m2t,m2X,'r*')
-            plot(dX_err_time,dX_err,'og')
+            if varargin{1}==true
+                plot(dX_err_time,dX_err,'og')
+            end
             plot(t_new,fitData,'b-')
             xlim([0 t(end)])
             xlabel('Time (s)')

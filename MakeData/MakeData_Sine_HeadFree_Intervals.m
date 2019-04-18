@@ -10,7 +10,7 @@ function [] = MakeData_Sine_HeadFree_Intervals(rootdir,Amp)
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
 Amp = 15;
-rootdir = 'H:\EXPERIMENTS\Experiment_Sinusoid\';
+rootdir = 'F:\EXPERIMENTS\Experiment_Sinusoid\';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -32,21 +32,21 @@ clear rootdir
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Loading...')
 % Preallocate data cells
-PAT     = cell(N{1,1},1);
-HEAD    = cell(N{1,1},1);
-WING    = cell(N{1,1},1);
-ERR     = cell(N{1,1},1);
-IO.pat2head = cell(N{1,1},1);
-IO.err2wing = cell(N{1,1},1);
-IO.head2wing = cell(N{1,1},1);
+PAT             = cell(N{1,1},1);
+HEAD            = cell(N{1,1},1);
+WING            = cell(N{1,1},1);
+ERR             = cell(N{1,1},1);
+IO.pat2head     = cell(N{1,1},1);
+IO.err2wing     = cell(N{1,1},1);
+IO.head2wing    = cell(N{1,1},1);
 for kk = 1:N{1,1}
-    PAT{kk}     = cell(N{1,3},1);
-    HEAD{kk}    = cell(N{1,3},1);
-    WING{kk}    = cell(N{1,3},1);
-    ERR{kk}     = cell(N{1,3},1);
-    IO.pat2head{kk} = cell(N{1,3},1);
-    IO.err2wing{kk} = cell(N{1,3},1);
-    IO.head2wing{kk} = cell(N{1,3},1);
+    PAT{kk}             = cell(N{1,3},1);
+    HEAD{kk}            = cell(N{1,3},1);
+    WING{kk}            = cell(N{1,3},1);
+    ERR{kk}             = cell(N{1,3},1);
+    IO.pat2head{kk}     = cell(N{1,3},1);
+    IO.err2wing{kk}     = cell(N{1,3},1);
+    IO.head2wing{kk}    = cell(N{1,3},1);
 end
 nInt = 5;
 % Store data in cells
@@ -85,7 +85,7 @@ for kk = 1:N{1,4}
     % Get pattern data from DAQ
     pat.Time	= t_p;
     pat.Pos 	= panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]  
-    pat.Pos  	= FitPanel(pat.Pos,pat.Time,head.Time); % fit panel data
+    pat.Pos  	= FitPanel(pat.Pos,pat.Time,head.Time,false,false); % fit panel data
     % Calculate error between head & pattern
     %-----------------------------------------------------------------------------------------------------------------------------
     qq = 0;
@@ -150,7 +150,7 @@ for kk = 1:N{1,1}
                    '-+','Color',cFlow(ww,:))
                 xlim([0 4])
                 ylim([-100 300])
-            end           
+            end
         end
     end
 end
@@ -160,14 +160,41 @@ ALL_Mean = cell2mat(cellfun(@(x) circ_mean(x,[],1),ALL,'UniformOutput',false));
 % figure (1) ; clf ; hold on
 % xlim([0 13])
 for ww = 1:nInt
-    plot(Freq,rad2deg(ALL_Mean(:,ww)),'Color',cFlow(ww,:),'LineWidth',3)
+    plot(U{1,3}{1},rad2deg(ALL_Mean(:,ww)),'Color',cFlow(ww,:),'LineWidth',3)
 end
 
+%%
+%---------------------------------------------------------------------------------------------------------------------------------
+cFlow = jet(N{1,3});
+figure (2) ; clf ; hold on
+xlabel('Interval')
+ylabel(['Phase (' char(176) ')'])
+% xlim([1 nInt])
+xticks(1:nInt)
+for ww = 1:N{1,3}
+    plot(1:nInt,rad2deg(ALL_Mean(ww,:)),'Color',cFlow(ww,:),'LineWidth',3)
+end
+
+legList = cell(N{1,3},1);
+for kk = 1:N{1,3}
+   legList{kk} = [num2str(U{1,3}{1}(kk)) ' Hz'];    
+end
+legend(legList)
+
+% for kk = 1:N{1,1}
+%     for jj = 1:N{1,3}
+%         for ii = 1:size(IO.pat2head{kk}{jj},1)
+%             for ww = 1:size(IO.pat2head{kk}{jj},2)
+%                 plot(ww,rad2deg(IO.pat2head{kk}{jj}{ii,ww}.IOBodePhaseDiff(:,1)),...
+%                    '-+','Color',cFlow(jj,:))
+%             end
+%         end
+%     end
+% end
 
 
 
 
-    
 %% Save ouputs as structure %%
 %---------------------------------------------------------------------------------------------------------------------------------
 % disp('Saving...')

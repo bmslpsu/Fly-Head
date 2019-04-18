@@ -87,7 +87,7 @@ end
 pp = 1;
 tt = 2; % trial index
 for jj = 1:nn(1)
-    rng = pp:pp+reps{1}(jj)-1; % range of trials that main idex spans
+    rng = pp:pp+reps{1}(jj)-1; % range of trials that main index spans
     Ind(rng,tt) = 1:reps{1}(jj); % set idicies to start at 1 & increment by 1
     pp = pp + reps{1}(jj); % new start of range
 end
@@ -100,6 +100,20 @@ if nargin>1
     end
 else
 end
+
+% Find map for condiions
+% cond = length(nn(3:end)); % conditions
+% map = cell(cond,1); % map to store # reps per condtiion per fly
+% for jj = 1:cond
+%     bvals = idx{2+jj:end}; % number of values per condition
+%  	map{jj} = nan(nn(1),length(bvals)); % map for current condtiion
+%     for ii = 1:length(bvals)
+%         for kk = 1:nn(1)
+% %             idx = ii+(length(bvals)-1)/jj;
+%             map{jj}(kk,ii) = sum( (Ind(:,2+jj)==idx{1,2+jj}(ii)) & (Ind(:,1)==kk) ); % # of reps
+%         end
+%     end
+% end
 
 % Make table from raw file data
 D = splitvars(table(numdata));
@@ -114,12 +128,13 @@ N.Properties.VariableNames = [varnames,'file'];
 U = splitvars(table(unq));
 U.Properties.VariableNames = varnames;
 
+
 fprintf('Files: %i \n',n.file)
 fprintf('%s: %i \n',varnames{1},nn(1))
 for kk = 3:n.catg
     fprintf('%s: %i \n',varnames{kk},nn(kk))
 end
-T = table(idx{1} , cell2mat(reps(:,1)));
+T = table(idx{1} , reps{:,1});
 T.Properties.VariableNames = varnames(1:2);
 disp(T)
 end
