@@ -110,7 +110,7 @@ for kk = 1:nTrial
     [b,a] = butter(2,head.Fc/(head.Fs/2)); % butterworth filter
     
     head.Pos = filtfilt(b,a,hAngles); % filter head position [deg]
-    head.Pos = head.Pos - mean(head.Pos); % subtract DC component
+    head.Pos = head.Pos; % subtract DC component
     head.Vel = filtfilt(b,a,diff(head.Pos)./(1/head.Fs)); % filtered velocity [deg/s]
     head.Vel = [head.Vel ; head.Vel(end)]; % filtered velocity [deg/s]
     head.VelMed = median(abs(head.Vel)); % velocity median
@@ -512,7 +512,7 @@ end
 figure (500) ; clf
 set(gcf,'Position',[700 300 600 600])
 set(gcf,'Color','w')
-polarhistogram(deg2rad(HEAD.SACD.MAIN(:,9)),100,'FaceColor','g','FaceAlpha',.9); hold on
+% polarhistogram(deg2rad(HEAD.SACD.MAIN(:,9)),100,'FaceColor','g','FaceAlpha',.9); hold on
 polarhistogram(deg2rad(HEAD.SACD.MAIN(:,11)),100,'FaceColor','r','FaceAlpha',.9); hold on
     legend('Start','End','Location','North')
     set(gca,'FontSize',30)
