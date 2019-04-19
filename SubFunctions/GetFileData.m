@@ -3,7 +3,7 @@ function [D,I,N,U] = GetFileData(FILES,varargin)
 %   INPUTS:
 %       FILES       :   file cells in the form "var1_val1_var2_val2_..._varn_valn". The first variable is
 %                       the control group & the second is the repetions, the rest are categories
-%       varargin    :   user can rename the variables by inputting strings equal to the # of variables in
+%       varargin    :   user can rename the variables by inputing strings equal to the # of variables in
 %                       the file name
 %   OUTPUTS:
 %       D           :   raw file data table
@@ -14,12 +14,7 @@ function [D,I,N,U] = GetFileData(FILES,varargin)
 % Let user load files if no input is specified
 if ~nargin
     [files, ~] = uigetfile({'*', 'files'}, 'Select files', 'MultiSelect','on');
-    if ischar(files)
-        FILES{1} = files;
-    else
-        FILES = files';
-    end
-    clear files
+    FILES = cellstr(files)';
 end
 % Get file data
 n.file = length(FILES);
@@ -98,22 +93,37 @@ if nargin>1
     for kk = 1:nargin-1
         varnames{kk} = varargin{kk};
     end
-else
 end
 
 % Find map for condiions
-% cond = length(nn(3:end)); % conditions
-% map = cell(cond,1); % map to store # reps per condtiion per fly
-% for jj = 1:cond
-%     bvals = idx{2+jj:end}; % number of values per condition
-%  	map{jj} = nan(nn(1),length(bvals)); % map for current condtiion
-%     for ii = 1:length(bvals)
-%         for kk = 1:nn(1)
-% %             idx = ii+(length(bvals)-1)/jj;
-%             map{jj}(kk,ii) = sum( (Ind(:,2+jj)==idx{1,2+jj}(ii)) & (Ind(:,1)==kk) ); % # of reps
-%         end
-%     end
-% end
+cond = nn(3:end);
+ncond = length(cond); % # of conditions
+% comb = prod(cond);
+ridx = cell(ncond,1);
+for kk = 1:ncond
+    ridx{kk} = idx{2+kk}';
+end
+allcomb = combvec(ridx{:});
+map = nan(nn(1),size(allcomb,2));
+for kk = 1:nn(1)
+    for ii = 1:size(allcomb,2)
+        rr = ones(size(Ind,1),1);
+        for jj = 1:size(allcomb,1)
+            rr = rr & (Ind(:,2+jj)==allcomb(jj,ii));
+        end
+        map(kk,ii) = sum( rr & Ind(:,1)==kk );
+    end
+end
+
+% Make variable names for map
+mapname = cell(1,size(allcomb,2));
+for kk = 1:size(allcomb,2)
+    valstr = [];
+    for jj = 1:size(allcomb,1)
+       valstr = [valstr  '_' num2str(allcomb(jj,kk))];
+    end
+    mapname{kk} = [strcat(varnames{3:end})  valstr];
+end
 
 % Make table from raw file data
 D = splitvars(table(numdata));
@@ -134,7 +144,7 @@ fprintf('%s: %i \n',varnames{1},nn(1))
 for kk = 3:n.catg
     fprintf('%s: %i \n',varnames{kk},nn(kk))
 end
-T = table(idx{1} , reps{:,1});
-T.Properties.VariableNames = varnames(1:2);
+T = splitvars(table(idx{1} , reps{:,1} , map));
+T.Properties.VariableNames = [varnames(1:2) , mapname];
 disp(T)
 end
