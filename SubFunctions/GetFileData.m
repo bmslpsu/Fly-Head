@@ -95,25 +95,37 @@ if nargin>1
     end
 end
 
-% Find map for condiions
-cond = nn(3:end);
-ncond = length(cond); % # of conditions
-% comb = prod(cond);
-ridx = cell(ncond,1);
-for kk = 1:ncond
+% Find map for conditions
+cond = nn(3:end); % conditions per category
+ncatg = length(cond); % # of categories 
+ridx = cell(ncatg,1);
+for kk = 1:ncatg
     ridx{kk} = idx{2+kk}';
 end
-allcomb = combvec(ridx{:});
-map = nan(nn(1),size(allcomb,2));
-for kk = 1:nn(1)
-    for ii = 1:size(allcomb,2)
+allcomb = combvec(ridx{:}); % all unquie condition combinations
+map = nan(nn(1),size(allcomb,2)); % map to store # reps for each combination
+for kk = 1:nn(1) % per fly
+    % Check all conditions
+    for ii = 1:size(allcomb,2) % each condition
         rr = ones(size(Ind,1),1);
-        for jj = 1:size(allcomb,1)
+        for jj = 1:size(allcomb,1) % each condition
             rr = rr & (Ind(:,2+jj)==allcomb(jj,ii));
         end
-        map(kk,ii) = sum( rr & Ind(:,1)==kk );
+        map(kk,ii) = sum( rr & Ind(:,1)==kk ); % # of reps
     end
 end
+
+% Check if there are at least 3 reps per condition
+mpass = nan(nn(1),1);
+for kk = 1:nn(1)
+    mcheck = min(map(kk,:));
+    if mcheck>=3
+        mpass(kk) = true;
+    else
+        mpass(kk) = false;
+    end
+end
+npass = sum(mpass); % # of successful flies
 
 % Make variable names for map
 mapname = cell(1,size(allcomb,2));
@@ -144,7 +156,8 @@ fprintf('%s: %i \n',varnames{1},nn(1))
 for kk = 3:n.catg
     fprintf('%s: %i \n',varnames{kk},nn(kk))
 end
-T = splitvars(table(idx{1} , reps{:,1} , map));
-T.Properties.VariableNames = [varnames(1:2) , mapname];
+fprintf('Pass: %i \n',npass)
+T = splitvars(table(idx{1} , reps{:,1} , map , mpass));
+T.Properties.VariableNames = [varnames(1:2) , mapname ,'CHECK_3'];
 disp(T)
 end
