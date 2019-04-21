@@ -1,4 +1,4 @@
-classdef Stats
+classdef FlyStats
     %% Stats:
     % 
     properties (GetAccess=private) % properties only avaiable to class
@@ -20,10 +20,12 @@ classdef Stats
         Min         = [];       % min of objects
         Mode        = [];       % mode of objects
         Range       = [];       % range of objects
+        CircMean  	= [];       % circular mean of objects
+        CircSTD   	= [];       % circular std of objects
     end
     
     methods
-        function obj = Stats(obj_cell)
+        function obj = FlyStats(obj_cell)
             [nn] = size(obj_cell); % size of cell array
 
             OBJ = cell(nn(1),nn(2)); % stores object data
@@ -50,14 +52,16 @@ classdef Stats
             end
             
             % Statistics
-            obj.Mean    = cellfun(@(x) mean(x,3),   obj.All,'UniformOutput',false);
-            obj.Median  = cellfun(@(x) median(x,3), obj.All,'UniformOutput',false);
-            obj.STD     = cellfun(@(x) std(x,0,3),  obj.All,'UniformOutput',false);
-            obj.Var     = cellfun(@(x) var(x,0,3),  obj.All,'UniformOutput',false);
-            obj.Max     = cellfun(@(x) max(x,[],3), obj.All,'UniformOutput',false);
-            obj.Min     = cellfun(@(x) min(x,[],3), obj.All,'UniformOutput',false);
-            obj.Mode  	= cellfun(@(x) mode(x,3),   obj.All,'UniformOutput',false);
-            obj.Range 	= cellfun(@(x) range(x,3),  obj.All,'UniformOutput',false);
+            obj.Mean        = cellfun(@(x) mean(x,3),           obj.All,'UniformOutput',false);
+            obj.Median      = cellfun(@(x) median(x,3),         obj.All,'UniformOutput',false);
+            obj.STD         = cellfun(@(x) std(x,0,3),          obj.All,'UniformOutput',false);
+            obj.Var         = cellfun(@(x) var(x,0,3),          obj.All,'UniformOutput',false);
+            obj.Max         = cellfun(@(x) max(x,[],3),         obj.All,'UniformOutput',false);
+            obj.Min         = cellfun(@(x) min(x,[],3),         obj.All,'UniformOutput',false);
+            obj.Mode        = cellfun(@(x) mode(x,3),           obj.All,'UniformOutput',false);
+            obj.Range       = cellfun(@(x) range(x,3),          obj.All,'UniformOutput',false);
+        	obj.CircMean    = cellfun(@(x) circ_mean(x,[],3),   obj.All,'UniformOutput',false);
+            obj.CircSTD     = cellfun(@(x) circ_std(x,[],[],3), obj.All,'UniformOutput',false);
 
         end
     end
