@@ -1,6 +1,10 @@
 classdef Fly
-    %% Fly:
-    % 
+    %% Fly: computes time & frequency domain quantities
+    %   INPUTS:
+    %       data    : raw daa
+    %       time    : time
+    %       Fc      : cutoff frequency
+    %       tt      : interpolated time (optional)
     properties (GetAccess=private) % properties only avaiable to class
     end
     
@@ -80,5 +84,79 @@ classdef Fly
                 [obj.IOMag(:,kk),obj.IOPhase(:,kk)] = Get_IO_Freq(obj.Fv(:,kk),obj.Mag(:,kk),obj.Phase(:,kk),obj.IOFreq);
             end
         end
+        
+        function obj = PlotTime(obj,n)
+            % PloTime: plot time domain data
+            %   INPUTS:
+            %       obj     : object instance
+            %       n       : derivaties of X to plot, default is all
+            
+            if nargin==1
+                n = size(obj.X,2);
+                n = 1:n;
+            end
+            
+            figure ; clf
+            pp = 1;
+            for kk = n
+                subplot(length(n),1,pp) ; hold on ; grid on
+                ylabel(['X_' num2str(kk)])
+             	plot(obj.Time,obj.X(:,kk),'k')
+                
+                if kk==n(end)
+                    xlabel('Time')
+                end
+                
+                pp = pp + 1;
+            end            
+            hold off
+        end 
+        
+	function obj = PlotFreq(obj,n,lim)
+            % PlotFreq: plot frequency domain data
+            %   INPUTS:
+            %       obj     : object instance
+            %       n       : derivaties of X to plot, default is all
+            
+            if nargin==1
+                n = size(obj.X,2);
+                nn = 1:n;
+                lim = max(max(obj.Fv));
+            elseif nargin>=2
+                nn = size(n);
+                lim = max(max(obj.Fv));
+            end
+            
+            figure ; clf
+            pp = 1;
+            for kk = nn
+                subplot(2,length(nn),pp) ; hold on ; grid on
+                title(['X_' num2str(kk)])
+             	plot(obj.Fv,obj.Mag(:,kk),'k')
+                xlim([0 lim])
+                
+                if pp==1
+                    ylabel('Magnitude')
+                end
+                
+                subplot(2,length(nn),pp+n) ; hold on ; grid on
+                ylabel(['X_' num2str(kk)])
+             	plot(obj.Fv,obj.Phase(:,kk),'k')
+             	xlim([0 lim])
+
+                if pp==(n+1)
+                    ylabel('Phase')
+                end
+                
+                if kk==nn(end)
+                    xlabel('Frequency')
+                end
+                
+                pp = pp + 1;
+            end            
+            hold off
+        end 
+        
+        
     end
 end
