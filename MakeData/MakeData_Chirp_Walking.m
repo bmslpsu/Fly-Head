@@ -1,4 +1,4 @@
-function [PAT,HEAD,T,n,unq] = MakeData_Chirp_Walking(rootdir,filename)
+function [PAT,HEAD,D, N, U] = MakeData_Chirp_Walking(rootdir,filename)
 %% MakeData_Chirp_HeadFree: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
 %   INPUTS:
 %       root    : root directory
@@ -12,7 +12,7 @@ function [PAT,HEAD,T,n,unq] = MakeData_Chirp_Walking(rootdir,filename)
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
 % rootdir = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\';
-% filename = 'Chirp_HeadFree_DATA';
+% filename = 'Chirp_Walk_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -21,7 +21,7 @@ function [PAT,HEAD,T,n,unq] = MakeData_Chirp_Walking(rootdir,filename)
 [FILES, PATH] = uigetfile({'*.mat', 'DAQ-files'}, 'Select files', rootdir, 'MultiSelect','on');
 FILES = cellstr(FILES)'; % if only one character array >> store in cell
 
-[O,I,N,U] = GetFileData(FILES,'Fly','Trial','Amp');
+[D,I,N,U] = GetFileData(FILES,'Fly','Trial','Amp');
 
 
 %% Get Data %%
@@ -65,7 +65,6 @@ flyFc = 20;
 span = 20:1:2100;
 
 for kk = 1:N{1,4}
-    data = [];
 	filename = fullfile(PATH,FILES{kk}); % full file name
     load(filename,'FlyState','AI','VidTime') % load in fly kinematics & arena voltages
     %-----------------------------------------------------------------------------------------------------------------------------
@@ -164,22 +163,22 @@ for kk = 1:N{1,1}
         PAT.FlyMed.Vel          {kk,1}(:,jj)	= median(PAT.Vel{kk}{jj},2);
         PAT.FlyMed.Freq         {kk,1}(:,jj)	= median(PAT.Freq{kk}{jj},2);
         PAT.FlyMed.Mag          {kk,1}(:,jj)	= median(PAT.Mag{kk}{jj},2);
-        PAT.FlyMed.Phase     	{kk,1}(:,jj)	= median(PAT.Phase{kk}{jj},2)';
+        PAT.FlyMed.Phase     	{kk,1}(:,jj)	= circ_median(PAT.Phase{kk}{jj},2)';
         % HEAD
         HEAD.FlyMed.Time      	{kk,1}(:,jj)	= median(HEAD.Time{kk}{jj},2);
         HEAD.FlyMed.Pos         {kk,1}(:,jj)	= median(HEAD.Pos{kk}{jj},2);
         HEAD.FlyMed.Vel         {kk,1}(:,jj)	= median(HEAD.Vel{kk}{jj},2);
         HEAD.FlyMed.Freq        {kk,1}(:,jj)	= median(HEAD.Freq{kk}{jj},2);
         HEAD.FlyMed.Mag         {kk,1}(:,jj)	= median(HEAD.Mag{kk}{jj},2);
-        HEAD.FlyMed.Phase       {kk,1}(:,jj)	= median(HEAD.Phase{kk}{jj},2)';
+        HEAD.FlyMed.Phase       {kk,1}(:,jj)	= circ_median(HEAD.Phase{kk}{jj},2)';
         HEAD.FlyMed.COHR.Freq 	{kk,1}(:,jj)	= median(HEAD.COHR.Freq{kk}{jj},2);
         HEAD.FlyMed.COHR.Mag 	{kk,1}(:,jj)	= median(HEAD.COHR.Mag{kk}{jj},2);
         HEAD.FlyMed.GAIN        {kk,1}(:,jj)	= median(HEAD.GAIN{kk}{jj},2);
-        HEAD.FlyMed.PHASE      	{kk,1}(:,jj)	= median(HEAD.PHASE{kk}{jj},2)';
+        HEAD.FlyMed.PHASE      	{kk,1}(:,jj)	= circ_median(HEAD.PHASE{kk}{jj},2)';
         HEAD.FlyMed.Err.Pos    	{kk,1}(:,jj)	= median(HEAD.Err.Pos{kk}{jj},2);
         HEAD.FlyMed.Err.Freq  	{kk,1}(:,jj)	= median(HEAD.Err.Freq{kk}{jj},2);
         HEAD.FlyMed.Err.Mag    	{kk,1}(:,jj)	= median(HEAD.Err.Mag{kk}{jj},2);
-    	HEAD.FlyMed.Err.Phase 	{kk,1}(:,jj)	= median(HEAD.Err.Phase{kk}{jj},2)';
+    	HEAD.FlyMed.Err.Phase 	{kk,1}(:,jj)	= circ_median(HEAD.Err.Phase{kk}{jj},2)';
    
 	% MEAN
     %-----------------------------------------------------------------------------------------------------------------------------
@@ -189,22 +188,22 @@ for kk = 1:N{1,1}
         PAT.FlyMean.Vel      	{kk,1}(:,jj)	= mean(PAT.Vel{kk}{jj},2);
         PAT.FlyMean.Freq     	{kk,1}(:,jj)	= mean(PAT.Freq{kk}{jj},2);
         PAT.FlyMean.Mag       	{kk,1}(:,jj)	= mean(PAT.Mag{kk}{jj},2);
-        PAT.FlyMean.Phase     	{kk,1}(:,jj)	= mean(PAT.Phase{kk}{jj},2)';
+        PAT.FlyMean.Phase     	{kk,1}(:,jj)	= circ_mean(PAT.Phase{kk}{jj},[],2)';
         % HEAD
         HEAD.FlyMean.Time      	{kk,1}(:,jj)	= mean(HEAD.Time{kk}{jj},2);
         HEAD.FlyMean.Pos      	{kk,1}(:,jj)	= mean(HEAD.Pos{kk}{jj},2);
         HEAD.FlyMean.Vel     	{kk,1}(:,jj)	= mean(HEAD.Vel{kk}{jj},2);
         HEAD.FlyMean.Freq     	{kk,1}(:,jj)	= mean(HEAD.Freq{kk}{jj},2);
         HEAD.FlyMean.Mag    	{kk,1}(:,jj)	= mean(HEAD.Mag{kk}{jj},2);
-        HEAD.FlyMean.Phase    	{kk,1}(:,jj)	= mean(HEAD.Phase{kk}{jj},2)';
+        HEAD.FlyMean.Phase    	{kk,1}(:,jj)	= circ_mean(HEAD.Phase{kk}{jj},[],2)';
         HEAD.FlyMean.COHR.Freq 	{kk,1}(:,jj)	= mean(HEAD.COHR.Freq{kk}{jj},2);
         HEAD.FlyMean.COHR.Mag 	{kk,1}(:,jj)	= mean(HEAD.COHR.Mag{kk}{jj},2);
         HEAD.FlyMean.GAIN   	{kk,1}(:,jj)	= mean(HEAD.GAIN{kk}{jj},2);
-        HEAD.FlyMean.PHASE      {kk,1}(:,jj)	= mean(HEAD.PHASE{kk}{jj},2)';
+        HEAD.FlyMean.PHASE      {kk,1}(:,jj)	= circ_mean(HEAD.PHASE{kk}{jj},[],2)';
         HEAD.FlyMean.Err.Pos 	{kk,1}(:,jj)	= mean(HEAD.Err.Pos{kk}{jj},2);
         HEAD.FlyMean.Err.Freq  	{kk,1}(:,jj)	= mean(HEAD.Err.Freq{kk}{jj},2);
         HEAD.FlyMean.Err.Mag   	{kk,1}(:,jj)	= mean(HEAD.Err.Mag{kk}{jj},2);
-    	HEAD.FlyMean.Err.Phase 	{kk,1}(:,jj)	= mean(HEAD.Err.Phase{kk}{jj},2)'; 
+    	HEAD.FlyMean.Err.Phase 	{kk,1}(:,jj)	= circ_mean(HEAD.Err.Phase{kk}{jj},[],2)'; 
     % STD
     %-----------------------------------------------------------------------------------------------------------------------------
         % PATTERN
@@ -213,23 +212,23 @@ for kk = 1:N{1,1}
         PAT.FlySTD.Vel          {kk,1}(:,jj)	= std(PAT.Vel{kk}{jj},0,2);
         PAT.FlySTD.Freq         {kk,1}(:,jj)	= std(PAT.Freq{kk}{jj},0,2);
         PAT.FlySTD.Mag          {kk,1}(:,jj)	= std(PAT.Mag{kk}{jj},0,2);
-        PAT.FlySTD.Phase     	{kk,1}(:,jj)	= std(PAT.Phase{kk}{jj},0,2);
+        PAT.FlySTD.Phase     	{kk,1}(:,jj)	= circ_std(PAT.Phase{kk}{jj},[],[],2);
         % HEAD
         HEAD.FlySTD.Time      	{kk,1}(:,jj)	= std(HEAD.Time{kk}{jj},0,2);
         HEAD.FlySTD.Pos         {kk,1}(:,jj)	= std(HEAD.Pos{kk}{jj},0,2);
         HEAD.FlySTD.Vel         {kk,1}(:,jj)	= std(HEAD.Vel{kk}{jj},0,2);
         HEAD.FlySTD.Freq        {kk,1}(:,jj)	= std(HEAD.Freq{kk}{jj},0,2);
         HEAD.FlySTD.Mag         {kk,1}(:,jj)	= std(HEAD.Mag{kk}{jj},0,2);
-        HEAD.FlySTD.Phase       {kk,1}(:,jj)	= std(HEAD.Phase{kk}{jj},0,2);
+        HEAD.FlySTD.Phase       {kk,1}(:,jj)	= circ_std(HEAD.Phase{kk}{jj},[],[],2);
         HEAD.FlySTD.COHR.Freq 	{kk,1}(:,jj)	= std(HEAD.COHR.Freq{kk}{jj},0,2);
         HEAD.FlySTD.COHR.Mag 	{kk,1}(:,jj)	= std(HEAD.COHR.Mag{kk}{jj},0,2);
         HEAD.FlySTD.GAIN        {kk,1}(:,jj)	= std(HEAD.GAIN{kk}{jj},0,2);
-        HEAD.FlySTD.PHASE      	{kk,1}(:,jj)	= std(HEAD.PHASE{kk}{jj},0,2);
+        HEAD.FlySTD.PHASE      	{kk,1}(:,jj)	= circ_std(HEAD.PHASE{kk}{jj},[],[],2);
 
         HEAD.FlySTD.Err.Pos    	{kk,1}(:,jj)	= std(HEAD.Err.Pos{kk}{jj},0,2);
         HEAD.FlySTD.Err.Freq  	{kk,1}(:,jj)	= std(HEAD.Err.Freq{kk}{jj},0,2);
         HEAD.FlySTD.Err.Mag    	{kk,1}(:,jj)	= std(HEAD.Err.Mag{kk}{jj},0,2);
-    	HEAD.FlySTD.Err.Phase 	{kk,1}(:,jj)	= std(HEAD.Err.Phase{kk}{jj},0,2);          
+    	HEAD.FlySTD.Err.Phase 	{kk,1}(:,jj)	= circ_std(HEAD.Err.Phase{kk}{jj},[],[],2);          
     end
 end
 clear kk jj
@@ -389,7 +388,7 @@ clear kk jj
 %% Save ouputs as structure %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
-save([rootdir 'DATA\' filename '.mat'],'PAT','HEAD','FD','T','n','unq')
+save([rootdir 'DATA\' filename '.mat'],'PAT','HEAD','D','N','U')
 disp('SAVING DONE')
 
 end
