@@ -10,8 +10,8 @@ function [] = MakeFig_Chirp_Walking_Head_Pos_BODE(root,figNum)
 root = 'W:\Research\Walking Chirp mat';
 figNum = 1;
 %---------------------------------------------------------------------------------------------------------------------------------
-filename = 'Chirp_HeadFree_Head_Pos_BODE'; % name of figure to save
-HeadFree = load([root '\Chirp_Walking_DATA.mat'],'PAT','HEAD','D','N', 'U'); % load data structure
+filename = 'Chirp_Walking_Head_Pos_BODE'; % name of figure to save
+Walking = load([root '\Chirp_Walking_DATA.mat'],'PAT','HEAD','D','N', 'U'); % load data structure
 
 FIG = figure (figNum); % figure handle
 FIG.Color = 'w';
@@ -37,12 +37,12 @@ set(gcf,'Position',[200 400 1300 600])
 %     end
 % end
 
-for jj = 1:HeadFree.N{1,3}
+for jj = 1:Walking.N{1,3}
     % MAGNITUDE
-	subplot(2,HeadFree.N{1,3},jj) ; hold on
-    title([num2str(HeadFree.U{1,3}{1}(jj)) '$^{\circ}$'],'Interpreter','latex','FontSize',15)
-        h.patch = PlotPatch(HeadFree.HEAD.GrandMean.GAIN(:,jj),HeadFree.HEAD.GrandSTD.GAIN(:,jj),...
-            HeadFree.HEAD.GrandMean.Freq(:,jj),2,HeadFree.N{1,1},'k',[0.4 0.4 0.6],0.5,2); % all flys
+	subplot(2,Walking.N{1,3},jj) ; hold on
+    title([num2str(Walking.U{1,3}{1}(jj)) '$^{\circ}$'],'Interpreter','latex','FontSize',15)
+        h.patch = PlotPatch(Walking.HEAD.GrandMed.GAIN(:,jj),Walking.HEAD.GrandSTD.GAIN(:,jj),...
+            Walking.HEAD.GrandMean.Freq(:,jj),2,Walking.N{1,1},'k',[0.4 0.4 0.6],0.5,2); % all flys
      	xlim([0.1 12])
         ylim([0 2])
         if jj==1
@@ -55,9 +55,9 @@ for jj = 1:HeadFree.N{1,3}
         xticks(0)
         xticklabels('')
     % PHASE    
-    subplot(2,HeadFree.N{1,3},jj+HeadFree.N{1,3}) ; hold on
-        h.patch = PlotPatch(HeadFree.HEAD.GrandMean.PHASE(:,jj),HeadFree.HEAD.GrandSTD.PHASE(:,jj),...
-            HeadFree.HEAD.GrandMean.Freq(:,jj),2,HeadFree.n.Fly,'k',[0.4 0.4 0.6],0.5,2); % all flys
+    subplot(2,Walking.N{1,3},jj+Walking.N{1,3}) ; hold on
+        h.patch = PlotPatch(Walking.HEAD.GrandMean.PHASE(:,jj),Walking.HEAD.GrandSTD.PHASE(:,jj),...
+            Walking.HEAD.GrandMean.Freq(:,jj),2,Walking.N{1,1},'k',[0.4 0.4 0.6],0.5,2); % all flys
         plot([0 15],[0 0],'Color',[0.5 0.5 0.5])
      	xlim([0.1 12])
         ylim([-4 4])
@@ -79,8 +79,8 @@ for jj = 1:HeadFree.N{1,3}
         
 end
 
-% saveas(FIG,[root 'FIGURE\' filename '.fig']); % save .fig file
-% print(gcf,[root 'FIGURE\' filename],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
-% disp('Saved to')
-% disp(root)
+saveas(FIG,[root '\' filename '.fig']); % save .fig file
+print(gcf,[root '\' filename],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
+disp('Saved to')
+disp(root)
 end

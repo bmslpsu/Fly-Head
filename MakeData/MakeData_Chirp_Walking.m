@@ -12,7 +12,7 @@ function [PAT,HEAD,D, N, U] = MakeData_Chirp_Walking(rootdir,savename)
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
 % rootdir = 'W:\Research\Walking Chirp mat';
-% savename = 'Chirp_Walk_DATA';
+% savename = 'Chirp_Walking_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -62,7 +62,7 @@ for kk = 1:N{1,1}
 end
 % Store data in organized cells
 flyFc = 20;
-span = 20:1:2100;
+span = 20:1:2300;
 
 for kk = 1:N{1,4}
 	filename = fullfile(PATH,FILES{kk}); % full file name
