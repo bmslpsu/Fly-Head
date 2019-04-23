@@ -1,4 +1,4 @@
-function [PAT,HEAD,D, N, U] = MakeData_Chirp_Walking(rootdir,filename)
+function [PAT,HEAD,D, N, U] = MakeData_Chirp_Walking(rootdir,savename)
 %% MakeData_Chirp_HeadFree: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
 %   INPUTS:
 %       root    : root directory
@@ -11,8 +11,8 @@ function [PAT,HEAD,D, N, U] = MakeData_Chirp_Walking(rootdir,filename)
 %       unq   	: unique fields
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
-% rootdir = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\';
-% filename = 'Chirp_Walk_DATA';
+% rootdir = 'W:\Research\Walking Chirp mat';
+% savename = 'Chirp_Walk_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -319,22 +319,22 @@ clear kk jj
     PAT.GrandMed.Vel            = cell2mat((cellfun(@(x) median(x,2),PAT.FlyAmpMed.Vel,'UniformOutput',false))');
     PAT.GrandMed.Freq           = cell2mat((cellfun(@(x) median(x,2),PAT.FlyAmpMed.Freq,'UniformOutput',false))');
     PAT.GrandMed.Mag            = cell2mat((cellfun(@(x) median(x,2),PAT.FlyAmpMed.Mag,'UniformOutput',false))');
-    PAT.GrandMed.Phase          = cell2mat((cellfun(@(x) median(x,2),PAT.FlyAmpMed.Phase,'UniformOutput',false)))';
+    PAT.GrandMed.Phase          = cell2mat((cellfun(@(x) circ_median(x,2),PAT.FlyAmpMed.Phase,'UniformOutput',false)))';
 
     HEAD.GrandMed.Time          = cell2mat((cellfun(@(x) median(x,2),HEAD.FlyAmpMed.Time,'UniformOutput',false))');
     HEAD.GrandMed.Pos           = cell2mat((cellfun(@(x) median(x,2),HEAD.FlyAmpMed.Pos,'UniformOutput',false))');
     HEAD.GrandMed.Vel           = cell2mat((cellfun(@(x) median(x,2),HEAD.FlyAmpMed.Vel,'UniformOutput',false))');
     HEAD.GrandMed.Freq          = cell2mat((cellfun(@(x) median(x,2),HEAD.FlyAmpMed.Freq,'UniformOutput',false))');
     HEAD.GrandMed.Mag           = cell2mat((cellfun(@(x) median(x,2),HEAD.FlyAmpMed.Mag,'UniformOutput',false))');
-    HEAD.GrandMed.Phase      	= cell2mat((cellfun(@(x) median(x,2),HEAD.FlyAmpMed.Phase,'UniformOutput',false)))';
+    HEAD.GrandMed.Phase      	= cell2mat((cellfun(@(x) circ_median(x,2),HEAD.FlyAmpMed.Phase,'UniformOutput',false)))';
     HEAD.GrandMed.COHR.Freq     = cell2mat((cellfun(@(x) median(x,2),HEAD.FlyAmpMed.COHR.Freq,'UniformOutput',false))');
     HEAD.GrandMed.COHR.Mag      = cell2mat((cellfun(@(x) median(x,2),HEAD.FlyAmpMed.COHR.Mag,'UniformOutput',false))');
     HEAD.GrandMed.GAIN      	= cell2mat((cellfun(@(x) median(x,2),HEAD.FlyAmpMed.GAIN,'UniformOutput',false))');
-    HEAD.GrandMed.PHASE      	= cell2mat((cellfun(@(x) median(x,2),HEAD.FlyAmpMed.PHASE,'UniformOutput',false)))';
-    HEAD.GrandMed.Err.Pos      	= cell2mat((cellfun(@(x) median(x,2),HEAD.FlyAmpMed.PHASE,'UniformOutput',false))');
+    HEAD.GrandMed.PHASE      	= cell2mat((cellfun(@(x) circ_median(x,2),HEAD.FlyAmpMed.PHASE,'UniformOutput',false)))';
+    HEAD.GrandMed.Err.Pos      	= cell2mat((cellfun(@(x) median(x,2),HEAD.FlyAmpMed.Err.Pos,'UniformOutput',false))');
     HEAD.GrandMed.Err.Freq    	= cell2mat((cellfun(@(x) median(x,2),HEAD.FlyAmpMed.Err.Freq ,'UniformOutput',false))');
     HEAD.GrandMed.Err.Mag      	= cell2mat((cellfun(@(x) median(x,2),HEAD.FlyAmpMed.Err.Mag ,'UniformOutput',false))');
-    HEAD.GrandMed.Err.Phase    	= cell2mat((cellfun(@(x) median(x,2),HEAD.FlyAmpMed.Err.Phase ,'UniformOutput',false)))';
+    HEAD.GrandMed.Err.Phase    	= cell2mat((cellfun(@(x) circ_median(x,2),HEAD.FlyAmpMed.Err.Phase ,'UniformOutput',false)))';
 
 % MEAN
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -343,22 +343,22 @@ clear kk jj
     PAT.GrandMean.Vel        	= cell2mat((cellfun(@(x) mean(x,2),PAT.FlyAmpMean.Vel,'UniformOutput',false))');
     PAT.GrandMean.Freq       	= cell2mat((cellfun(@(x) mean(x,2),PAT.FlyAmpMean.Freq,'UniformOutput',false))');
     PAT.GrandMean.Mag         	= cell2mat((cellfun(@(x) mean(x,2),PAT.FlyAmpMean.Mag,'UniformOutput',false))');
-    PAT.GrandMean.Phase       	= cell2mat((cellfun(@(x) mean(x,2),PAT.FlyAmpMean.Phase,'UniformOutput',false)'));
+    PAT.GrandMean.Phase       	= cell2mat((cellfun(@(x) circ_mean(x,[],2),PAT.FlyAmpMean.Phase,'UniformOutput',false)'));
 
     HEAD.GrandMean.Time       	= cell2mat((cellfun(@(x) mean(x,2),HEAD.FlyAmpMean.Time,'UniformOutput',false))');
     HEAD.GrandMean.Pos          = cell2mat((cellfun(@(x) mean(x,2),HEAD.FlyAmpMean.Pos,'UniformOutput',false))');
     HEAD.GrandMean.Vel      	= cell2mat((cellfun(@(x) mean(x,2),HEAD.FlyAmpMean.Vel,'UniformOutput',false))');
     HEAD.GrandMean.Freq      	= cell2mat((cellfun(@(x) mean(x,2),HEAD.FlyAmpMean.Freq,'UniformOutput',false))');
     HEAD.GrandMean.Mag      	= cell2mat((cellfun(@(x) mean(x,2),HEAD.FlyAmpMean.Mag,'UniformOutput',false))');
-    HEAD.GrandMean.Phase     	= cell2mat((cellfun(@(x) mean(x,2),HEAD.FlyAmpMean.Phase,'UniformOutput',false)'));
+    HEAD.GrandMean.Phase     	= cell2mat((cellfun(@(x) circ_mean(x,[],2),HEAD.FlyAmpMean.Phase,'UniformOutput',false)'));
     HEAD.GrandMean.COHR.Freq 	= cell2mat((cellfun(@(x) mean(x,2),HEAD.FlyAmpMean.COHR.Freq,'UniformOutput',false))');
     HEAD.GrandMean.COHR.Mag 	= cell2mat((cellfun(@(x) mean(x,2),HEAD.FlyAmpMean.COHR.Mag,'UniformOutput',false))');
     HEAD.GrandMean.GAIN      	= cell2mat((cellfun(@(x) mean(x,2),HEAD.FlyAmpMean.GAIN,'UniformOutput',false))');
-    HEAD.GrandMean.PHASE      	= cell2mat((cellfun(@(x) mean(x,2),HEAD.FlyAmpMean.PHASE,'UniformOutput',false)'));
-    HEAD.GrandMean.Err.Pos    	= cell2mat((cellfun(@(x) mean(x,2),HEAD.FlyAmpMean.PHASE,'UniformOutput',false))');
+    HEAD.GrandMean.PHASE      	= cell2mat((cellfun(@(x) circ_mean(x,[],2),HEAD.FlyAmpMean.PHASE,'UniformOutput',false)'));
+    HEAD.GrandMean.Err.Pos    	= cell2mat((cellfun(@(x) mean(x,2),HEAD.FlyAmpMean.Err.Pos,'UniformOutput',false))');
     HEAD.GrandMean.Err.Freq    	= cell2mat((cellfun(@(x) mean(x,2),HEAD.FlyAmpMean.Err.Freq ,'UniformOutput',false))');
     HEAD.GrandMean.Err.Mag     	= cell2mat((cellfun(@(x) mean(x,2),HEAD.FlyAmpMean.Err.Mag ,'UniformOutput',false))');
-    HEAD.GrandMean.Err.Phase   	= cell2mat((cellfun(@(x) mean(x,2),HEAD.FlyAmpMean.Err.Phase ,'UniformOutput',false)'));
+    HEAD.GrandMean.Err.Phase   	= cell2mat((cellfun(@(x) circ_mean(x,[],2),HEAD.FlyAmpMean.Err.Phase ,'UniformOutput',false)'));
 
    
 % STD
@@ -368,27 +368,27 @@ clear kk jj
     PAT.GrandSTD.Vel            = cell2mat((cellfun(@(x) std(x,0,2),PAT.FlyAmpMed.Vel,'UniformOutput',false))');
     PAT.GrandSTD.Freq           = cell2mat((cellfun(@(x) std(x,0,2),PAT.FlyAmpMed.Freq,'UniformOutput',false))');
     PAT.GrandSTD.Mag            = cell2mat((cellfun(@(x) std(x,0,2),PAT.FlyAmpMed.Mag,'UniformOutput',false))');
-    PAT.GrandSTD.Phase          = cell2mat((cellfun(@(x) std(x,0,2),PAT.FlyAmpMed.Phase,'UniformOutput',false))');
+    PAT.GrandSTD.Phase          = cell2mat((cellfun(@(x) circ_std(x,[],[],2),PAT.FlyAmpMed.Phase,'UniformOutput',false))');
 
     HEAD.GrandSTD.Time          = cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.Time,'UniformOutput',false))');
     HEAD.GrandSTD.Pos           = cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.Pos,'UniformOutput',false))');
     HEAD.GrandSTD.Vel           = cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.Vel,'UniformOutput',false))');
     HEAD.GrandSTD.Freq          = cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.Freq,'UniformOutput',false))');
     HEAD.GrandSTD.Mag           = cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.Mag,'UniformOutput',false))');
-    HEAD.GrandSTD.Phase      	= cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.Phase,'UniformOutput',false))');
+    HEAD.GrandSTD.Phase      	= cell2mat((cellfun(@(x) circ_std(x,[],[],2),HEAD.FlyAmpMed.Phase,'UniformOutput',false))');
     HEAD.GrandSTD.COHR.Freq     = cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.COHR.Freq,'UniformOutput',false))');
     HEAD.GrandSTD.COHR.Mag      = cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.COHR.Mag,'UniformOutput',false))');
     HEAD.GrandSTD.GAIN      	= cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.GAIN,'UniformOutput',false))');
-    HEAD.GrandSTD.PHASE      	= cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.PHASE,'UniformOutput',false))');
-    HEAD.GrandSTD.Err.Pos      	= cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.PHASE,'UniformOutput',false))');
+    HEAD.GrandSTD.PHASE      	= cell2mat((cellfun(@(x) circ_std(x,[],[],2),HEAD.FlyAmpMed.PHASE,'UniformOutput',false))');
+    HEAD.GrandSTD.Err.Pos      	= cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.Err.Pos,'UniformOutput',false))');
     HEAD.GrandSTD.Err.Freq    	= cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.Err.Freq ,'UniformOutput',false))');
     HEAD.GrandSTD.Err.Mag      	= cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.Err.Mag ,'UniformOutput',false))');
-    HEAD.GrandSTD.Err.Phase    	= cell2mat((cellfun(@(x) std(x,0,2),HEAD.FlyAmpMed.Err.Phase ,'UniformOutput',false))');
+    HEAD.GrandSTD.Err.Phase    	= cell2mat((cellfun(@(x) circ_std(x,[],[],2),HEAD.FlyAmpMed.Err.Phase ,'UniformOutput',false))');
 
 %% Save ouputs as structure %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
-save([rootdir 'DATA\' filename '.mat'],'PAT','HEAD','D','N','U')
+save([rootdir '\' savename '.mat'],'PAT','HEAD','D','N','U');
 disp('SAVING DONE')
 
 end
