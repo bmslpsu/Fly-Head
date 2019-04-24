@@ -7,7 +7,7 @@ daqreset
 imaqreset
 %% Set directories & experimental paramters %%
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'D:\Experiment_HeadExcitation\SOS\';
+root = 'D:\EXPERIMENTS\Experiment_SOS\';
 viddir = [root 'Vid\'];
 
 % EXPERIMENTAL PARAMETERS
@@ -44,7 +44,7 @@ ch.AO.Name = 'Trigger';
 s.Rate = 5000; % samples per second
 s.IsContinuous = false;	% continuous data collection until stopped
 
-FrameRate = 200; % camera frame rate
+FrameRate = 100; % camera frame rate
 nFrame = FrameRate * n_tracktime; % # of frames to log
 
 t = 0:1/s.Rate:n_tracktime;
@@ -74,7 +74,7 @@ vid.TriggerRepeat = nFrame-1; % # triggers
 srcObj1 = get(vid, 'Source');
 srcObj1.Gamma = 0.386367797851563;
 srcObj1.GainRaw = 964;
-srcObj1.ExposureTimeAbs = 4000; % 200 Hz frame rate
+srcObj1.ExposureTimeAbs = 8000;
 % srcObj1(1).ExposureMode = 'Timed'; % exposure time controlled by pulse width
 
 % Trigger config
@@ -87,7 +87,7 @@ set(srcObj1(1),'TriggerSelector','FrameStart');
 %% EXPERIMENT LOOP %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Start Experiment:')
-for ii =  1:n_trial  
+for ii = 1:n_trial  
    
     disp('Trial')
     disp(num2str(ii));  % print counter to command line
@@ -113,7 +113,7 @@ for ii =  1:n_trial
     % EXPERIMENT SETUP %
     disp('Play Stimulus: ')
     Panel_com('set_pattern_id', 2); pause(n_pause)                	% set pattern to "Pattern_spatFreq_22_30_60"
-    Panel_com('set_position',[1 , 2]); pause(n_pause)             	% set starting position (xpos,ypos)
+    Panel_com('set_position',[1 , 4]); pause(n_pause)             	% set starting position (xpos,ypos)
     Panel_com('set_posfunc_id',[1, 1]); pause(n_pause)              % arg1 = channel (x=1,y=2); arg2 = funcid
 	Panel_com('set_funcX_freq', 200); pause(n_pause)                % 100Hz update rate for x-channel
     Panel_com('set_funcY_freq', 50); pause(n_pause)              	% 50Hz update rate for y-channel
