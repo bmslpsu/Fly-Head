@@ -3,23 +3,15 @@ function [] = Experiment_SOS(Fn)
 % Fn is the fly number
 % Experiment Template written by Ben Cellini
 % This code is written for Panel Controller v3 and NiDAQ seesion mode
-
-% clear all ; clc
-% close all
 daqreset
 imaqreset
-
-% Fn = 222;
-
 %% Set directories & experimental paramters %%
 %---------------------------------------------------------------------------------------------------------------------------------
-%rootdir = uigetdir({}, 'Select folder to save data'); % define directory to save file
-
 root = 'D:\Experiment_HeadExcitation\SOS\';
 viddir = [root 'Vid\'];
 
 % EXPERIMENTAL PARAMETERS
-n_tracktime = 20;	% length(func)/fps; seconds for each EXPERIMENT
+n_tracktime = 21;	% length(func)/fps; seconds for each EXPERIMENT
 n_resttime = 1;     % seconds for each REST
 n_pause = 0.2;      % seconds for each pause between panel commands
 n_trial = 20;     	% # of repetitions
