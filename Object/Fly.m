@@ -31,17 +31,19 @@ classdef Fly
         STD             = []        % std of data
         AbsMean         = [];       % mean of absolute value of data
         AbsSTD          = [];       % STD of absolute value of data
-
+        SacdThresh     	= [];       % saccade detetcion threshold
+    	SacdCount      	= [];       % saccades in data set
+        SacdRate      	= [];       % saccade rate
+        SACD            = [];       % saccade data table
     end
     
     methods
-        function obj = Fly(data,time,Fc,varargin)
+        function obj = Fly(data,time,Fc,tt)
             obj.Fc = Fc; % cutoff frequency
             obj.X = data(:); % store data
             obj.Time = time(:); % store time
             
             if nargin==4 % interpolate if new time vector is input
-                tt = varargin{1};
                 obj.X = interp1(obj.Time, obj.X , tt, 'nearest'); % interpolate to match new time
                 obj.Time = tt;
                 if min(tt)<min(obj.Time) || max(tt)<max(obj.Time)
@@ -57,16 +59,17 @@ classdef Fly
             
         end
         
-        function obj = Calc_Main(obj)
-            % Calc_Main: defualt calculations
+        function obj = Calc_Main(obj,IOFreq)           
+            % Calc_Main: default calculations
             obj.n      	= length(obj.Time);                             % # of data points
             obj.Ts     	= mean(diff(obj.Time));                         % sampling Time
             obj.Fs   	= 1/obj.Ts;                                     % sampling frequency
             [b,a]      	= butter(2,obj.Fc/(obj.Fs/2),'low');            % 2nd-order low-pass butterworth filter
             obj.X(:,1) 	= filtfilt(b,a,obj.X);                          % filtered data
-            obj.X(:,2)	= filtfilt(b,a,[diff(obj.X(:,1))/obj.Ts ; 0]);	% 1st derivative of data
-            obj.X(:,3)	= filtfilt(b,a,[diff(obj.X(:,2))/obj.Ts ; 0]);	% 2nd derivative of data
+            obj.X(:,2)	= [diff(obj.X(:,1))/obj.Ts ; 0];                % 1st derivative of data
+            obj.X(:,3)	= [diff(obj.X(:,2))/obj.Ts ; 0];                % 2nd derivative of data
             
+            % Stats
             for kk = 1:size(obj.X,2)
                 obj.Mean(1,kk)     	= mean(obj.X(:,kk));             	% mean: data & derivatives
             	obj.AbsMean(1,kk)	= mean(abs(obj.X(:,kk)));          	% mean: absolute value of data & derivatives
@@ -75,6 +78,23 @@ classdef Fly
                 
                 [obj.Fv(:,kk),obj.Mag(:,kk),obj.Phase(:,kk)] = FFT(obj.Time,obj.X(:,kk)); % transform data into frequency domain
             end
+            
+            % Input-Output Frequency data
+            if nargin==1
+                res = round(obj.Time(end))/100;
+                IOFreq = res:res:obj.Fv(end); % default
+                IOFreq = 1;
+            end
+            
+            obj = IO_Freq(obj,IOFreq);
+            
+            % Saccade detetcion and data          
+            [Sacd,thresh,count,rate] = SacdDetect(obj.X(:,1),obj.Time,2.5,false);
+            
+            obj.SacdThresh	= thresh;
+            obj.SacdCount   = count;
+            obj.SacdRate    = rate;
+            obj.SACD        = mean(table2array(Sacd),1);
         end
             
         function obj = IO_Freq(obj,IOFreq)
@@ -85,15 +105,15 @@ classdef Fly
             end
         end
         
-        function obj = PlotTime(obj,n)
+        
+        function [] = PlotTime(obj,n)
             % PloTime: plot time domain data
             %   INPUTS:
             %       obj     : object instance
             %       n       : derivaties of X to plot, default is all
             
             if nargin==1
-                n = size(obj.X,2);
-                n = 1:n;
+                n = 1:size(obj.X,2);
             end
             
             figure ; clf
@@ -112,45 +132,78 @@ classdef Fly
             hold off
         end 
         
-	function obj = PlotFreq(obj,n,lim)
-            % PlotFreq: plot frequency domain data
+ 	function [] = PlotSacd(obj)
+            % PloTime: plot time domain data
             %   INPUTS:
             %       obj     : object instance
             %       n       : derivaties of X to plot, default is all
             
+            [Sacd,thresh] = SacdDetect(obj.X(:,1),obj.Time,2.5,true);
+                       
+            figure('Name','Saccade') ; clf
+            
+                % Position
+                subplot(2,1,1) ; hold on ; grid on
+                    ylabel('X_1')
+                    h.pos   = plot(obj.Time,obj.X(:,1),'k');
+                    h.start = plot(Sacd{:,7},Sacd{:,10},'g*'); % start
+                    h.peak  = plot(Sacd{:,8},Sacd{:,11},'b*'); % peak
+                    h.end   = plot(Sacd{:,9},Sacd{:,12},'r*'); % end
+                    plot(obj.Time, zeros(obj.n,1),'--','Color',[0.0 0.5 0.5],'LineWidth',1); % upper detection threshold
+                    legend([h.start h.peak h.end],'Start','Peak','End')
+             	% Velocity
+                subplot(2,1,2) ; hold on ; grid on
+                    ylabel('X_2')
+                    plot(obj.Time,obj.X(:,2),'k')
+                    plot(Sacd{:,7},Sacd{:,13},'g*') % start
+                    plot(Sacd{:,8},Sacd{:,14},'b*') % peak
+                    plot(Sacd{:,9},Sacd{:,15},'r*') % end
+                    plot(obj.Time, thresh*ones(obj.n,1),'m--','LineWidth',2); % upper detection threshold
+                    plot(obj.Time,-thresh*ones(obj.n,1),'m--','LineWidth',2); % lower detection threshold
+                    xlabel('Time')
+                
+            hold off
+    end
+    
+	function [] = PlotFreq(obj,n,lim)
+            % PlotFreq: plot frequency domain data
+            %   INPUTS:
+            %       obj     : object instance
+            %       n       : derivaties of X to plot, default is all
+            %       lim     : x-limit
             if nargin==1
-                n = size(obj.X,2);
-                nn = 1:n;
+                n   = 1:size(obj.X,2); % all is default
                 lim = max(max(obj.Fv));
-            elseif nargin>=2
-                nn = size(n);
+            elseif nargin<=2
                 lim = max(max(obj.Fv));
             end
             
-            figure ; clf
+            nn  = length(n);
+
+          	 figure('Name','Frequency Domain') ; clf
             pp = 1;
-            for kk = nn
-                subplot(2,length(nn),pp) ; hold on ; grid on
+            for kk = n
+                subplot(2,nn,pp) ; hold on ; grid on
                 title(['X_' num2str(kk)])
              	plot(obj.Fv,obj.Mag(:,kk),'k')
+                plot(obj.IOFreq,obj.IOMag(:,kk),'r*')
                 xlim([0 lim])
                 
                 if pp==1
                     ylabel('Magnitude')
                 end
                 
-                subplot(2,length(nn),pp+n) ; hold on ; grid on
-                ylabel(['X_' num2str(kk)])
+                subplot(2,nn,pp+nn) ; hold on ; grid on
+                ylabel('Phase')
              	plot(obj.Fv,obj.Phase(:,kk),'k')
+                plot(obj.IOFreq,obj.IOPhase(:,kk),'r*')
              	xlim([0 lim])
 
                 if pp==(n+1)
                     ylabel('Phase')
                 end
                 
-                if kk==nn(end)
-                    xlabel('Frequency')
-                end
+             	xlabel('Frequency')
                 
                 pp = pp + 1;
             end            
