@@ -116,10 +116,11 @@ for kk = 1:nn(1) % per fly
 end
 
 % Check if there are at least 3 reps per condition
+minTrial = 3;
 mpass = nan(nn(1),1);
 for kk = 1:nn(1)
     mcheck = min(map(kk,:));
-    if mcheck>=3
+    if mcheck>=minTrial
         mpass(kk) = true;
     else
         mpass(kk) = false;
@@ -158,6 +159,6 @@ for kk = 3:n.catg
 end
 fprintf('Pass: %i \n',npass)
 T = splitvars(table(idx{1} , reps{:,1} , map , mpass));
-T.Properties.VariableNames = [varnames(1:2) , mapname ,'CHECK_3'];
+T.Properties.VariableNames = [varnames(1:2) , mapname ,['CHECK_' num2str(minTrial)]];
 disp(T)
 end

@@ -6,8 +6,8 @@ function [] = MakeData_Chirp_HeadFree_TEST(rootdir,filename)
 %       PAT     : pattern structure
 %       WING   	: wings structure
 %---------------------------------------------------------------------------------------------------------------------------------
-rootdir = 'F:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\';
-% filename = 'Chirp_HeadFree_DATA';
+rootdir = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\';
+filename = 'Chirp_HeadFree_DATA_TEST';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -21,7 +21,7 @@ FILES = cellstr(FILES)';
 
 PATH.daq = root.daq;
 
-[~,I,N,~] = GetFileData(FILES);
+[~,I,N,U] = GetFileData(FILES,'Fly','Trial','Amp');
 
 clear rootdir
 %% Get Data %%
@@ -127,4 +127,9 @@ for jj = 1:N{1,3}
     GRAND{jj} = GrandStats(FlyGroup{jj});
 end
 clear jj
+%% SAVE %%
+%---------------------------------------------------------------------------------------------------------------------------------
+disp('Saving...')
+save([PATH.daq 'DATA\' filename '.mat'],'ALL','TRIAL','FLY','GRAND','U','N','-v7.3')
+disp('SAVING DONE')
 end

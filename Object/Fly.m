@@ -116,7 +116,7 @@ classdef Fly
                 n = 1:size(obj.X,2);
             end
             
-            figure ; clf
+            figure('Name','Time Domain') ; clf
             pp = 1;
             for kk = n
                 subplot(length(n),1,pp) ; hold on ; grid on

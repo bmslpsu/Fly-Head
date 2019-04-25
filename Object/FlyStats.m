@@ -64,5 +64,14 @@ classdef FlyStats
             obj.CircSTD     = cellfun(@(x) circ_std(x,[],[],3), obj.All,'UniformOutput',false);
 
         end
+        
+        function [] = PlotTime(obj)
+            figure('Name','Time Domain') ; clf
+            for kk = 1
+                
+            end
+            
+        end
+        
     end
 end
