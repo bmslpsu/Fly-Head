@@ -127,6 +127,7 @@ for kk = 1:nn(1)
     end
 end
 npass = sum(mpass); % # of successful flies
+mpass = logical(mpass);
 
 % Make variable names for map
 mapname = cell(1,size(allcomb,2));
@@ -151,14 +152,20 @@ N.Properties.VariableNames = [varnames,'file'];
 U = splitvars(table(unq));
 U.Properties.VariableNames = varnames;
 
-
 fprintf('Files: %i \n',n.file)
 fprintf('%s: %i \n',varnames{1},nn(1))
 for kk = 3:n.catg
     fprintf('%s: %i \n',varnames{kk},nn(kk))
 end
 fprintf('Pass: %i \n',npass)
-T = splitvars(table(idx{1} , reps{:,1} , map , mpass));
-T.Properties.VariableNames = [varnames(1:2) , mapname ,['CHECK_' num2str(minTrial)]];
+
+if isempty(map)
+    mpass = reps{:,1} >= minTrial;
+    T = splitvars(table(idx{1} , reps{:,1} , mpass));
+    T.Properties.VariableNames = [varnames(1:2) , ['CHECK_' num2str(minTrial)]];
+else
+    T = splitvars(table(idx{1} , reps{:,1} , map , mpass));
+    T.Properties.VariableNames = [varnames(1:2) , mapname ,['CHECK_' num2str(minTrial)]];
+end
 disp(T)
 end

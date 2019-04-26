@@ -11,11 +11,6 @@ function [SACD,thresh,count,rate] = SacdDetect(fly,tt,N,debug)
 %       count 	: # of saccades
 %       rate 	: saccades/s
 %---------------------------------------------------------------------------------------------------------------------------------
-%%
-% N = 2.5;
-% debug = true;
-%%
-%---------------------------------------------------------------------------------------------------------------------------------
 time.data       = tt;                               % time vector
 n               = length(time.data);                % # of data points
 Ts              = mean(diff(time.data));        	% sampling time
@@ -29,6 +24,10 @@ thresh          = vel.mean + N*vel.std;             % saccade detetcion threshol
 svel            = avel.data;                        % preallocate velocity data above threshold
 
 svel(avel.data<thresh) = 0;                         % velocity data above threshold
+
+% Variable names
+varnames = {'Duration','Amplitude','Direction','StartIdx','PeakIdx','EndIdx','StartTime','PeakTime','EndTime','StartPos','PeakPos','EndPos'...
+            'StartVel','PeakVel','EndVel','StartAbsVel','PeakAbsVel','EndAbsVel'};
 
 % Find velcocity spikes
 [avel.pks, loc.pks] = findpeaks(svel,'MINPEAKDISTANCE',40); % find local maxima
@@ -80,39 +79,20 @@ if ~isempty(I)
     pos.amp         = pos.end - pos.start;
     time.dur        = time.end - time.start;
     dir             = sign(vel.pks);
-else
-    % Stats
-    avel.start  	= [];
-    avel.end        = [];
-    vel.start       = [];
-    vel.end         = [];
-    pos.start       = [];
-    pos.end         = [];
-    time.start   	= [];
-    time.end      	= [];
-    pos.amp         = [];
-    time.dur        = [];
-    dir             = [];   
     
-    avel.pks        = [];
- 	vel.pks         = [];
-    pos.pks         = [];
-    time.pks        = [];
+    % All data
+    DATA = [time.dur , pos.amp , dir, loc.start , loc.pks , loc.end , time.start , time.pks , time.end , pos.start , pos.pks , pos.end ,...
+            vel.start , vel.pks , vel.end , avel.start , avel.pks , avel.end];
+	
+else % no saccades
+    DATA    = nan(1,length(varnames));
+    count   = nan;
+    rate    = nan;
 end
-
-
-% All data
-DATA = [time.dur , pos.amp , dir, loc.start , loc.pks , loc.end , time.start , time.pks , time.end , pos.start , pos.pks , pos.end ,...
-        vel.start , vel.pks , vel.end , avel.start , avel.pks , avel.end];
-
-% Variable names
-varnames = {'Duration','Amplitude','Direction','StartIdx','PeakIdx','EndIdx','StartTime','PeakTime','EndTime','StartPos','PeakPos','EndPos'...
-           	'StartVel','PeakVel','EndVel','StartAbsVel','PeakAbsVel','EndAbsVel'};
 
 % Saccade table
 SACD = splitvars(table(DATA));
 SACD.Properties.VariableNames = varnames;
-
 
 % Debug plots
 if debug

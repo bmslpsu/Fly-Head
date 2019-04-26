@@ -38,24 +38,26 @@ classdef Fly
     end
     
     methods
-        function obj = Fly(data,time,Fc,tt)
+        function obj = Fly(data,time,Fc,IOFreq,tt)
             obj.Fc = Fc; % cutoff frequency
             obj.X = data(:); % store data
             obj.Time = time(:); % store time
             
-            if nargin==4 % interpolate if new time vector is input
+            if nargin==3
+                IOFreq = 0;
+            elseif nargin==5 % interpolate if new time vector is input
                 obj.X = interp1(obj.Time, obj.X , tt, 'nearest'); % interpolate to match new time
                 obj.Time = tt;
                 if min(tt)<min(obj.Time) || max(tt)<max(obj.Time)
                    error('Interpolation time outside of range')
                 end
-            elseif nargin>4
+            elseif nargin>5
                 error('Too many inputs')
-            elseif nargin<2
+            elseif nargin<3
                 error('Not enough many inputs')
             end 
             
-            obj = Calc_Main(obj); % run defualt calculations
+            obj = Calc_Main(obj,IOFreq); % run defualt calculations
             
         end
         
@@ -79,13 +81,7 @@ classdef Fly
                 [obj.Fv(:,kk),obj.Mag(:,kk),obj.Phase(:,kk)] = FFT(obj.Time,obj.X(:,kk)); % transform data into frequency domain
             end
             
-            % Input-Output Frequency data
-            if nargin==1
-                res = round(obj.Time(end))/100;
-                IOFreq = res:res:obj.Fv(end); % default
-                IOFreq = 1;
-            end
-            
+            % Input-Output frequency data           
             obj = IO_Freq(obj,IOFreq);
             
             % Saccade detetcion and data          
@@ -138,19 +134,20 @@ classdef Fly
             %       obj     : object instance
             %       n       : derivaties of X to plot, default is all
             
-            [Sacd,thresh] = SacdDetect(obj.X(:,1),obj.Time,2.5,true);
+            [Sacd,thresh] = SacdDetect(obj.X(:,1),obj.Time,2.5,false);
                        
             figure('Name','Saccade') ; clf
             
                 % Position
                 subplot(2,1,1) ; hold on ; grid on
                     ylabel('X_1')
+                    plot(obj.Time, zeros(obj.n,1),'--','Color',[0.0 0.5 0.5],'LineWidth',1); % upper detection threshold
                     h.pos   = plot(obj.Time,obj.X(:,1),'k');
                     h.start = plot(Sacd{:,7},Sacd{:,10},'g*'); % start
                     h.peak  = plot(Sacd{:,8},Sacd{:,11},'b*'); % peak
                     h.end   = plot(Sacd{:,9},Sacd{:,12},'r*'); % end
-                    plot(obj.Time, zeros(obj.n,1),'--','Color',[0.0 0.5 0.5],'LineWidth',1); % upper detection threshold
                     legend([h.start h.peak h.end],'Start','Peak','End')
+                    xlim([obj.Time(1) obj.Time(end)])
              	% Velocity
                 subplot(2,1,2) ; hold on ; grid on
                     ylabel('X_2')
@@ -160,8 +157,9 @@ classdef Fly
                     plot(Sacd{:,9},Sacd{:,15},'r*') % end
                     plot(obj.Time, thresh*ones(obj.n,1),'m--','LineWidth',2); % upper detection threshold
                     plot(obj.Time,-thresh*ones(obj.n,1),'m--','LineWidth',2); % lower detection threshold
+                	plot(obj.Time, zeros(obj.n,1),'--','Color',[0.0 0.5 0.5],'LineWidth',1); % upper detection threshold
                     xlabel('Time')
-                
+                    xlim([obj.Time(1) obj.Time(end)])
             hold off
     end
     
