@@ -6,7 +6,7 @@ function [] = MakeData_SOS_HeadFree_TEST(rootdir,filename)
 %       PAT     : pattern structure
 %       WING   	: wings structure
 %---------------------------------------------------------------------------------------------------------------------------------
-% rootdir = 'H:\EXPERIMENTS\Experiment_SOS\';
+% rootdir = 'F:\EXPERIMENTS\Experiment_SOS\';
 % filename = 'SOS_HeadFree_DATA_TEST';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -21,17 +21,18 @@ FILES = cellstr(FILES)';
 
 PATH.daq = root.daq;
 
-[D,I,N,U] = GetFileData(FILES);
+[D,I,N,U,T] = GetFileData(FILES);
 
 clear rootdir
 %% Get Data %%
 %---------------------------------------------------------------------------------------------------------------------------------
 IOFreq = 0.1*round(linspace(0.1,8,10)/0.1);
 disp('Loading...')
-ALL 	= [table2cell(I), cell([N{1,end},4])]; % cell array to store all data objects
+ALL 	= cell([N{1,end},9]); % cell array to store all data objects
 TRIAL  	= cell(N{1,1},1);
-n.catg = size(N,2) - 1;
+n.catg  = size(N,2) - 1;
 pp = 0;
+span = 1:2000;
 for kk = 1:N{1,end}
     disp(kk)
     % Load HEAD & DAQ data
@@ -49,9 +50,9 @@ for kk = 1:N{1,end}
     end
     %-----------------------------------------------------------------------------------------------------------------------------
     % Get head data
-    head.Time = t_v;
+    head.Time = t_v(span);
     head.Pos = hAngles - mean(hAngles);
-    Head = Fly(head.Pos,head.Time,20,IOFreq); % head object
+    Head = Fly(head.Pos(span),head.Time,20,IOFreq); % head object
   	%-----------------------------------------------------------------------------------------------------------------------------
     % Get wing data from DAQ
     wing.Time       = t_p; % wing time [s]
@@ -97,7 +98,11 @@ for kk = 1:N{1,end}
         TRIAL{I{kk,1}}{qq+1,ww} = vars{ww};
     end
 end
-clear jj ii kk pp qq ww n a b t_p t_v hAngles data head wing pat bode tt Head Pat Wing Err pat2head err2wing head2wing vars root
+
+ALL( all(cellfun(@isempty, ALL),2), : ) = []; % get rid of emtpty rows becuase of low WBF
+
+clear jj ii kk pp qq ww n a b spant_p t_v hAngles data head wing pat bode tt ...
+    Head Pat Wing Err pat2head err2wing head2wing vars root
 disp('LOADING DONE')
 
 %% Fly Statistics %%
@@ -115,17 +120,10 @@ GRAND = cell(1,size(FLY,2));
 for ii = 1:size(FLY,2)
     GRAND{ii} = GrandStats(FLY(:,ii));
 end
-
-%%
-
-% plot(GRAND{5}.Mean{2}{4},GRAND{5}.Mean{2}{5}(:,1))
-% ylim([0 1.5])
-plot(GRAND{2}.Mean{2}{5},GRAND{2}.Mean{2}{6}(:,1))
-
-
+clear ii
 %% SAVE %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
-save([PATH.daq 'DATA\' filename '.mat'],'ALL','TRIAL','FLY','GRAND','U','N','-v7.3')
+save([PATH.daq 'DATA\' filename '.mat'],'ALL','TRIAL','FLY','GRAND','U','N','T','-v7.3')
 disp('SAVING DONE')
 end

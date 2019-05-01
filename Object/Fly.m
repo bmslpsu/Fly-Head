@@ -28,8 +28,10 @@ classdef Fly
         IOMag           = [];       % magnitude at all frequencies
         IOPhase       	= [];       % phase at all frequencies
         Mean            = [];       % mean of data
+        Med          	= [];       % median of data
         STD             = []        % std of data
         AbsMean         = [];       % mean of absolute value of data
+     	AbsMed        	= [];       % median of absolute value of data
         AbsSTD          = [];       % STD of absolute value of data
         SacdThresh     	= [];       % saccade detetcion threshold
     	SacdCount      	= [];       % saccades in data set
@@ -75,6 +77,8 @@ classdef Fly
             for kk = 1:size(obj.X,2)
                 obj.Mean(1,kk)     	= mean(obj.X(:,kk));             	% mean: data & derivatives
             	obj.AbsMean(1,kk)	= mean(abs(obj.X(:,kk)));          	% mean: absolute value of data & derivatives
+                obj.Med(1,kk)     	= median(obj.X(:,kk));             	% median: data & derivatives
+            	obj.AbsMed(1,kk)	= median(abs(obj.X(:,kk)));        	% median: absolute value of data & derivatives
                 obj.STD(1,kk)     	= std(obj.X(:,kk));                	% std: data & derivatives
                 obj.AbsSTD(1,kk)   	= std(obj.X(:,kk));               	% std: absolute value of data & derivatives
                 
@@ -85,7 +89,7 @@ classdef Fly
             obj = IO_Freq(obj,IOFreq);
             
             % Saccade detetcion and data          
-            [Sacd,thresh,count,rate] = SacdDetect(obj.X(:,1),obj.Time,2.5,false);
+            [Sacd,thresh,count,rate] = SacdDetect(obj.X(:,1),obj.Time,2.75,false);
             
             obj.SacdThresh	= thresh;
             obj.SacdCount   = count;

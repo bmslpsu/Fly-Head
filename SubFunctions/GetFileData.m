@@ -1,4 +1,4 @@
-function [D,I,N,U] = GetFileData(FILES,varargin)
+function [D,I,N,U,T] = GetFileData(FILES,varargin)
 %% GetFileData: Parse file name data and returns tables with relevant information, lets user load files if no input is specified
 %   INPUTS:
 %       FILES       :   file cells in the form "var1_val1_var2_val2_..._varn_valn". The first variable is
@@ -16,6 +16,7 @@ if ~nargin
     [files, ~] = uigetfile({'*', 'files'}, 'Select files', 'MultiSelect','on');
     FILES = cellstr(files)';
 end
+
 % Get file data
 n.file = length(FILES);
 [~,filename,~] = fileparts(FILES{1}); % remove file extension from file name
@@ -32,7 +33,8 @@ for kk = 1:n.file
         vardata{kk,jj} = filedata{jj};
     end
 end
-% Compare whther data is string or number >> determine if category or value
+
+% Compare whether data is string or number >> determine if category or value
 log = nan(1,n.vars);
 for ii = 1:n.vars
     log(ii) = isnan(str2double(vardata{1,ii}));
@@ -51,12 +53,13 @@ loc.catg = loc.catg(1:length(loc.val)); % if there are more categories than valu
 n.catg = length(loc.val); % # of categories
 n.val = length(loc.catg); % # of values
 if length(varargin)>n.catg
-   error('More variable names than file variables') 
+   error('More variable names than variables') 
 end
 catg = cell(1,length(loc.catg)); % cell to store category names
 for ii = 1:n.val
     catg{ii} = vardata{1,loc.catg(ii)}; % get names
 end
+
 % Store values, get unique values & # of unique values
 numdata = nan(n.file,n.val);
 unq = cell(1,n.val);
@@ -78,6 +81,7 @@ for kk = 1:n.val
         Ind(numdata(:,kk)==unq{kk}(jj),kk) = jj; % set idicies to start at 1 & increment by 1
     end
 end
+
 % Associate trials with main index (first category)
 pp = 1;
 tt = 2; % trial index
@@ -95,18 +99,18 @@ if nargin>1
     end
 end
 
-% Find map for conditions
+% Compute map for conditions
 cond = nn(3:end); % conditions per category
 ncatg = length(cond); % # of categories 
 ridx = cell(ncatg,1);
 for kk = 1:ncatg
     ridx{kk} = idx{2+kk}';
 end
-allcomb = combvec(ridx{:}); % all unquie condition combinations
+allcomb = combvec(ridx{:}); % all unique condition combinations
 map = nan(nn(1),size(allcomb,2)); % map to store # reps for each combination
 for kk = 1:nn(1) % per fly
-    % Check all conditions
-    for ii = 1:size(allcomb,2) % each condition
+    % Check all combinations & conditions
+    for ii = 1:size(allcomb,2) % each combination
         rr = ones(size(Ind,1),1);
         for jj = 1:size(allcomb,1) % each condition
             rr = rr & (Ind(:,2+jj)==allcomb(jj,ii));
@@ -148,10 +152,11 @@ I.Properties.VariableNames = varnames;
 % Make table from # data
 N = splitvars(table([nn,n.file]));
 N.Properties.VariableNames = [varnames,'file'];
-% Make table from unqiue data
+% Make table from unique data
 U = splitvars(table(unq));
 U.Properties.VariableNames = varnames;
 
+% Display data
 fprintf('Files: %i \n',n.file)
 fprintf('%s: %i \n',varnames{1},nn(1))
 for kk = 3:n.catg
@@ -159,7 +164,7 @@ for kk = 3:n.catg
 end
 fprintf('Pass: %i \n',npass)
 
-if isempty(map)
+if isempty(map) % no conditions
     mpass = reps{:,1} >= minTrial;
     T = splitvars(table(idx{1} , reps{:,1} , mpass));
     T.Properties.VariableNames = [varnames(1:2) , ['CHECK_' num2str(minTrial)]];
