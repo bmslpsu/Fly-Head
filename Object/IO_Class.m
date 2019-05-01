@@ -91,7 +91,7 @@ classdef IO_Class
             for kk = n
                 subplot(2,nn,pp) ; hold on ; grid on
                 title(['X_' num2str(kk)])
-             	plot(obj.BodeBodeFv,obj.BodeGain(:,kk),'k')
+%              	plot(obj.BodeFv,obj.BodeGain(:,kk),'k')
                 plot(obj.IOFreq,obj.IOBodeGain(:,kk),'r-o')
                 xlim([0 lim])
                 ylim([0 1.5])
@@ -102,7 +102,7 @@ classdef IO_Class
                 
                 subplot(2,nn,pp+nn) ; hold on ; grid on
                 ylabel('Phase')
-             	plot(obj.BodeFv,obj.BodePhaseDiff(:,kk),'k')
+%              	plot(obj.BodeFv,obj.BodePhaseDiff(:,kk),'k')
                 plot(obj.IOFreq,obj.IOBodePhaseDiff(:,kk),'r-o')
              	xlim([0 lim])
 
