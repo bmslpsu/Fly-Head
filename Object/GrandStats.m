@@ -1,6 +1,7 @@
 classdef GrandStats
-    %% GrandStats:
-    % 
+    %% GrandStats: statistics for multiple instances of "Fly" or "IO" classes
+    %   INPUTS:
+    %       FlyStat    : cell array containing FlyStat classes (works along columns)
     properties (GetAccess=private) % properties only avaiable to class
         nFly   	= [];           % # of flies
     end

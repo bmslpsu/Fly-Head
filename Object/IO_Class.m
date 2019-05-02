@@ -1,6 +1,9 @@
 classdef IO_Class
     %% IO_Class:
-    % 
+    %   INPUTS:
+    %       In      : input  "Fly" class
+    %       Out     : output "Fly" class
+    
     properties (GetAccess=private) % properties only avaiable to class
         IN                  = []; % input data
         OUT                 = []; % output data

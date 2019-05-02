@@ -1,4 +1,4 @@
-function [] = MakeData_SOS_HeadFree_TEST(rootdir,filename)
+function [] = MakeData_SOS_HeadFree(rootdir,filename)
 %% MakeData_SOS_HeadFree_TEST: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
 %   INPUTS:
 %       root    : root directory
@@ -124,6 +124,6 @@ clear ii
 %% SAVE %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
-save([PATH.daq 'DATA\' filename '.mat'],'ALL','TRIAL','FLY','GRAND','U','N','T','-v7.3')
+save([PATH.daq 'DATA\' filename '.mat'],'ALL','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
 disp('SAVING DONE')
 end

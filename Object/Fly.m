@@ -1,10 +1,12 @@
 classdef Fly
-    %% Fly: computes time & frequency domain quantities
+    %% Fly: computes time domain, frequency domain quantities
     %   INPUTS:
     %       data    : raw daa
     %       time    : time
     %       Fc      : cutoff frequency
+  	%       IOFreq 	: discrete frequency inpus
     %       tt      : interpolated time (optional)
+    
     properties (GetAccess=private) % properties only avaiable to class
     end
     
@@ -98,7 +100,7 @@ classdef Fly
         end
             
         function obj = IO_Freq(obj,IOFreq)
-            % IO_Freq: extract frequency domain data at specified frequencies
+            % IO_Freq: extract frequency domain data at discrete frequencies
             obj.IOFreq = IOFreq(:);
             for kk = 1:size(obj.X,2)
                 [obj.IOMag(:,kk),obj.IOPhase(:,kk)] = Get_IO_Freq(obj.Fv(:,kk),obj.Mag(:,kk),obj.Phase(:,kk),obj.IOFreq);

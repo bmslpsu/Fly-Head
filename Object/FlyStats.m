@@ -1,6 +1,7 @@
 classdef FlyStats
-    %% FlyStats:
-    % 
+    %% FlyStats: statistics for multiple instances of "Fly" or "IO" classes
+    %   INPUTS:
+    %       obj_cell    : cell array containing classes (works along columns so columns must contain the same class)
     properties (GetAccess=private) % properties only avaiable to class
         nTrial    	= [];       % # of trials
     end
