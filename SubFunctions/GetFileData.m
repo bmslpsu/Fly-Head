@@ -1,4 +1,4 @@
-function [D,I,N,U,T] = GetFileData(FILES,varargin)
+function [D,I,N,U,T] = GetFileData(FILES,abscat,varargin)
 %% GetFileData: Parse file name data and returns tables with relevant information, lets user load files if no input is specified
 %   INPUTS:
 %       FILES       :   file cells in the form "var1_val1_var2_val2_..._varn_valn". The first variable is
@@ -15,6 +15,9 @@ function [D,I,N,U,T] = GetFileData(FILES,varargin)
 if ~nargin
     [files, ~] = uigetfile({'*', 'files'}, 'Select files', 'MultiSelect','on');
     FILES = cellstr(files)';
+    abscat = false;
+elseif nargin==1
+	abscat = false;
 end
 
 % Get file data
@@ -68,8 +71,14 @@ idx = cell(1,n.val);
 reps = cell(1,n.val);
 Ind = nan(n.file,n.val);
 for kk = 1:n.val
-    vardata(:,loc.val(kk)) = cellfun(@(x) str2double(x),vardata(:,loc.val(kk)),...
-        'UniformOutput',false); % get values from cell array
+    if abscat
+        vardata(:,loc.val(kk)) = cellfun(@(x) abs(str2double(x)),vardata(:,loc.val(kk)),...
+            'UniformOutput',false); % get absolute values from cell array
+    else
+        vardata(:,loc.val(kk)) = cellfun(@(x) str2double(x),vardata(:,loc.val(kk)),...
+            'UniformOutput',false); % get values from cell array
+    end
+    
     numdata(:,kk) = cell2mat(vardata(:,loc.val(kk))); % numeric array of cvategory values
     unq{kk} = sort(unique(numdata(:,kk)),'ascend'); % unique values for category
     nn(kk) = length(unq{kk}); % # of values for category
@@ -93,8 +102,8 @@ end
 
 % Let user set variable names if needed
 varnames = catg;
-if nargin>1
-    for kk = 1:nargin-1
+if nargin>2
+    for kk = 1:nargin-2
         varnames{kk} = varargin{kk};
     end
 end

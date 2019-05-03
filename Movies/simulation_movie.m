@@ -15,29 +15,29 @@ function [] = simulation_movie(bodyAng,headAng,refAng,tout,varargin)
 %---------------------------------------------------------------------------------------------------------------------------------
 % Example Input %
 %---------------------------------------------------------------------------------------------------------------------------------
-% clear ; clc ; close all
-% tout = 0:(1/100):5;
-% bodyAng = 40*sin(2*pi*1*tout + 97);
-% headAng = 180*tout;
-% refAng = 0*bodyAng;
-% rootdir = 'C:\Users\boc5244\Box Sync\Research';
+clear ; clc ; close all
+tout = 0:(1/100):5;
+bodyAng = 40*sin(2*pi*1*tout + 97);
+headAng = 180*tout;
+refAng = bodyAng;
+rootdir = 'C:\Users\boc5244\Box Sync\Research';
 %---------------------------------------------------------------------------------------------------------------------------------
 vidFs = 50; % video frame rate [Hz]
-if nargin==6
-    export = true;
-    root.mov = varargin{1};
-    filename = varargin{2};
-    VID = VideoWriter(fullfile(root.mov,[filename '.avi']),'Uncompressed AVI'); % create video object
-    VID.FrameRate = vidFs;
-    open(VID)
-elseif nargin==5
-    error('Must input filename')
-elseif nargin<5
-    export = false;
-else
-    error('Too may inputs')
-end
-
+% if nargin==6
+%     export = true;
+%     root.mov = varargin{1};
+%     filename = varargin{2};
+%     VID = VideoWriter(fullfile(root.mov,[filename '.avi']),'Uncompressed AVI'); % create video object
+%     VID.FrameRate = vidFs;
+%     open(VID)
+% elseif nargin==5
+%     error('Must input filename')
+% elseif nargin<5
+%     export = false;
+% else
+%     error('Too may inputs')
+% end
+export = false;
 % Body geometry
 body.center = [0,0];
 body.L = 40;

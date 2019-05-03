@@ -48,6 +48,9 @@ if ~isempty(I)
         Es = find(Eind > loc.pks(ww,1),1,'first'); % first value after the start index is the end index
         if ~isempty(Es) % make sure data did not start above threshold
             loc.end(ww,1) = Eind(Es); % saccade end index
+        else
+            loc.end(ww,1) = 1;
+%             disp('here')
         end
 
         % Inter-saccade interval
