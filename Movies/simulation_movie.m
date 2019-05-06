@@ -11,33 +11,33 @@ function [] = simulation_movie(bodyAng,headAng,refAng,tout,varargin)
 %       -
 %   USAGE:
 %       1. simulation_movie(bodyAng,headAng,refAng,tout)
-%       2. simulation_movie(bodyAng,headAng,refAng,tout,roo,filename)
+%       2. simulation_movie(bodyAng,headAng,refAng,tout,root,filename)
 %---------------------------------------------------------------------------------------------------------------------------------
 % Example Input %
 %---------------------------------------------------------------------------------------------------------------------------------
-clear ; clc ; close all
-tout = 0:(1/100):5;
-bodyAng = 40*sin(2*pi*1*tout + 97);
-headAng = 180*tout;
-refAng = bodyAng;
-rootdir = 'C:\Users\boc5244\Box Sync\Research';
+% clear ; clc ; close all
+% tout = 0:(1/100):5;
+% bodyAng = 40*sin(2*pi*1*tout + 97);
+% headAng = 180*tout;
+% refAng = bodyAng;
+% rootdir = 'C:\Users\boc5244\Box Sync\Research';
 %---------------------------------------------------------------------------------------------------------------------------------
 vidFs = 50; % video frame rate [Hz]
-% if nargin==6
-%     export = true;
-%     root.mov = varargin{1};
-%     filename = varargin{2};
-%     VID = VideoWriter(fullfile(root.mov,[filename '.avi']),'Uncompressed AVI'); % create video object
-%     VID.FrameRate = vidFs;
-%     open(VID)
-% elseif nargin==5
-%     error('Must input filename')
-% elseif nargin<5
-%     export = false;
-% else
-%     error('Too may inputs')
-% end
-export = false;
+if nargin==6
+    export = true;
+    root.mov = varargin{1};
+    filename = varargin{2};
+    VID = VideoWriter(fullfile(root.mov,[filename '.avi']),'Uncompressed AVI'); % create video object
+    VID.FrameRate = vidFs;
+    open(VID)
+elseif nargin==5
+    error('Must input filename')
+elseif nargin<5
+    export = false;
+else
+    error('Too may inputs')
+end
+
 % Body geometry
 body.center = [0,0];
 body.L = 40;
@@ -115,21 +115,7 @@ for kk = 1:length(body.ang)
     end
     
     if kk~=length(body.ang)
-        for jj = 1:length(h.body)
-            delete(h.body{jj})
-        end
-        for jj = 1:length(h.head)
-            delete(h.head{jj})
-        end
-        for jj = 1:length(h.ref)
-            delete(h.ref{jj})
-        end
-        for jj = 1:length(h.fig)
-            delete(h.fig{jj})
-        end
-        for jj = 1:length(h.gaze)
-            delete(h.gaze{jj})
-        end
+        subplot(12,1,1:8) ; cla
     end
 end
 toc

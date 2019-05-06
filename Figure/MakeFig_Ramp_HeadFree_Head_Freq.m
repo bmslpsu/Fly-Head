@@ -6,7 +6,7 @@ function [] = MakeFig_Ramp_HeadFree_Head_Freq()
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
-root = 'F:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast\';
+root = 'H:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast\';
 figNum = 1;
 %---------------------------------------------------------------------------------------------------------------------------------
 filename = 'Ramp_HeadFree_Head_Freq'; % name of figure to save
@@ -17,8 +17,7 @@ for ww = 1:nFreq
     HeadFree{ww} = load([root num2str(spatFreq(ww)) '\DATA\Ramp_HeadFree_DATA.mat'],...
         'TRIAL','FLY','GRAND','U','N'); % load data structure
 end
-%%
-close all
+
 FIG = figure (figNum); % figure handle
 FIG.Color = 'w';
 FIG.Position = [100 100 1100 800];
