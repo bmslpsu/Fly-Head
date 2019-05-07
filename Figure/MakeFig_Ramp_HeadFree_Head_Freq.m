@@ -6,8 +6,8 @@ function [] = MakeFig_Ramp_HeadFree_Head_Freq()
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
-root = 'H:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast\';
-figNum = 1;
+% root = 'F:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast\';
+% figNum = 1;
 %---------------------------------------------------------------------------------------------------------------------------------
 filename = 'Ramp_HeadFree_Head_Freq'; % name of figure to save
 spatFreq = [22.5 30 60 0];
@@ -62,7 +62,8 @@ pp = 1;
 for ww = 1:nFreq % spatial frequencies
     freq = spatFreq(ww);
     for jj = 1:HeadFree{ww}.N{1,3} % speeds
-     	subplot(nFreq,HeadFree{ww}.N{1,3},subIdx(pp)) ; hold on ; xlim([0 40]) ; ylim([0 1]) ; grid on ; grid minor
+     	subplot(nFreq,HeadFree{ww}.N{1,3},subIdx(pp)) ; hold on ; xlim([0 40]) ; ylim([0 1])
+%         grid on ; grid minor
         vel = HeadFree{1}.U{1,3}{1}(jj);
         tmpFreq = vel/freq;
         if pp<=5
@@ -70,21 +71,26 @@ for ww = 1:nFreq % spatial frequencies
         end
         if mod(pp-1,5)==0
             ylabel([num2str(freq) char(176)],'FontSize',15,'FontWeight','bold')
+        else
+            yticks('')
         end
         if pp>15
             xlabel('Frequency (Hz)','FontSize',12,'FontWeight','normal')
+        else
+            xticks('')
         end
         
         text(15,0.9,[num2str(tmpFreq) ' cyc/s'])
         
         h.patch = PlotPatch(HeadFree{ww}.GRAND{jj,catIdx}.Mean{2}{8}(:,xIdx),HeadFree{ww}.GRAND{jj,catIdx}.STD{2}{8}(:,xIdx),...
             HeadFree{ww}.GRAND{jj,catIdx}.Mean{2}{7}(:,xIdx),2,HeadFree{ww}.N{1,1},'k',[0.4 0.4 0.6],0.5,3);
+        
         pp = pp + 1;
     end
 end
-%%
-saveas(FIG,[root 'FIGURE\' filename '.fig']); % save .fig file
-print(gcf,[root 'FIGURE\' filename],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
+
+saveas(FIG,['F:\DATA\FIGURE\' filename '.fig']); % save .fig file
+print(FIG,['F:\DATA\FIGURE\' filename],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
 disp('Saved to')
-disp(root)
+disp('F:\DATA\FIGURE\')
 end
