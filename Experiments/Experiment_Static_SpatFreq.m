@@ -19,7 +19,7 @@ n.tracktime = 10;  	% seconds for each EXPERIMENT
 n.resttime = 2;    	% seconds for each REST
 n.pause = 0.2;      % pause between commands
 n.AI = 6;        	% # of analog input channels
-r.rep = 6;          % number of cycles through velocities for each fly
+n.rep = 6;          % number of cycles through velocities for each fly
 
 %% SETUP DATA AQUISITION: NiDAQ (session mode)
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -95,9 +95,9 @@ n.freq = length(freq);      	% # of velocities
 ypos = [1 4 5 7 12];          	% pattern y-pos corresponding to spatial frequencies
 
 % Create sequence of randomly shuffled frequencies
-Freq_all = nan(n.freq*r.rep,1);
+Freq_all = nan(n.freq*n.rep,1);
 pp = 0;
-for kk = 1:r.rep
+for kk = 1:n.rep
     Freq_rand = freq(randperm(n.freq),:);    % reshuffle randomly
     Freq_all(pp+1:pp+n.freq,1) = Freq_rand;  % add rep
     pp = kk*n.freq;
@@ -112,7 +112,7 @@ end
 %% START EXPERIMENT AND DATA COLLECTION %%
 %---------------------------------------------------------------------------------------------------------------------------------
 tic
-for kk = 1:r.rep*n.freq
+for kk = 1:n.rep*n.freq
     disp('-------------------------------------------------------')
     disp(['Trial:  ' num2str(kk)]) % prints counter to command line
    	preview(vid); % open video preview window
@@ -135,7 +135,7 @@ for kk = 1:r.rep*n.freq
     pause(1)
     disp(['Spatial Frequency ' num2str(Freq_all(kk)) ' Hz'])
     Panel_com('stop');pause(n.pause);
-    Panel_com('set_pattern_id', patID);pause(n.pause)                       % set pattern
+    Panel_com('set_pattern_id', 2);pause(n.pause)                       % set pattern
     Panel_com('set_position',[randi([1,96]), ypos_all(kk)]);pause(n.pause) 	% set starting position (xpos,ypos) [ypos = spatFreq]
     Panel_com('set_funcX_freq', 50);pause(n.pause);                         % default X update rate
     Panel_com('set_funcY_freq', 50);pause(n.pause);                         % default Y update rate
