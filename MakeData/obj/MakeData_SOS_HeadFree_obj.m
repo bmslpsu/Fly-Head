@@ -1,18 +1,18 @@
-function [] = MakeData_SOS_HeadFree(rootdir,filename)
-%% MakeData_SOS_HeadFree_TEST: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
+function [] = MakeData_SOS_HeadFree_obj(rootdir,filename)
+%% MakeData_SOS_HeadFree_obj: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
 %   INPUTS:
-%       root    : root directory
+%       root        : root directory
+%       filename    : filename of ouput file
 %   OUTPUTS:
-%       PAT     : pattern structure
-%       WING   	: wings structure
+%       ALL         : data stored in table
 %---------------------------------------------------------------------------------------------------------------------------------
-% rootdir = 'F:\EXPERIMENTS\Experiment_SOS\';
-% filename = 'SOS_HeadFree_DATA_TEST';
+% rootdir = 'F:\EXPERIMENTS\Experiment_SOS';
+% filename = 'SOS_HeadFree_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
 root.daq = rootdir;
-root.ang = [root.daq '\Vid\Angles\'];
+root.ang = fullfile(root.daq,'\Vid\Angles\');
 
 % Select files
 [FILES, PATH.ang] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -37,8 +37,8 @@ for kk = 1:N{1,end}
     disp(kk)
     % Load HEAD & DAQ data
     data = [];
-	load([PATH.daq   FILES{kk}],'data','t_p'); % load pattern x-position
-    load([PATH.ang   FILES{kk}],'hAngles','t_v'); % load head angles % time arrays
+	load(fullfile(PATH.daq, FILES{kk}),'data','t_p'); % load pattern x-position
+    load(fullfile(PATH.ang, FILES{kk}),'hAngles','t_v'); % load head angles % time arrays
     %-----------------------------------------------------------------------------------------------------------------------------
     % Check WBF
 	wing.f = 100*(data(:,6)); % wing beat frequency
@@ -124,6 +124,7 @@ clear ii
 %% SAVE %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
-save([PATH.daq 'DATA\' filename '.mat'],'ALL','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
+save(['F:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
+    'ALL','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
 disp('SAVING DONE')
 end

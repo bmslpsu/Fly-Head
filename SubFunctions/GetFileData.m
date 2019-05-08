@@ -128,6 +128,22 @@ for kk = 1:nn(1) % per fly
     end
 end
 
+% If there are no condtions, use trials instead
+if isempty(map) % no conditions
+   map = reps{:,1};
+   mapname = {'reps'};
+else
+    % Make variable names for map
+    mapname = cell(1,size(allcomb,2));
+    for kk = 1:size(allcomb,2)
+        valstr = [];
+        for jj = 1:size(allcomb,1)
+           valstr = [valstr  '_' num2str(allcomb(jj,kk))];
+        end
+        mapname{kk} = [strcat(varnames{3:end})  valstr];
+    end
+end
+
 % Check if there are at least 3 reps per condition
 minTrial = 3;
 mpass = nan(nn(1),1);
@@ -141,16 +157,6 @@ for kk = 1:nn(1)
 end
 npass = sum(mpass); % # of successful flies
 mpass = logical(mpass);
-
-% Make variable names for map
-mapname = cell(1,size(allcomb,2));
-for kk = 1:size(allcomb,2)
-    valstr = [];
-    for jj = 1:size(allcomb,1)
-       valstr = [valstr  '_' num2str(allcomb(jj,kk))];
-    end
-    mapname{kk} = [strcat(varnames{3:end})  valstr];
-end
 
 % Make table from raw file data
 D = splitvars(table(numdata));
@@ -172,14 +178,7 @@ for kk = 3:n.catg
     fprintf('%s: %i \n',varnames{kk},nn(kk))
 end
 fprintf('Pass: %i \n',npass)
-
-if isempty(map) % no conditions
-    mpass = reps{:,1} >= minTrial;
-    T = splitvars(table(idx{1} , reps{:,1} , mpass));
-    T.Properties.VariableNames = [varnames(1:2) , ['CHECK_' num2str(minTrial)]];
-else
-    T = splitvars(table(idx{1} , reps{:,1} , map , mpass));
-    T.Properties.VariableNames = [varnames(1:2) , mapname ,['CHECK_' num2str(minTrial)]];
-end
+T = splitvars(table(unq{1} , reps{:,1} , map , mpass));
+T.Properties.VariableNames = [varnames(1:2) , mapname ,['CHECK_' num2str(minTrial)]];
 disp(T)
 end
