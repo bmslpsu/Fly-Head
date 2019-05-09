@@ -1,24 +1,41 @@
-function [D,I,N,U,T] = GetFileData(FILES,abscat,varargin)
+function [D,I,N,U,T,FILES,PATH] = GetFileData(FILES,abscat,varargin)
 %% GetFileData: Parse file name data and returns tables with relevant information, lets user load files if no input is specified
 %   INPUTS:
-%       FILES       :   file cells in the form "var1_val1_var2_val2_..._varn_valn". The first variable is
-%                       the control group & the second is the repetions, the rest are categories
-%       varargin    :   user can rename the variables by inputing strings equal to the # of variables in
-%                       the file name
+%       FILES       :   File cells in the form "var1_val1_var2_val2_..._varn_valn". The first variable is
+%                       the control group & the second is the repetions,
+%                       the rest are categories. If "FILES" is a character
+%                       vector, then it is the root directory & user selects files.
+%       abscat      :   if set to true, indexing is based on the absolute
+%                       value of conditions.
+%       varargin    :   User can rename the variables by inputing strings equal to the # of variables in
+%                       the file name.
 %   OUTPUTS:
 %       D           :   raw file data table
 %       I           :   index table
 %       N           :   # table
 %       U           :   unique variable #'s table
+%       T           :   map of all data + trials per condition
+%       FILES      	:   files used
+%       PATH      	:   file location
 %---------------------------------------------------------------------------------------------------------------------------------
 % Let user load files if no input is specified
-if ~nargin
-    [files, ~] = uigetfile({'*', 'files'}, 'Select files', 'MultiSelect','on');
+if ~nargin % open file selection GUi in current folder
+    [files, PATH] = uigetfile({'*', 'files'}, 'Select files', 'MultiSelect','on');
     FILES = cellstr(files)';
     abscat = false;
-elseif nargin==1
-	abscat = false;
+elseif nargin>=1
+    if ischar(FILES) % if root directory given, open file selection GUi in root
+        [files, PATH] = uigetfile({'*', 'files'}, 'Select files',FILES, 'MultiSelect','on');
+        FILES = cellstr(files)';
+    else
+        PATH = []; % if only files are given
+    end
+    
+    if nargin==1
+        abscat = false; % default is off
+    end
 end
+clear files
 
 % Get file data
 n.file = length(FILES);
@@ -47,7 +64,7 @@ if ~log(1) % make sure naming convetion is consistent and file name starts with 
 end
 for kk = 1:length(log)-1
    if (log(kk)+log(kk+1))==0 % make sure there are not values without categories
-      warning('file naming-convention is not correct')
+      warning('file naming convention is not correct')
    end
 end
 [~,loc.catg] = find(log==true); % find locations of categorical variable 
@@ -81,13 +98,22 @@ for kk = 1:n.val
     
     numdata(:,kk) = cell2mat(vardata(:,loc.val(kk))); % numeric array of cvategory values
     unq{kk} = sort(unique(numdata(:,kk)),'ascend'); % unique values for category
+    nanIdx = find(isnan(unq{3}));
+    if ~isempty(nanIdx) % make sure NaN only registers once
+        unq{kk}(nanIdx(2:end)) = [];
+    end
     nn(kk) = length(unq{kk}); % # of values for category
     idx{kk} = (1:nn(kk))'; % indicies values needed for each category
+    
     % Set up indexing convention
     reps{kk} = nan(nn(kk),1);
     for jj = 1:nn(kk)
         reps{kk}(jj) = sum(numdata(:,kk)==unq{kk}(jj)); % # of repetitions of each unique value
         Ind(numdata(:,kk)==unq{kk}(jj),kk) = jj; % set idicies to start at 1 & increment by 1
+        if isnan(unq{kk}(jj)) % replace Nan with index
+            [rr,~] = find(isnan(numdata(:,kk)));
+            Ind(rr,kk) = jj;
+        end
     end
 end
 
@@ -144,7 +170,7 @@ else
     end
 end
 
-% Check if there are at least 3 reps per condition
+% Check if there are at least 3 reps per condition & if each fly has at least one rep
 minTrial = 3;
 mpass = nan(nn(1),1);
 for kk = 1:nn(1)
@@ -153,6 +179,10 @@ for kk = 1:nn(1)
         mpass(kk) = true;
     else
         mpass(kk) = false;
+    end
+    
+    if ~mcheck % makes sure at least one trial per condition
+        warning('Fly %i does not have data for all conditions',unq{1}(kk))
     end
 end
 npass = sum(mpass); % # of successful flies
