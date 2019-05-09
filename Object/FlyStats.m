@@ -47,8 +47,9 @@ classdef FlyStats
             obj.All = cell(1,nn(2)); % stores concatenateed array data
             for jj = 1:nn(2) % cycle through all input cells in the dimension average
                 obj_all{jj} = cat(3,OBJ{:,jj}); % concatenates object data cells in 3rd dimension
-                for ii = 1:length(obj_all{jj}) % cycle through properties
+                for ii = 1:size(obj_all{jj},1) % cycle through properties
                     for kk = 1:nn(1) % cycle through the dimesnion to average
+%                       	fprintf('(%i,%i,%i)\n',jj,kk,ii)
                         obj.All{ii,jj}(:,:,kk) = obj_all{jj}{ii,1,kk}; % transform cell to array
                     end
                 end

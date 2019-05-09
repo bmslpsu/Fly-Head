@@ -1,43 +1,40 @@
-function [] = MakeData_Chirp_HeadFree_obj(rootdir)
-%% MakeData_Chirp_HeadFree_obj: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
+function [] = MakeData_Chirp_HeadFixed_obj(rootdir)
+%% MakeData_Chirp_HeadFixed_obj: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
 %   INPUTS:
 %       root        : root directory
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-% rootdir = 'F:\EXPERIMENTS\Experiment_ChirpLog_HeadFree';
-filename = 'Chirp_HeadFree_DATA';
+rootdir = 'F:\EXPERIMENTS\Experiment_ChirpLog_HeadFixed';
+filename = 'Chirp_HeadFixed_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
 root.daq = rootdir;
-root.ang = fullfile(root.daq,'\Vid\Angles\');
 
 % Select files
-[FILES, PATH.ang] = uigetfile({'*.mat', 'DAQ-files'}, ...
-    'Select head angle trials', root.ang, 'MultiSelect','on');
+[FILES, PATH.daq] = uigetfile({'*.mat', 'DAQ-files'}, ...
+    'Select head angle trials', root.daq, 'MultiSelect','on');
 FILES = cellstr(FILES)';
 
-PATH.daq = root.daq;
-
-[D,I,N,U,T] = GetFileData(FILES,true);
+[D,I,N,U,T] = GetFileData(FILES);
 
 clear rootdir
 %% Get Data %%
 %---------------------------------------------------------------------------------------------------------------------------------
 IOFreq = 1;
 disp('Loading...')
-ALL 	= cell([N{1,end},6]); % cell array to store all data objects
+ALL 	= cell([N{1,end},3]); % cell array to store all data objects
 TRIAL  	= cell(N{1,1},N{1,3});
 n.catg  = size(N,2) - 1;
 pp = 0;
-span = 1:4000;
+Head.Time = (0:(1/200):20)';
+Head.Fs = 1/mean(diff(Head.Time));
 for kk = 1:N{1,end}
     disp(kk)
-    % Load HEAD & DAQ data
+    % Load DAQ data
     data = [];
 	load(fullfile(PATH.daq, FILES{kk}),'data','t_p'); % load pattern x-position
-    load(fullfile(PATH.ang, FILES{kk}),'hAngles','t_v'); % load head angles % time arrays
     %-----------------------------------------------------------------------------------------------------------------------------
     % Check WBF
 	wing.f = 100*(data(:,6)); % wing beat frequency
@@ -47,11 +44,6 @@ for kk = 1:N{1,end}
     else
         pp = pp + 1; % set next index to store data
     end
-    %-----------------------------------------------------------------------------------------------------------------------------
-    % Get head data
-    head.Time = t_v(span);
-    head.Pos = hAngles;
-    Head = Fly(head.Pos(span),head.Time,40,IOFreq); % head object
   	%-----------------------------------------------------------------------------------------------------------------------------
     % Get wing data from DAQ
     wing.Time       = t_p; % wing time [s]
@@ -71,27 +63,20 @@ for kk = 1:N{1,end}
  	Pat      	= Fly(pat.Pos,Head.Time,0.4*Head.Fs,IOFreq); % pattern object
 	%-----------------------------------------------------------------------------------------------------------------------------
  	% Calculate error between head & pattern
-    head.Err = Pat.X(:,1) - Head.X(:,1); % calculate position error between head & pattern [deg]
-    Err = Fly(head.Err,Head.Time,0.4*Head.Fs,IOFreq); % error object
+    Err = Pat;
     %-----------------------------------------------------------------------------------------------------------------------------
     % Calculate iput-output relationships
-    pat2head    = IO_Class(Pat,Head);
-    err2wing    = IO_Class(Err,Wing);
-	head2wing   = IO_Class(Head,Wing);
+    err2wing = IO_Class(Err,Wing);
     %-----------------------------------------------------------------------------------------------------------------------------
     % Store objects in cells
     for jj = 1:n.catg
         ALL{pp,jj} = I{kk,jj};
     end
     ALL{pp,n.catg+1}	= Pat;
-	ALL{pp,n.catg+2} 	= Head;
-    ALL{pp,n.catg+3}	= Wing;
-    ALL{pp,n.catg+4} 	= Err;
-    ALL{pp,n.catg+5}	= pat2head;
-    ALL{pp,n.catg+6} 	= err2wing;
-    ALL{pp,n.catg+7}	= head2wing;
+    ALL{pp,n.catg+2}	= Wing;
+    ALL{pp,n.catg+3} 	= err2wing;
     
-    vars = {Pat,Head,Wing,Err,pat2head,err2wing,head2wing};
+    vars = {Pat,Wing,err2wing};
 	qq = size(TRIAL{I{kk,1},I{kk,3}},1);
     for ww = 1:length(vars)
         TRIAL{I{kk,1},I{kk,3}}{qq+1,ww} = vars{ww};

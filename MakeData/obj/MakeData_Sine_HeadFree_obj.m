@@ -1,18 +1,18 @@
-function [ALL] = MakeData_Chirp_HeadFree_obj(rootdir,filename)
-%% MakeData_Chirp_HeadFree_obj: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
+function [] = MakeData_Sine_HeadFree_obj(rootdir,Amp)
+%% MakeData_Sine_HeadFree_obj: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
 %   INPUTS:
 %       root        : root directory
-%       filename    : filename of ouput file
+%       Amp         : amplitude folder
 %   OUTPUTS:
-%       ALL         : data stored in table
+%       -
 %---------------------------------------------------------------------------------------------------------------------------------
-% rootdir = 'F:\EXPERIMENTS\Experiment_ChirpLog_HeadFree';
-% filename = 'Chirp_HeadFree_DATA';
+rootdir = 'F:\EXPERIMENTS\Experiment_Sinusoid';
+filename = ['Sine_HeadFree_' num2str(Amp) '_DATA'];
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
-root.daq = rootdir;
-root.ang = fullfile(root.daq,'\Vid\Angles\');
+root.daq = fullfile(rootdir, num2str(Amp));
+root.ang = fullfile(root.daq, '\Vid\Angles\');
 
 % Select files
 [FILES, PATH.ang] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -26,13 +26,14 @@ PATH.daq = root.daq;
 clear rootdir
 %% Get Data %%
 %---------------------------------------------------------------------------------------------------------------------------------
-IOFreq = 1;
+IOFreq = U{1,3}{1};
 disp('Loading...')
 ALL 	= cell([N{1,end},6]); % cell array to store all data objects
 TRIAL  	= cell(N{1,1},N{1,3});
 n.catg  = size(N,2) - 1;
 pp = 0;
-span = 1:4000;
+span = 1:2000;
+tt = linspace(0,10,2000)';
 for kk = 1:N{1,end}
     disp(kk)
     % Load HEAD & DAQ data
@@ -52,7 +53,7 @@ for kk = 1:N{1,end}
     % Get head data
     head.Time = t_v(span);
     head.Pos = hAngles;
-    Head = Fly(head.Pos(span),head.Time,40,IOFreq); % head object
+    Head = Fly(head.Pos(span),head.Time,40,IOFreq(I{kk,3})); % head object
   	%-----------------------------------------------------------------------------------------------------------------------------
     % Get wing data from DAQ
     wing.Time       = t_p; % wing time [s]
@@ -63,21 +64,21 @@ for kk = 1:N{1,end}
     wing.Right      = filtfilt(b,a,(data(:,5))); % right wing [V]
     wing.Pos        = wing.Left - wing.Right; % dWBA (L-R) [V]
   	wing.Pos        = wing.Pos - mean(wing.Pos); % subtract mean [V]
-   	Wing = Fly(wing.Pos,t_p,40,IOFreq,Head.Time); % wing object
+   	Wing = Fly(wing.Pos,t_p,40,IOFreq(I{kk,3}),tt); % wing object
 	%-----------------------------------------------------------------------------------------------------------------------------
 	% Get pattern data from DAQ
     pat.Time	= t_p;
     pat.Pos 	= panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]  
-    pat.Pos  	= FitPanel(pat.Pos,pat.Time,Head.Time); % fit panel data
- 	Pat      	= Fly(pat.Pos,Head.Time,0.4*Head.Fs,IOFreq); % pattern object
+    pat.Pos  	= FitPanel(pat.Pos,pat.Time,tt,false,false); % fit panel data
+ 	Pat      	= Fly(pat.Pos,Head.Time,0.4*Head.Fs,IOFreq(I{kk,3})); % pattern object
 	%-----------------------------------------------------------------------------------------------------------------------------
  	% Calculate error between head & pattern
     head.Err = Pat.X(:,1) - Head.X(:,1); % calculate position error between head & pattern [deg]
-    Err = Fly(head.Err,Head.Time,0.4*Head.Fs,IOFreq); % error object
+    Err = Fly(head.Err,Head.Time,0.4*Head.Fs,IOFreq(I{kk,3})); % error object
     %-----------------------------------------------------------------------------------------------------------------------------
     % Calculate iput-output relationships
     pat2head    = IO_Class(Pat,Head);
-    err2wing    = IO_Class(Err,Head);
+    err2wing    = IO_Class(Err,Wing);
 	head2wing   = IO_Class(Head,Wing);
     %-----------------------------------------------------------------------------------------------------------------------------
     % Store objects in cells

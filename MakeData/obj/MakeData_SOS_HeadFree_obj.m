@@ -1,13 +1,12 @@
-function [] = MakeData_SOS_HeadFree_obj(rootdir,filename)
+function [] = MakeData_SOS_HeadFree_obj(rootdir)
 %% MakeData_SOS_HeadFree_obj: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
 %   INPUTS:
 %       root        : root directory
-%       filename    : filename of ouput file
 %   OUTPUTS:
-%       ALL         : data stored in table
+%       -
 %---------------------------------------------------------------------------------------------------------------------------------
-% rootdir = 'F:\EXPERIMENTS\Experiment_SOS';
-% filename = 'SOS_HeadFree_DATA';
+rootdir = 'F:\EXPERIMENTS\Experiment_SOS';
+filename = 'SOS_HeadFree_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -26,13 +25,14 @@ PATH.daq = root.daq;
 clear rootdir
 %% Get Data %%
 %---------------------------------------------------------------------------------------------------------------------------------
-IOFreq = 0.1*round(linspace(0.1,8,10)/0.1);
+IOFreq = 0.1*round(linspace(0.1,8,10)/0.1)';
 disp('Loading...')
 ALL 	= cell([N{1,end},9]); % cell array to store all data objects
 TRIAL  	= cell(N{1,1},1);
 n.catg  = size(N,2) - 1;
 pp = 0;
-span = 1:2000;
+span = 1:2100;
+tt = linspace(0,20,2000)';
 for kk = 1:N{1,end}
     disp(kk)
     % Load HEAD & DAQ data
@@ -52,7 +52,7 @@ for kk = 1:N{1,end}
     % Get head data
     head.Time = t_v(span);
     head.Pos = hAngles - mean(hAngles);
-    Head = Fly(head.Pos(span),head.Time,20,IOFreq); % head object
+    Head = Fly(head.Pos(span),head.Time,20,IOFreq,tt); % head object
   	%-----------------------------------------------------------------------------------------------------------------------------
     % Get wing data from DAQ
     wing.Time       = t_p; % wing time [s]
@@ -63,12 +63,12 @@ for kk = 1:N{1,end}
     wing.Right      = filtfilt(b,a,(data(:,5))); % right wing [V]
     wing.Pos        = wing.Left - wing.Right; % dWBA (L-R) [V]
   	wing.Pos        = wing.Pos - mean(wing.Pos); % subtract mean [V]
-   	Wing = Fly(wing.Pos,t_p,20,IOFreq,Head.Time); % wing object
+   	Wing = Fly(wing.Pos,t_p,20,IOFreq,tt); % wing object
 	%-----------------------------------------------------------------------------------------------------------------------------
 	% Get pattern data from DAQ
     pat.Time	= t_p;
     pat.Pos 	= panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]  
-    pat.Pos  	= FitPanel(pat.Pos,pat.Time,Head.Time); % fit panel data
+    pat.Pos  	= FitPanel(pat.Pos,pat.Time,tt); % fit panel data
  	Pat      	= Fly(pat.Pos,Head.Time,0.4*Head.Fs,IOFreq); % pattern object
 	%-----------------------------------------------------------------------------------------------------------------------------
  	% Calculate error between head & pattern
@@ -113,7 +113,7 @@ for kk = 1:N{1,1}
         FLY{kk,ii} = FlyStats(TRIAL{kk}(:,ii));
     end
 end
-clear kk
+clear kk ii
 %% Grand Statistics %%
 %---------------------------------------------------------------------------------------------------------------------------------
 GRAND = cell(1,size(FLY,2));

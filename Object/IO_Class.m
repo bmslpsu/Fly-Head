@@ -84,7 +84,7 @@ classdef IO_Class
                 n   = 1:size(obj.BodeGain,2); % all is default
                 lim = max(max(obj.BodeFv));
             elseif nargin<=2
-                lim = max(max(obj.Fv));
+                lim = max(max(obj.BodeFv));
             end
             
             nn  = length(n);

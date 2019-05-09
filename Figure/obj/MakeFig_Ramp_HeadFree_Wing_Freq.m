@@ -1,5 +1,5 @@
-function [] = MakeFig_Ramp_HeadFree_Head_Freq()
-%% MakeFig_Ramp_HeadFree_Head_Freq: head frequency spectrum plot for ramp
+function [] = MakeFig_Ramp_HeadFree_Wing_Freq()
+%% MakeFig_Ramp_HeadFree_Wing_Freq: head frequency spectrum plot for ramp
 %   INPUTS:
 %       -
 %   OUTPUTS:
@@ -9,7 +9,7 @@ function [] = MakeFig_Ramp_HeadFree_Head_Freq()
 % root = 'F:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast\';
 % figNum = 1;
 %---------------------------------------------------------------------------------------------------------------------------------
-filename = 'Ramp_HeadFree_Head_Freq'; % name of figure to save
+filename = 'Ramp_HeadFree_Wing_Head_Freq'; % name of figure to save
 spatFreq = [22.5 30 60 0];
 nFreq = length(spatFreq);
 HeadFree = cell(nFreq,1);
@@ -23,7 +23,7 @@ FIG.Color = 'w';
 FIG.Position = [100 100 1100 800];
 FIG.Name = filename;
 hold on
-catIdx = 2;
+catIdx = 3;
 xIdx = 1;
 
 subIdx = reshape(1:(nFreq*5), 4, 5);
@@ -89,8 +89,6 @@ for ww = 1:nFreq % spatial frequencies
     end
 end
 
-saveas(FIG,['F:\DATA\FIGURE\' filename '.fig']); % save .fig file
-print(FIG,['F:\DATA\FIGURE\' filename],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
-disp('Saved to')
-disp('F:\DATA\FIGURE\')
+saveas(FIG,['F:\DATA\Rigid_Data\FIGURE\' filename '.fig']); % save .fig file
+print(FIG,['F:\DATA\Rigid_Data\FIGURE\' filename],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
 end

@@ -98,10 +98,17 @@ for kk = 1:n.val
     
     numdata(:,kk) = cell2mat(vardata(:,loc.val(kk))); % numeric array of cvategory values
     unq{kk} = sort(unique(numdata(:,kk)),'ascend'); % unique values for category
-    nanIdx = find(isnan(unq{3}));
+    
+    try
+        nanIdx = find(isnan(unq{3}));
+    catch
+        nanIdx = [];
+    end
+    
     if ~isempty(nanIdx) % make sure NaN only registers once
         unq{kk}(nanIdx(2:end)) = [];
     end
+    
     nn(kk) = length(unq{kk}); % # of values for category
     idx{kk} = (1:nn(kk))'; % indicies values needed for each category
     

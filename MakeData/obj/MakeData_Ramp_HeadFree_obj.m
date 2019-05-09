@@ -1,12 +1,11 @@
-function [] = MakeData_Ramp_HeadFree(rootdir,filename)
+function [] = MakeData_Ramp_HeadFree_obj(rootdir)
 %% MakeData_Ramp_HeadFree: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
 %   INPUTS:
 %       root    : root directory
 %   OUTPUTS:
-%       PAT     : pattern structure
-%       WING   	: wings structure
+%       -
 %---------------------------------------------------------------------------------------------------------------------------------
-rootdir = 'F:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast\60\';
+% rootdir = 'F:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast\60\';
 filename = 'Ramp_HeadFree_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -87,10 +86,6 @@ for kk = 1:N{1,end}
     ALL{pp,n.catg+1-1}	= Pat;
 	ALL{pp,n.catg+2-1} 	= Head;
     ALL{pp,n.catg+3-1}	= Wing;
-%     ALL{pp,n.catg+4} 	= Err;
-%     ALL{pp,n.catg+5}	= pat2head;
-%     ALL{pp,n.catg+6} 	= err2wing;
-%     ALL{pp,n.catg+7}	= head2wing;
     
     vars = {Pat,Head,Wing,Err,pat2head,err2wing,head2wing};
 	qq = size(TRIAL{I{kk,1},I{kk,3}},1);
@@ -128,6 +123,6 @@ clear jj ii
 %% SAVE %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
-save([PATH.daq 'DATA\' filename '.mat'],'ALL','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
+save(['F:\DATA\Rigid_Data\' filename '.mat'],'ALL','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
 disp('SAVING DONE')
 end
