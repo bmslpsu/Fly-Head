@@ -19,7 +19,7 @@ n.tracktime = 10;  	% seconds for each EXPERIMENT
 n.resttime = 2;    	% seconds for each REST
 n.pause = 0.2;      % pause between commands
 n.AI = 6;        	% # of analog input channels
-n.rep = 6;          % number of cycles through velocities for each fly
+n.rep = 6;          % number of cycles through spatial frequencies for each fly
 
 %% SETUP DATA AQUISITION: NiDAQ (session mode)
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -76,8 +76,8 @@ vid.TriggerRepeat = nFrame-1; % # triggers
 % Configure vidobj source properties.
 srcObj1 = get(vid, 'Source');
 srcObj1.Gamma = 0.386367797851563;
-srcObj1.GainRaw = 964;
-srcObj1.ExposureTimeAbs = 10000; % 100 Hz frame rate
+srcObj1.GainRaw = 600;
+srcObj1.ExposureTimeAbs = 8000; % 100 Hz frame rate
 % srcObj1(1).ExposureMode = 'Timed'; % exposure time controlled by pulse width
 
 % Trigger config
@@ -90,9 +90,9 @@ set(srcObj1(1),'TriggerSelector','FrameStart');
 disp('VID Setup Done...')
 %% Set variable to control pattern spatial frequency %%
 %---------------------------------------------------------------------------------------------------------------------------------
-freq = 7.5*[0 3 4 8 inf]';  	% [deg] spatial frequencies
-n.freq = length(freq);      	% # of velocities
-ypos = [1 4 5 7 12];          	% pattern y-pos corresponding to spatial frequencies
+freq = 7.5*[0 3 4 8 inf nan]';  	% [deg] spatial frequencies
+n.freq = length(freq);              % # of velocities
+ypos = [1 4 5 7 12 1];            	% pattern y-pos corresponding to spatial frequencies
 
 % Create sequence of randomly shuffled frequencies
 Freq_all = nan(n.freq*n.rep,1);
@@ -133,14 +133,18 @@ for kk = 1:n.rep*n.freq
     %-----------------------------------------------------------------------------------------------------------------------------
     % SETUP EXPERIMENT
     pause(1)
-    disp(['Spatial Frequency ' num2str(Freq_all(kk)) ' Hz'])
+    disp(['Spatial Frequency: ' num2str(Freq_all(kk)) ' Hz'])
     Panel_com('stop');pause(n.pause);
-    Panel_com('set_pattern_id', 2);pause(n.pause)                       % set pattern
-    Panel_com('set_position',[randi([1,96]), ypos_all(kk)]);pause(n.pause) 	% set starting position (xpos,ypos) [ypos = spatFreq]
-    Panel_com('set_funcX_freq', 50);pause(n.pause);                         % default X update rate
-    Panel_com('set_funcY_freq', 50);pause(n.pause);                         % default Y update rate
-    Panel_com('set_mode', [0,0]);pause(n.pause)                             % 0=open,1=closed,2=fgen,3=vmode,4=pmode
-    Panel_com('send_gain_bias',[0,0,0,0]);pause(n.pause)                    % no gain
+    if isnan(Freq_all(kk))
+        Panel_com('set_pattern_id', 2);pause(n.pause)                       	% set pattern
+    else
+        Panel_com('set_pattern_id', 3);pause(n.pause)                        	% set pattern
+    end
+    Panel_com('set_position',[randi([1,96]), ypos_all(kk)]); pause(n.pause) 	% set starting position (xpos,ypos) [ypos = spatFreq]
+    Panel_com('set_funcX_freq', 50);pause(n.pause);                             % default X update rate
+    Panel_com('set_funcY_freq', 50);pause(n.pause);                             % default Y update rate
+    Panel_com('set_mode', [0,0]);pause(n.pause)                                 % 0=open,1=closed,2=fgen,3=vmode,4=pmode
+    Panel_com('send_gain_bias',[0,0,0,0]);pause(n.pause)                        % no gain
     %-----------------------------------------------------------------------------------------------------------------------------
     % RUN EXPERIMENT AND COLLECT DATA
     queueOutputData(s,TriggerSignal) % set trigger AO signal
@@ -165,7 +169,7 @@ for kk = 1:n.rep*n.freq
     
     % Save data
     disp('Saving...')
-    filename  = ['Fly_' num2str(Fn) '_Trial_' num2str(kk) '_SpatFreq_' num2str(Freq_all(kk)) '_Vel_' num2str(0) '.mat'];
+    filename = ['Fly_' num2str(Fn) '_Trial_' num2str(kk) '_SpatFreq_' num2str(Freq_all(kk)) '_Vel_' num2str(0) '.mat'];
     save(fullfile(rootdir,filename),'-v7.3','data','t_p');
     save(fullfile(viddir,filename),'-v7.3','vidData','t_v');
     %-----------------------------------------------------------------------------------------------------------------------------
