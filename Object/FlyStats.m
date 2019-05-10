@@ -47,8 +47,9 @@ classdef FlyStats
             obj.All = cell(1,nn(2)); % stores concatenateed array data
             for jj = 1:nn(2) % cycle through all input cells in the dimension average
                 obj_all{jj} = cat(3,OBJ{:,jj}); % concatenates object data cells in 3rd dimension
-                for ii = 1:length(obj_all{jj}) % cycle through properties
+                for ii = 1:size(obj_all{jj},1) % cycle through properties
                     for kk = 1:nn(1) % cycle through the dimesnion to average
+%                       	fprintf('(%i,%i,%i)\n',jj,kk,ii)
                         obj.All{ii,jj}(:,:,kk) = obj_all{jj}{ii,1,kk}; % transform cell to array
                     end
                 end
@@ -170,6 +171,58 @@ classdef FlyStats
             hold off
         end
         
+        function [] = PlotBode(obj,n,lim)
+            % PlotBode: BODE plot for IO_Class
+            %   INPUTS:
+            %       obj     : object instance
+            %       n       : derivaties of X to plot, default is all
+            %       lim     : x-limit
+        
+            freq = obj.Median{1}(:,1);
+            if nargin==1
+                n = 1:size(obj.All{6},2);
+                lim = freq(end);
+            elseif nargin<=2
+                lim = freq(end);
+            end
+            
+            figure('Name',['Fly Frequency Domain (# trial = ' num2str(obj.nTrial) ')'])
+            pp = 1;
+            for kk = n
+                ax = subplot(2,length(n),pp) ; hold on ; grid on
+                    title(['X_' num2str(kk)])               
+                    for jj = 1:size(obj.All{1},3)
+                        h = plot(obj.All{1}(:,1,jj),obj.All{2}(:,kk,jj),'-');
+                        h.Color(4) = 0.5;
+                    end
+
+                    PlotPatch(obj.Median{2}(:,kk),obj.STD{2}(:,kk),freq,2,obj.nTrial,'k',[0.4 0.4 0.6],0.5,2);
+
+                    xlim([0 lim])
+                    ylim([0 1.2])
+                    ylabel('Gain')
+                
+                ax = subplot(2,length(n),pp+length(n)) ; hold on ; grid on                               
+                    for jj = 1:size(obj.All{5},3)
+                        h = plot(obj.All{1}(:,1,jj),obj.All{3}(:,kk,jj),'-');
+                        h.Color(4) = 0.5;
+                    end
+                    
+                    PlotPatch(obj.CircMean{3}(:,kk),obj.CircSTD{3}(:,kk),freq,2,obj.nTrial,'k',[0.4 0.4 0.6],0.5,2);
+
+                    xlim([0 lim])
+                    ylim(max(ax.YLim)*[-1 1])
+                    ylabel('Phase')
+
+                    if (pp+length(n))>n(end)
+                        xlabel('Frequency')
+                    end
+                
+                pp = pp + 1;
+            end
+            hold off
+        end
+        
         
         function [] = PlotIOBode(obj,n,lim)
             % PlotIOBode: BODE plot for IO_Class
@@ -195,8 +248,6 @@ classdef FlyStats
                         h = plot(obj.All{4}(:,1,jj),obj.All{5}(:,kk,jj),'-o');
                         h.Color(4) = 0.5;
                     end
-
-%                     PlotPatch(obj.Median{2}(:,kk),obj.STD{2}(:,kk),freq,2,obj.nTrial,'k',[0.4 0.4 0.6],0.5,2);
 
                     err = 2*obj.STD{5}(:,kk);
                     errorbar(obj.Median{4},obj.Median{5}(:,kk),err,'-ok','LineWidth',2)

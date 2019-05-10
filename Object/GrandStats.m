@@ -155,6 +155,60 @@ classdef GrandStats
             hold off
         end
         
+        function [] = PlotBode(obj,n,lim)
+            % PlotBode: BODE plot
+            %   INPUTS:
+            %       obj     : object instance
+            %       n       : derivaties of X to plot, default is all
+            %       lim     : x-limit
+        
+            freq = obj.Median{2}{7}(:,1);
+            if nargin==1
+                n = 1:size(obj.All{6},2);
+                lim = freq(end);
+            elseif nargin<=2
+                lim = freq(end);
+            end
+            
+            figure('Name',['Grand BODE (# Fly = ' num2str(obj.nFly) ')'])
+            pp = 1;
+            for kk = n
+                ax = subplot(2,length(n),pp) ; hold on ; grid on
+                    title(['X_' num2str(kk)])               
+                    for jj = 1:size(obj.All{1}{1},3)
+                       	h = plot(obj.All{2}{1}(:,1,jj),obj.All{2}{2}(:,kk,jj),'-');
+                        h.Color(4) = 0.5;
+                    end
+                    
+                    PlotPatch(obj.Median{2}{2}(:,kk),obj.STD{2}{2}(:,kk),obj.Median{2}{1}(:,kk),2,obj.nFly,...
+                        'k',[0.4 0.4 0.6],0.5,2);
+
+                    xlim([0 lim])
+                    ylim(1.2*[0 1])
+                    ylabel('Gain')
+                
+                ax = subplot(2,length(n),pp+length(n)) ; hold on ; grid on                               
+                    for jj = 1:size(obj.All{1}{1},3)
+                     	h = plot(obj.All{2}{1}(:,1,jj),obj.All{9}{3}(:,kk,jj),'-');
+                        h.Color(4) = 0.5;
+                    end
+                    
+                	PlotPatch(obj.CircMean{9}{3}(:,kk),obj.CircSTD{9}{3}(:,kk),obj.Median{2}{1}(:,kk),2,obj.nFly,...
+                        'k',[0.4 0.4 0.6],0.5,2);
+                    
+                    xlim([0 lim])
+                    ylim(max(ax.YLim)*[-1 1])
+                    ylabel('Phase')
+
+                    if (pp+length(n))>n(end)
+                        xlabel('Frequency')
+                    end
+                
+                pp = pp + 1;
+            end
+            hold off
+        end
+
         function [] = PlotIOBode(obj,n,lim)
             % PlotIOBode: BODE plot
             %   INPUTS:

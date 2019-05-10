@@ -1,18 +1,17 @@
-function [] = MakeData_Ramp_HeadFree(rootdir,filename)
-%% MakeData_Ramp_HeadFree: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
+function [] = MakeData_Chirp_HeadFree_obj(rootdir)
+%% MakeData_Chirp_HeadFree_obj: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
 %   INPUTS:
-%       root    : root directory
+%       root        : root directory
 %   OUTPUTS:
-%       PAT     : pattern structure
-%       WING   	: wings structure
+%       -
 %---------------------------------------------------------------------------------------------------------------------------------
-rootdir = 'F:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast\60\';
-filename = 'Ramp_HeadFree_DATA';
+% rootdir = 'F:\EXPERIMENTS\Experiment_ChirpLog_HeadFree';
+filename = 'Chirp_HeadFree_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
 root.daq = rootdir;
-root.ang = [root.daq '\Vid\HeadAngles\'];
+root.ang = fullfile(root.daq,'\Vid\Angles\');
 
 % Select files
 [FILES, PATH.ang] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -26,19 +25,19 @@ PATH.daq = root.daq;
 clear rootdir
 %% Get Data %%
 %---------------------------------------------------------------------------------------------------------------------------------
-IOFreq = 0.1*round(linspace(0.1,8,10)/0.1);
+IOFreq = 1;
 disp('Loading...')
 ALL 	= cell([N{1,end},6]); % cell array to store all data objects
 TRIAL  	= cell(N{1,1},N{1,3});
 n.catg  = size(N,2) - 1;
 pp = 0;
-span = 1:2000;
+span = 1:4000;
 for kk = 1:N{1,end}
     disp(kk)
     % Load HEAD & DAQ data
     data = [];
-	load([PATH.daq   FILES{kk}],'data','t_p'); % load pattern x-position
-    load([PATH.ang   FILES{kk}],'hAngles','t_v'); % load head angles % time arrays
+	load(fullfile(PATH.daq, FILES{kk}),'data','t_p'); % load pattern x-position
+    load(fullfile(PATH.ang, FILES{kk}),'hAngles','t_v'); % load head angles % time arrays
     %-----------------------------------------------------------------------------------------------------------------------------
     % Check WBF
 	wing.f = 100*(data(:,6)); % wing beat frequency
@@ -77,24 +76,24 @@ for kk = 1:N{1,end}
     %-----------------------------------------------------------------------------------------------------------------------------
     % Calculate iput-output relationships
     pat2head    = IO_Class(Pat,Head);
-    err2wing    = IO_Class(Err,Head);
+    err2wing    = IO_Class(Err,Wing);
 	head2wing   = IO_Class(Head,Wing);
     %-----------------------------------------------------------------------------------------------------------------------------
     % Store objects in cells
-    for jj = 1:n.catg-1
+    for jj = 1:n.catg
         ALL{pp,jj} = I{kk,jj};
     end
-    ALL{pp,n.catg+1-1}	= Pat;
-	ALL{pp,n.catg+2-1} 	= Head;
-    ALL{pp,n.catg+3-1}	= Wing;
-%     ALL{pp,n.catg+4} 	= Err;
-%     ALL{pp,n.catg+5}	= pat2head;
-%     ALL{pp,n.catg+6} 	= err2wing;
-%     ALL{pp,n.catg+7}	= head2wing;
+    ALL{pp,n.catg+1}	= Pat;
+	ALL{pp,n.catg+2} 	= Head;
+    ALL{pp,n.catg+3}	= Wing;
+    ALL{pp,n.catg+4} 	= Err;
+    ALL{pp,n.catg+5}	= pat2head;
+    ALL{pp,n.catg+6} 	= err2wing;
+    ALL{pp,n.catg+7}	= head2wing;
     
     vars = {Pat,Head,Wing,Err,pat2head,err2wing,head2wing};
 	qq = size(TRIAL{I{kk,1},I{kk,3}},1);
-    for ww = 1:length(vars)-4
+    for ww = 1:length(vars)
         TRIAL{I{kk,1},I{kk,3}}{qq+1,ww} = vars{ww};
     end
 end
@@ -128,6 +127,7 @@ clear jj ii
 %% SAVE %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
-save([PATH.daq 'DATA\' filename '.mat'],'ALL','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
+save(['F:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
+    'ALL','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
 disp('SAVING DONE')
 end

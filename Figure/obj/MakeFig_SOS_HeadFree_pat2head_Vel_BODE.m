@@ -6,7 +6,7 @@ function [] = MakeFig_SOS_HeadFree_pat2head_Vel_BODE()
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
-root = 'F:\EXPERIMENTS\Experiment_SOS\DATA\';
+root = 'F:\DATA\Rigid_Data\';
 figNum = 1;
 %---------------------------------------------------------------------------------------------------------------------------------
 filename = 'SOS_HeadFree_pat2head_Vel_BODE'; % name of figure to save
@@ -45,7 +45,7 @@ xlim([0 9])
 ylim([0 1.2])
 xlabel('Frequency (Hz)','Interpreter','latex','FontSize',15)
 ylabel('Head Gain (${\circ}/{\circ}$)','Interpreter','latex','FontSize',15)
-
+%%
 saveas(FIG,[root 'FIGURE\' filename '.fig']); % save .fig file
 print(gcf,[root 'FIGURE\' filename],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
 disp('Saved to')
