@@ -1,27 +1,35 @@
-function [] = MakeFig_SOS_HeadFree_Head_Pos_Time()
+function [FIG] = MakeFig_SOS_HeadFree_Head_Pos_Time()
 %% MakeFig_SOS_HeadFree_Pos_Time: time domain head position plot for SOS
 %   INPUTS:
 %       -
 %   OUTPUTS:
-%       -
+%       FIG     :   figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
-root = 'F:\EXPERIMENTS\Experiment_SOS\DATA\';
+root = 'H:\DATA\Rigid_Data\';
 figNum = 1;
-%---------------------------------------------------------------------------------------------------------------------------------
+catIdx = 2;
+xIdx = 1;
+
 filename = 'SOS_HeadFree_Head_Pos_Time'; % name of figure to save
-HeadFree = load([root 'SOS_HeadFree_DATA.mat'],'TRIAL','FLY','GRAND','U','N'); % load data structure
+
+% Select files
+[FILE,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
+    'Select head angle trials', root, 'MultiSelect','off');
+FILE = cellstr(FILE)';
+
+HeadFree = load(fullfile(root,FILE{1}),'TRIAL','FLY','GRAND','U','N'); % load data structure
 
 FIG = figure (figNum); % figure handle
 FIG.Color = 'w';
 FIG.Position = [100 100 1100 800];
+FIG.Name = filename;
 hold on
-catIdx = 2;
 
 % Trials
 for kk = 1:HeadFree.N{1,1}
     for ii = size(HeadFree.TRIAL{kk},1)
-        h.Trial = plot(HeadFree.TRIAL{kk}{ii,catIdx}.Time,HeadFree.TRIAL{kk}{ii,catIdx}.X(:,1),...
+        h.Trial = plot(HeadFree.TRIAL{kk}{ii,catIdx}.Time,HeadFree.TRIAL{kk}{ii,catIdx}.X(:,xIdx),...
             'Color',[0.5 0.5 0.5 0.25],'LineWidth',1);
     end
 end
@@ -42,7 +50,5 @@ xlabel('Time (s)','Interpreter','latex','FontSize',15)
 ylabel('Head($^{\circ}$)','Interpreter','latex','FontSize',15)
 
 saveas(FIG,[root 'FIGURE\' filename '.fig']); % save .fig file
-print(gcf,[root 'FIGURE\' filename],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
-disp('Saved to')
-disp(root)
+%print(gcf,[root 'FIGURE\' filename],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
 end

@@ -1,24 +1,29 @@
-function [] = MakeFig_SOS_HeadFree_pat2head_Pos_BODE()
+function [FIG] = MakeFig_SOS_HeadFree_pat2head_Pos_BODE()
 %% MakeFig_SOS_HeadFree_pat2head_Pos_BODE: BODE head position for SOS
 %   INPUTS:
 %       -
 %   OUTPUTS:
-%       -
+%       FIG     :   figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
-% EXAMPLE INPUT %
-root = 'F:\EXPERIMENTS\Experiment_SOS\DATA\';
+root = 'H:\DATA\Rigid_Data\';
 figNum = 1;
-%---------------------------------------------------------------------------------------------------------------------------------
+catIdx = 5;
+xIdx = 1;
+
 filename = 'SOS_HeadFree_pat2head_Pos_BODE'; % name of figure to save
-HeadFree = load([root 'SOS_HeadFree_DATA.mat'],'TRIAL','FLY','GRAND','U','N'); % load data structure
+
+% Select files
+[FILE,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
+    'Select head angle trials', root, 'MultiSelect','off');
+FILE = cellstr(FILE)';
+
+HeadFree = load(fullfile(root,FILE{1}),'TRIAL','FLY','GRAND','U','N'); % load data structure
 
 FIG = figure (figNum); % figure handle
 FIG.Color = 'w';
 FIG.Position = [100 100 1100 800];
 FIG.Name = filename;
 hold on
-catIdx = 5;
-xIdx = 1;
 
 % Trials
 for kk = 1:HeadFree.N{1,1}
@@ -47,7 +52,5 @@ xlabel('Frequency (Hz)','Interpreter','latex','FontSize',15)
 ylabel('Head Gain (${\circ}/{\circ}$)','Interpreter','latex','FontSize',15)
 
 saveas(FIG,[root 'FIGURE\' filename '.fig']); % save .fig file
-print(gcf,[root 'FIGURE\' filename],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
-disp('Saved to')
-disp(root)
+% print(gcf,[root 'FIGURE\' filename],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
 end

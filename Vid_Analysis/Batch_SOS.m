@@ -3,7 +3,7 @@
 clear;close all;clc
 
 % root = 'F:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast\0\Vid\';
-root = 'F:\EXPERIMENTS\Experiment_SOS\Vid';
+root = 'H :\EXPERIMENTS\Experiment_SOS\Vid';
 % root = 'F:\EXPERIMENTS\Experiment_Static_SpatFreq\Vid';
 [FILES, dirpath] = uigetfile({'*.mat', 'DAQ-files'}, ... % select video files
     'Select fly trials', root, 'MultiSelect','on');
