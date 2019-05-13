@@ -5,7 +5,7 @@ function [] = MakeData_SOS_HeadFree_obj(rootdir)
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-rootdir = 'F:\EXPERIMENTS\Experiment_SOS';
+% rootdir = 'F:\EXPERIMENTS\Experiment_SOS';
 filename = 'SOS_HeadFree_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -27,7 +27,7 @@ clear rootdir
 %---------------------------------------------------------------------------------------------------------------------------------
 IOFreq = 0.1*round(linspace(0.1,8,10)/0.1)';
 disp('Loading...')
-ALL 	= cell([N{1,end},9]); % cell array to store all data objects
+ALL 	= cell([N{1,end},10]); % cell array to store all data objects
 TRIAL  	= cell(N{1,1},1);
 n.catg  = size(N,2) - 1;
 pp = 0;
@@ -79,18 +79,17 @@ for kk = 1:N{1,end}
     pat2head    = IO_Class(Pat,Head);
     err2wing    = IO_Class(Err,Head);
 	head2wing   = IO_Class(Head,Wing);
+    pat2wing    = IO_Class(Pat,Wing);
     %-----------------------------------------------------------------------------------------------------------------------------
     % Store objects in cells
     for jj = 1:n.catg
         ALL{pp,jj} = I{kk,jj};
     end
-    ALL{pp,n.catg+1}	= Pat;
-	ALL{pp,n.catg+2} 	= Head;
-    ALL{pp,n.catg+3}	= Wing;
-	ALL{pp,n.catg+4} 	= Err;
-    ALL{pp,n.catg+5}	= pat2head;
-	ALL{pp,n.catg+6} 	= err2wing;
-    ALL{pp,n.catg+7}	= head2wing;
+
+	vars = {Pat,Head,Wing,Err,pat2head,err2wing,head2wing,pat2wing};
+    for jj = 1:length(vars)
+        ALL{pp,n.catg+jj} = vars{jj};
+    end
     
     vars = {Pat,Head,Wing,Err,pat2head,err2wing,head2wing};
 	qq = size(TRIAL{I{kk,1}},1);

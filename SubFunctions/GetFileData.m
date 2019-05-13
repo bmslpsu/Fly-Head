@@ -69,7 +69,7 @@ for kk = 1:length(log)-1
 end
 [~,loc.catg] = find(log==true); % find locations of categorical variable 
 [~,loc.val] = find(log==false); % find locations of value variables
-loc.catg = loc.catg(1:length(loc.val)); % if there are more categories than values >>> get rid of last category
+loc.catg = loc.catg(1:length(loc.val)); % if there are more categories than values >>> get rid of trailing categories
 n.catg = length(loc.val); % # of categories
 n.val = length(loc.catg); % # of values
 if length(varargin)>n.catg
@@ -141,7 +141,7 @@ if nargin>2
     end
 end
 
-% Compute map for conditions
+% Compute trial map for conditions
 cond = nn(3:end); % conditions per category
 ncatg = length(cond); % # of categories 
 ridx = cell(ncatg,1);
@@ -161,12 +161,12 @@ for kk = 1:nn(1) % per fly
     end
 end
 
-% If there are no condtions, use trials instead
+% If there are no condtions, use trials instead >>>  make variable names for map
 if isempty(map) % no conditions
    map = reps{:,1};
    mapname = {'reps'};
 else
-    % Make variable names for map
+    % Make variable names
     mapname = cell(1,size(allcomb,2));
     for kk = 1:size(allcomb,2)
         valstr = [];
@@ -194,19 +194,26 @@ for kk = 1:nn(1)
 end
 npass = sum(mpass); % # of successful flies
 mpass = logical(mpass);
+mapSum = sum(map,1); % # of trials per condition
 
-% Make table from raw file data
+% Table from raw file data
 D = splitvars(table(numdata));
 D.Properties.VariableNames = varnames;
-% Make table from index data
+% Table from index data
 I = splitvars(table(Ind));
 I.Properties.VariableNames = varnames;
-% Make table from # data
+% Table from # data
 N = splitvars(table([nn,n.file]));
 N.Properties.VariableNames = [varnames,'file'];
-% Make table from unique data
+% Ttable from unique data
 U = splitvars(table(unq));
 U.Properties.VariableNames = varnames;
+% Table from map conditions
+A = splitvars(table(mapSum));
+A.Properties.VariableNames = mapname;
+% Table from all trials ,flies, conditions
+T = splitvars(table(unq{1} , reps{:,1} , map , mpass));
+T.Properties.VariableNames = [varnames(1:2) , mapname ,['CHECK_' num2str(minTrial)]];
 
 % Display data
 fprintf('Files: %i \n',n.file)
@@ -215,7 +222,6 @@ for kk = 3:n.catg
     fprintf('%s: %i \n',varnames{kk},nn(kk))
 end
 fprintf('Pass: %i \n',npass)
-T = splitvars(table(unq{1} , reps{:,1} , map , mpass));
-T.Properties.VariableNames = [varnames(1:2) , mapname ,['CHECK_' num2str(minTrial)]];
 disp(T)
+disp(A)
 end

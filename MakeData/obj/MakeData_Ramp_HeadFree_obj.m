@@ -1,17 +1,18 @@
-function [] = MakeData_Ramp_HeadFree_obj(rootdir)
+function [] = MakeData_Ramp_HeadFree_obj(rootdir,Amp)
 %% MakeData_Ramp_HeadFree: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
 %   INPUTS:
 %       root    : root directory
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-% rootdir = 'F:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast\60\';
-filename = 'Ramp_HeadFree_DATA';
+% rootdir = 'F:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast';
+% Amp = 60;
+filename = ['Ramp_HeadFree_' num2str(Amp) '_DATA'];
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
-root.daq = rootdir;
-root.ang = [root.daq '\Vid\HeadAngles\'];
+root.daq = fullfile(rootdir,num2str(Amp));
+root.ang = fullfile(root.daq,'\Vid\HeadAngles\');
 
 % Select files
 [FILES, PATH.ang] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -36,8 +37,8 @@ for kk = 1:N{1,end}
     disp(kk)
     % Load HEAD & DAQ data
     data = [];
-	load([PATH.daq   FILES{kk}],'data','t_p'); % load pattern x-position
-    load([PATH.ang   FILES{kk}],'hAngles','t_v'); % load head angles % time arrays
+	load(fullfile(PATH.daq, FILES{kk}),'data','t_p'); % load pattern x-position
+    load(fullfile(PATH.ang, FILES{kk}),'hAngles','t_v'); % load head angles % time arrays
     %-----------------------------------------------------------------------------------------------------------------------------
     % Check WBF
 	wing.f = 100*(data(:,6)); % wing beat frequency
@@ -70,26 +71,27 @@ for kk = 1:N{1,end}
     pat.Pos  	= FitPanel(pat.Pos,pat.Time,Head.Time); % fit panel data
  	Pat      	= Fly(pat.Pos,Head.Time,0.4*Head.Fs,IOFreq); % pattern object
 	%-----------------------------------------------------------------------------------------------------------------------------
- 	% Calculate error between head & pattern
-    head.Err = Pat.X(:,1) - Head.X(:,1); % calculate position error between head & pattern [deg]
-    Err = Fly(head.Err,Head.Time,0.4*Head.Fs,IOFreq); % error object
-    %-----------------------------------------------------------------------------------------------------------------------------
-    % Calculate iput-output relationships
-    pat2head    = IO_Class(Pat,Head);
-    err2wing    = IO_Class(Err,Head);
-	head2wing   = IO_Class(Head,Wing);
+%  	% Calculate error between head & pattern
+%     head.Err = Pat.X(:,1) - Head.X(:,1); % calculate position error between head & pattern [deg]
+%     Err = Fly(head.Err,Head.Time,0.4*Head.Fs,IOFreq); % error object
+%     %-----------------------------------------------------------------------------------------------------------------------------
+%     % Calculate iput-output relationships
+%     pat2head    = IO_Class(Pat,Head);
+%     err2wing    = IO_Class(Err,Head);
+%     head2wing   = IO_Class(Head,Wing);
     %-----------------------------------------------------------------------------------------------------------------------------
     % Store objects in cells
     for jj = 1:n.catg-1
         ALL{pp,jj} = I{kk,jj};
     end
-    ALL{pp,n.catg+1-1}	= Pat;
-	ALL{pp,n.catg+2-1} 	= Head;
-    ALL{pp,n.catg+3-1}	= Wing;
     
-    vars = {Pat,Head,Wing,Err,pat2head,err2wing,head2wing};
+	vars = {Pat,Head,Wing};
+    for jj = 1:length(vars)
+        ALL{pp,n.catg+jj-1} = vars{jj};
+    end
+    
 	qq = size(TRIAL{I{kk,1},I{kk,3}},1);
-    for ww = 1:length(vars)-4
+    for ww = 1:length(vars)
         TRIAL{I{kk,1},I{kk,3}}{qq+1,ww} = vars{ww};
     end
 end
