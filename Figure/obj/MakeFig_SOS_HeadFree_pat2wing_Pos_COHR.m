@@ -1,5 +1,5 @@
-function [FIG] = MakeFig_SOS_HeadFree_pat2head_Pos_COHR()
-%% MakeFig_SOS_HeadFree_pat2head_Pos_Cohr: head coherence plot for SOS
+function [FIG] = MakeFig_SOS_HeadFree_pat2wing_Pos_COHR()
+%% MakeFig_SOS_HeadFree_pat2wing_Pos_COHR: head coherence plot for SOS
 %   INPUTS:
 %       -
 %   OUTPUTS:
@@ -15,12 +15,12 @@ FILE = cellstr(FILE)';
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','FLY','GRAND','U','N'); % load data structure
 
 figNum = 1;
-catIdx = 5;
+catIdx = 8;
 xIdx = 1;
 
-filename = 'SOS_HeadFree_pat2head_Pos_COHR'; % name of figure to save
+filename = 'SOS_HeadFree_pat2wing_Pos_COHR'; % name of figure to save
 
-FIG = figure (figNum); % figure handle
+FIG = figure (figNum); clf % figure handle
 FIG.Color = 'w';
 FIG.Position = [100 100 1100 800];
 FIG.Name = filename;
@@ -50,7 +50,7 @@ errorbar(HeadFree.GRAND{1,catIdx}.Mean{2}{4},HeadFree.GRAND{1,catIdx}.Mean{2}{9}
 xlim([0 9])
 ylim([0 1])
 xlabel('Frequency (Hz)','Interpreter','latex','FontSize',15)
-ylabel('Head Coherence (${\circ}/{\circ}$)','Interpreter','latex','FontSize',15)
+ylabel('Wing Coherence','Interpreter','latex','FontSize',15)
 
 saveas(FIG,[root 'FIGURE\' filename '.fig']); % save .fig file
 % print(gcf,[root 'FIGURE\' filename],'-dpdf','-r600','-bestfit') % save as publication quality .pdf

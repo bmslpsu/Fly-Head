@@ -1,11 +1,11 @@
 function [] = MakeData_SOS_HeadFree_obj(rootdir)
 %% MakeData_SOS_HeadFree_obj: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
 %   INPUTS:
-%       root        : root directory
+%       rootdir    	:   root directory
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-% rootdir = 'F:\EXPERIMENTS\Experiment_SOS';
+rootdir = 'F:\EXPERIMENTS\Experiment_SOS';
 filename = 'SOS_HeadFree_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -91,7 +91,6 @@ for kk = 1:N{1,end}
         ALL{pp,n.catg+jj} = vars{jj};
     end
     
-    vars = {Pat,Head,Wing,Err,pat2head,err2wing,head2wing};
 	qq = size(TRIAL{I{kk,1}},1);
     for ww = 1:length(vars)
         TRIAL{I{kk,1}}{qq+1,ww} = vars{ww};

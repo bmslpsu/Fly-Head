@@ -1,5 +1,5 @@
-function [FIG] = MakeFig_Sine_HeadFree_pat2head_BODE_ALL()
-%% MakeFig_Sine_HeadFree_pat2head_BODE_ALL:
+function [FIG] = MakeFig_Sine_HeadFree_err2wing_BODE_ALL()
+%% MakeFig_Sine_HeadFree_err2wing_BODE_ALL:
 %   INPUTS:
 %      CLR      :   line color
 %   OUTPUTS:
@@ -25,8 +25,8 @@ for ww = 1:nAmp
 end
 
 figNum = 1;
-filename = 'Sine_HeadFree_pat2head_BODE_ALL'; % name of figure to save
-catIdx = 5; % pat2head
+filename = 'Sine_HeadFree_err2wing_BODE_ALL'; % name of figure to save
+catIdx = 6; % pat2head
 xIdx = 1;
 
 % Fly Stats
@@ -42,9 +42,9 @@ for ww = 1:nAmp % amplitudes
         PHASE.GrandMean{ww}(jj,1) 	= HeadFree{ww}.GRAND{jj,catIdx}.CircMean{9}{6}(:,xIdx);
         GAIN.GrandSTD{ww}(jj,1)   	= HeadFree{ww}.GRAND{jj,catIdx}.STD{2}{5}(:,xIdx);
         PHASE.GrandSTD{ww}(jj,1) 	= HeadFree{ww}.GRAND{jj,catIdx}.CircSTD{10}{6}(:,xIdx);
-        if jj==5
+        if jj==5 || jj==6
             if PHASE.GrandMean{ww}(jj,1)>0.4
-                PHASE.GrandMean{ww}(jj,1) 	= PHASE.GrandMean{ww}(jj,1) - pi;
+%                 PHASE.GrandMean{ww}(jj,1) 	= PHASE.GrandMean{ww}(jj,1) - pi;
             end
         end
 
@@ -63,10 +63,8 @@ legList     = cellstr(num2str(Amp))';
 hh          = cell(nAmp,1);
 % Grand Stats
 for ww = 1:nAmp % amplitudes
-    subplot(2,1,1) ; hold on ; xlim([0 12.5]) ; ylim(1*[0 1.2]) ; title('All','interpreter','latex','FontSize',18)
+    subplot(2,1,1) ; hold on ; xlim([0 12.5]) ; ylim(1*[0 0.4]) ; title('All','interpreter','latex','FontSize',18)
         h.Fly = errorbar(FREQ.GrandMean{ww},GAIN.GrandMean{ww},2*GAIN.GrandSTD{ww},'-o','Color',CLR(ww,:),'LineWidth',2);
-        plot([0 12],[1 1],'--k')
-%         legend(h.Fly,[num2str(Amp(ww)) char(176)])     
         ylabel('Gain ($^{\circ}/^{\circ}$)','interpreter','latex','FontSize',15)
     subplot(2,1,2) ; hold on ; xlim([0 12.5]) ; ylim(pi*[-1 1])
         h.Fly = errorbar(FREQ.GrandMean{ww},PHASE.GrandMean{ww},2*PHASE.GrandSTD{ww},'-o','Color',CLR(ww,:),'LineWidth',2);

@@ -1,13 +1,11 @@
-function [] = MakeFig_Sine_HeadFree_Wing_Time()
+function [] = MakeFig_Sine_HeadFree_Wing_Pos_Time()
 %% MakeFig_Sine_HeadFree_Wing_Time:
 %   INPUTS:
 %       -
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'H:\DATA\Rigid_Data\';
-figNum = 1;
-filename = 'Sine_HeadFree_Wing_Time'; % name of figure to save
+root = 'F:\DATA\Rigid_Data\';
 
 % Select files
 [FILES,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -25,6 +23,9 @@ HeadFree = cell(nAmp,1);
 for ww = 1:nAmp
     HeadFree{ww} = load(fullfile(root,FILES{ww}),'TRIAL','FLY','GRAND','U','N');
 end
+%%
+figNum = 1;
+filename = 'Sine_HeadFree_Wing_Time'; % name of figure to save
 
 FIG = figure (figNum); % figure handle
 FIG.Color = 'w';
@@ -34,6 +35,7 @@ for ww = 1:nAmp
    FIG.Name = [FIG.Name '_' num2str(Amp(ww))];  
 end
 hold on
+
 catIdx = 3;
 xIdx = 1;
 
@@ -91,5 +93,5 @@ end
 
 figdir = 'H:\DATA\Rigid_Data\FIGURE\';
 saveas(FIG,[figdir FIG.Name '.fig']); % save .fig file
-print (FIG,[figdir FIG.Name],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
+% print (FIG,[figdir FIG.Name],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
 end
