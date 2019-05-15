@@ -1,4 +1,4 @@
-function [FIG] = MakeFig_Sine_HeadFree_headvswing_TimeScatter_ALL()
+function [FIG] = MakeFig_Sine_HeadFree_patvshead_TimeScatter_ALL()
 %% MakeFig_Sine_HeadFree_headvswing_TimeScatter_ALL:
 %   INPUTS:
 %      -
@@ -23,22 +23,22 @@ HeadFree = cell(nAmp,1);
 for ww = 1:nAmp
     HeadFree{ww} = load(fullfile(root,FILES{ww}),'TRIAL','U','N');
 end
-%%
-figNum = 1;
-filename = 'Sine_HeadFree_headvswing_TimeScatter_ALL'; % name of figure to save
-catIdx = [2 3];
-xIdx = 1;
 
+figNum = 1;
+filename = 'Sine_HeadFree_patvshead_TimeScatter_ALL'; % name of figure to save
+catIdx = [1 2];
+xIdx = 1;
+%%
 % Store data by amplitude
-HEAD = cell(nAmp,HeadFree{1}.N{1,3});
-WING = HEAD;
+PAT = cell(nAmp,HeadFree{1}.N{1,3});
+HEAD = PAT;
 pp = 1;
 for ww = 1:nAmp
     for jj = 1:HeadFree{ww}.N{1,3}
         for kk = 1:HeadFree{ww}.N{1,1}
             for ii = 1:size(HeadFree{ww}.TRIAL{kk,jj},1)
-                HEAD{ww,jj}(:,end+1) = HeadFree{ww}.TRIAL{kk,jj}{ii,catIdx(1)}.X(:,xIdx);
-                WING{ww,jj}(:,end+1) = HeadFree{ww}.TRIAL{kk,jj}{ii,catIdx(2)}.X(:,xIdx);
+                PAT{ww,jj}(:,end+1) = HeadFree{ww}.TRIAL{kk,jj}{ii,catIdx(1)}.X(:,xIdx);
+                HEAD{ww,jj}(:,end+1) = HeadFree{ww}.TRIAL{kk,jj}{ii,catIdx(2)}.X(:,xIdx);
                 pp = pp + 1; 
             end
         end
@@ -64,22 +64,23 @@ for ww = 1:nAmp
         end
             
         if pp>(nAmp-1)*HeadFree{ww}.N{1,3}
-            xlabel('Head ($^{\circ}$)','Interpreter','latex','FontSize',12)
+            xlabel('Pattern ($^{\circ}$)','Interpreter','latex','FontSize',12)
         else
             xticks('')
         end
         
         if round((pp-1)/HeadFree{ww}.N{1,3})==((pp-1)/HeadFree{ww}.N{1,3})
-           ylabel({[num2str(Amp(ww)) '$^{\circ}$'],'Wing (V)'},'Interpreter','latex','FontSize',12)
+           ylabel({[num2str(Amp(ww)) '$^{\circ}$'],'Head ($^{\circ}$)'},'Interpreter','latex','FontSize',12)
         else
             yticks('')
         end
 
-        xData = HEAD{ww,jj}(:);
-        yData = WING{ww,jj}(:);
+        xData = PAT{ww,jj}(:);
+        yData = HEAD{ww,jj}(:);
 
         [h] = scatplot(xData,yData);
         delete(h.cb)
+%         scatter(xData(:,1),yData(:,1))
         
         % Calculate linear best fit
         [r,m,b] = regression(xData,yData,'one');
@@ -89,6 +90,7 @@ for ww = 1:nAmp
         plot(xFit,yFit,'r','LineWidth',5)
         
     pp = pp + 1;
+%     lsline
     end
 end
 
