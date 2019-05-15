@@ -1,11 +1,11 @@
 function [FIG] = MakeFig_Sine_HeadFree_headvswing_TimeScatter_ALL()
 %% MakeFig_Sine_HeadFree_headvswing_TimeScatter_ALL:
 %   INPUTS:
-%      CLR      :   line color
+%      -
 %   OUTPUTS:
 %       FIG     :   figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'F:\DATA\Rigid_Data\';
+root = 'E:\DATA\Rigid_Data\';
 
 % Select files
 [FILES,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -23,7 +23,7 @@ HeadFree = cell(nAmp,1);
 for ww = 1:nAmp
     HeadFree{ww} = load(fullfile(root,FILES{ww}),'TRIAL','U','N');
 end
-
+%%
 figNum = 1;
 filename = 'Sine_HeadFree_headvswing_TimeScatter_ALL'; % name of figure to save
 catIdx = [2 3];
@@ -45,7 +45,7 @@ for ww = 1:nAmp
     end
 end
 
-
+%%
 FIG = figure (figNum); clf % figure handle
 FIG.Color = 'w';
 FIG.Position = [100 100 1200 220*nAmp];
