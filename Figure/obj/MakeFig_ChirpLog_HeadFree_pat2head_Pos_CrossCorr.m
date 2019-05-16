@@ -13,7 +13,7 @@ root = 'F:\DATA\Rigid_Data\';
 FILE = cellstr(FILE)';
 
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','FLY','GRAND','U','N'); % load data structure
-
+%%
 figNum = 1;
 catIdx = 5;
 xIdx = 1;

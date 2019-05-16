@@ -6,9 +6,6 @@ function [] = MakeFig_Sine_HeadFree_Head_Time()
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
 root = 'H:\DATA\Rigid_Data\';
-figNum = 1;
-%---------------------------------------------------------------------------------------------------------------------------------
-filename = 'Sine_HeadFree_Head_Time'; % name of figure to save
 
 % Select files
 [FILES,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -26,17 +23,22 @@ HeadFree = cell(nAmp,1);
 for ww = 1:nAmp
     HeadFree{ww} = load(fullfile(root,FILES{ww}),'TRIAL','FLY','GRAND','U','N');
 end
-%%
-FIG = figure (figNum); % figure handle
+
+filename = 'Sine_HeadFree_Head_Time'; % name of figure to save
+
+hold on
+catIdx = 2;
+xIdx = 1;
+figNum = 1;
+
+FIG = figure (figNum); clf % figure handle
 FIG.Color = 'w';
 FIG.Position = [100 100 1100 800];
+movegui(FIG,'center')
 FIG.Name = filename;
 for ww = 1:nAmp
    FIG.Name = [FIG.Name '_' num2str(Amp(ww))];  
 end
-hold on
-catIdx = 2;
-xIdx = 1;
 
 % Trials
 for ww = 1:nAmp % amplitudes
@@ -75,10 +77,10 @@ for ww = 1:nAmp % amplitudes
 
      	title([num2str(freq) ' Hz'],'FontSize',15,'FontWeight','bold')
         
-       	ylabel(['Head (' char(176) ')'],'FontSize',12,'FontWeight','bold')
+       	ylabel(['Head ($^{\circ}$)'],'interpreter','latex','FontSize',15)
         
         if pp==HeadFree{ww}.N{1,3}
-            xlabel('Time (s)','FontSize',12,'FontWeight','bold')
+            xlabel('Time (s)','interpreter','latex','FontSize',15)
         else
             xticks('')
         end
@@ -89,8 +91,8 @@ for ww = 1:nAmp % amplitudes
         pp = pp + 1;
     end
 end
-%%
+
 figdir = 'H:\DATA\Rigid_Data\FIGURE\';
 saveas(FIG,[figdir FIG.Name '.fig']); % save .fig file
-print (FIG,[figdir FIG.Name],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
+%print (FIG,[figdir FIG.Name],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
 end

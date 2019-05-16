@@ -1,5 +1,5 @@
-function [FIG] = MakeFig_ChirpLog_HeadFree_head_Pos_Time()
-%% MakeFig_ChirpLog_HeadFree_head_Pos_Time.m:
+function [FIG] = MakeFig_ChirpLog_HeadFixed_wing_Pos_Time()
+%% MakeFig_ChirpLog_HeadFixed_wing_Pos_Time:
 %   INPUTS:
 %       -
 %   OUTPUTS:
@@ -18,13 +18,12 @@ figNum = 1;
 catIdx = 2;
 xIdx = 1;
 
-filename = 'ChirpLog_HeadFree_head_Pos_Time'; % name of figure to save
+filename = 'ChirpLog_HeadFixed_wing_Pos_Time'; % name of figure to save
 
 FIG = figure (figNum); clf % figure handle
 FIG.Color = 'w';
 FIG.Position = [100 100 1200 800];
 FIG.Name = filename;
-FIG.PaperPositionMode = 'auto';
 movegui(FIG,'center')
 hold on
 
@@ -33,7 +32,7 @@ pp = 1;
 for jj = 1:HeadFree.N{1,3}
     for kk = 1:HeadFree.N{1,1}
         for ii = 1:size(HeadFree.TRIAL{kk,jj},1)
-            subplot(HeadFree.N{1,3},1,pp) ; hold on ; xlim([0 20]) ; ylim(20*[-1 1])
+            subplot(HeadFree.N{1,3},1,pp) ; hold on ; xlim([0 20]) ; ylim(3*[-1 1])
                 h.Trial = plot(HeadFree.TRIAL{kk,jj}{ii,catIdx}.Time,HeadFree.TRIAL{kk,jj}{ii,catIdx}.X(:,xIdx),...
                     '-','Color',[0.5 0.5 0.5 0.1],'LineWidth',1);
         end
@@ -45,7 +44,7 @@ end
 pp = 1;
 for jj = 1:HeadFree.N{1,3}
     for kk = 1:HeadFree.N{1,1}
-        subplot(HeadFree.N{1,3},1,pp) ; hold on ; xlim([0 20]) ; ylim(20*[-1 1])
+        subplot(HeadFree.N{1,3},1,pp) ; hold on ; xlim([0 20]) ; ylim(3*[-1 1])
             h.Fly = plot(HeadFree.FLY{jj}{kk,catIdx}.Mean{5},HeadFree.FLY{jj}{kk,catIdx}.Mean{6}(:,xIdx),...
                 '-','LineWidth',1);
             h.Fly.Color(4) = 0.5;
@@ -56,12 +55,12 @@ end
 % Grand Stats
 pp = 1;
 for jj = 1:HeadFree.N{1,3}
-    ax = subplot(HeadFree.N{1,3},1,pp) ; hold on ; xlim([0 20]) ; ylim(20*[-1 1])
+    ax = subplot(HeadFree.N{1,3},1,pp) ; hold on ; xlim([0 20]) ; ylim(4*[-1 1])
     title([num2str(HeadFree.U{1,3}{1}(jj)) char(176)],'FontSize',15)
         h.patch = PlotPatch(HeadFree.GRAND{jj,catIdx}.Mean{2}{6}(:,xIdx),HeadFree.GRAND{jj,catIdx}.STD{2}{6}(:,xIdx),...
             HeadFree.GRAND{jj,catIdx}.Mean{2}{5},3,HeadFree.N{1,1},'k',[0.4 0.4 0.6],0.5,3);
                
-    	ylabel('Head ($^{\circ}$)','Interpreter','latex','FontSize',15)
+    	ylabel('$\Delta$ WBA (V)','Interpreter','latex','FontSize',15)
 
         if pp==HeadFree.N{1,3}
             xlabel('Time (s)','Interpreter','latex','FontSize',15)

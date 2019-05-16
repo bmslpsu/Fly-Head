@@ -23,7 +23,7 @@ HeadFree = cell(nAmp,1);
 for ww = 1:nAmp
     HeadFree{ww} = load(fullfile(root,FILES{ww}),'TRIAL','FLY','GRAND','U','N');
 end
-%%
+
 figNum = 1;
 filename = 'Sine_HeadFree_Wing_Time'; % name of figure to save
 
@@ -76,10 +76,10 @@ for ww = 1:nAmp % amplitudes
 
      	title([num2str(freq) ' Hz'],'FontSize',15,'FontWeight','bold')
         
-       	ylabel(['\Delta WBA (V)'],'FontSize',12,'FontWeight','bold')
+       	ylabel('$\Delta$ WBA (V)','Interpreter','latex','FontSize',15)
         
         if pp==HeadFree{ww}.N{1,3}
-            xlabel('Time (s)','FontSize',12,'FontWeight','bold')
+            xlabel('Time (s)','Interpreter','latex','FontSize',15)
         else
             xticks('')
         end

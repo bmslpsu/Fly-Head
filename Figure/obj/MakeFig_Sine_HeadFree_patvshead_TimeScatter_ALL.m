@@ -28,7 +28,7 @@ figNum = 1;
 filename = 'Sine_HeadFree_patvshead_TimeScatter_ALL'; % name of figure to save
 catIdx = [1 2];
 xIdx = 1;
-%%
+
 % Store data by amplitude
 PAT = cell(nAmp,HeadFree{1}.N{1,3});
 HEAD = PAT;

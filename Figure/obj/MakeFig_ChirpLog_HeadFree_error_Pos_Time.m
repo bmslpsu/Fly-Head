@@ -13,7 +13,7 @@ root = 'F:\DATA\Rigid_Data\';
 FILE = cellstr(FILE)';
 
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','FLY','GRAND','U','N'); % load data structure
-
+%%
 figNum = 1;
 catIdx = 4;
 xIdx = 1;
@@ -60,7 +60,7 @@ for jj = 1:HeadFree.N{1,3}
         h.patch = PlotPatch(HeadFree.GRAND{jj,catIdx}.Mean{2}{6}(:,xIdx),HeadFree.GRAND{jj,catIdx}.STD{2}{6}(:,xIdx),...
             HeadFree.GRAND{jj,catIdx}.Mean{2}{5},3,HeadFree.N{1,1},'k',[0.4 0.4 0.6],0.5,3);
                
-    	ylabel('Error ($\circ$)','Interpreter','latex','FontSize',15)
+    	ylabel('Error ($^{\circ}$)','Interpreter','latex','FontSize',15)
 
         if pp==HeadFree.N{1,3}
             xlabel('Time (s)','Interpreter','latex','FontSize',15)

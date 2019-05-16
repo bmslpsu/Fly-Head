@@ -23,7 +23,7 @@ HeadFree = cell(nAmp,1);
 for ww = 1:nAmp
     HeadFree{ww} = load(fullfile(root,FILES{ww}),'GRAND','U','N');
 end
-
+%%
 figNum = 1;
 filename = 'Sine_HeadFree_pat2head_COHR_ALL'; % name of figure to save
 catIdx = 5; % pat2head
@@ -56,12 +56,12 @@ hh          = cell(nAmp,1);
 for ww = 1:nAmp % amplitudes
     hold on ; xlim([0 12.5]) ; ylim(1*[0 1]) ; title('All','interpreter','latex','FontSize',18)
     h.Fly = errorbar(FREQ.GrandMean{ww},COHR.GrandMean{ww},2*COHR.GrandSTD{ww},'-o','Color',CLR(ww,:),'LineWidth',2);
-    ylabel('Coherence','interpreter','latex','FontSize',15)
+    ylabel('Head Coherence','interpreter','latex','FontSize',15)
     xlabel('Frequency (Hz)','interpreter','latex','FontSize',15)
 end
 legend(cat(1,hh{:}),legList)
 
-figdir = 'F:\DATA\Rigid_Data\FIGURE\';
+figdir = 'H:\DATA\Rigid_Data\FIGURE\';
 saveas(FIG,[figdir FIG.Name '.fig']); % save .fig file
 % print (FIG,[figdir FIG.Name],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
 end

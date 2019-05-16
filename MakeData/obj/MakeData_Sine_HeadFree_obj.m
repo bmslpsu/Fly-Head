@@ -80,20 +80,18 @@ for kk = 1:N{1,end}
     pat2head    = IO_Class(Pat,Head);
     err2wing    = IO_Class(Err,Wing);
 	head2wing   = IO_Class(Head,Wing);
+    pat2wing    = IO_Class(Pat,Wing);
     %-----------------------------------------------------------------------------------------------------------------------------
     % Store objects in cells
     for jj = 1:n.catg
         ALL{pp,jj} = I{kk,jj};
     end
-    ALL{pp,n.catg+1}	= Pat;
-	ALL{pp,n.catg+2} 	= Head;
-    ALL{pp,n.catg+3}	= Wing;
-    ALL{pp,n.catg+4} 	= Err;
-    ALL{pp,n.catg+5}	= pat2head;
-    ALL{pp,n.catg+6} 	= err2wing;
-    ALL{pp,n.catg+7}	= head2wing;
     
-    vars = {Pat,Head,Wing,Err,pat2head,err2wing,head2wing};
+	vars = {Pat,Head,Wing,Err,pat2head,err2wing,head2wing,pat2wing};
+    for jj = 1:length(vars)
+        ALL{pp,n.catg+jj} = vars{jj};
+    end
+    
 	qq = size(TRIAL{I{kk,1},I{kk,3}},1);
     for ww = 1:length(vars)
         TRIAL{I{kk,1},I{kk,3}}{qq+1,ww} = vars{ww};

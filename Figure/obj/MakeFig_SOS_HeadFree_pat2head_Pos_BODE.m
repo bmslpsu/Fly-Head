@@ -5,7 +5,7 @@ function [FIG] = MakeFig_SOS_HeadFree_pat2head_Pos_BODE()
 %   OUTPUTS:
 %       FIG     :   figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'F:\DATA\Rigid_Data\';
+root = 'H:\DATA\Rigid_Data\';
 figNum = 1;
 catIdx = 5;
 xIdx = 1;

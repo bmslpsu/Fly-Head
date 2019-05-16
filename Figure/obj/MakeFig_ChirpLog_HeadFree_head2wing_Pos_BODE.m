@@ -13,7 +13,7 @@ root = 'F:\DATA\Rigid_Data\';
 FILE = cellstr(FILE)';
 
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','FLY','GRAND','U','N'); % load data structure
-
+%%
 figNum = 1;
 catIdx = 7;
 xIdx = 1;
@@ -64,11 +64,11 @@ pp = 1;
 for jj = 1:HeadFree.N{1,3}
     ax = subplot(2,HeadFree.N{1,3},pp) ; hold on ; xlim([0.1 12]) ; ylim([0 1])
     title([num2str(HeadFree.U{1,3}{1}(jj)) char(176)],'FontSize',15)
-        h.patch = PlotPatch(medfilt1(HeadFree.GRAND{jj,catIdx}.Mean{2}{2}(:,xIdx),3),medfilt1(HeadFree.GRAND{jj,catIdx}.STD{2}{2}(:,xIdx),3),...
+        h.patch = PlotPatch(HeadFree.GRAND{jj,catIdx}.Mean{2}{2}(:,xIdx),medfilt1(HeadFree.GRAND{jj,catIdx}.STD{2}{2}(:,xIdx),3),...
             HeadFree.GRAND{jj,catIdx}.Mean{2}{1}(:,xIdx),3,HeadFree.N{1,1},'k',[0.4 0.4 0.6],0.5,2);
                
         if pp==1
-            ylabel('Wing Gain ($V/{\circ}$)','Interpreter','latex','FontSize',15)
+            ylabel('Wing Gain ($V/^{\circ}$)','Interpreter','latex','FontSize',15)
        	else
             yticks('')
         end

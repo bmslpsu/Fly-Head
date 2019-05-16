@@ -23,7 +23,7 @@ HeadFree = cell(nAmp,1);
 for ww = 1:nAmp
     HeadFree{ww} = load(fullfile(root,FILES{ww}),'GRAND','U','N');
 end
-
+%%
 figNum = 1;
 filename = 'Sine_HeadFree_err2wing_BODE_ALL'; % name of figure to save
 catIdx = 6; % pat2head
@@ -44,7 +44,7 @@ for ww = 1:nAmp % amplitudes
         PHASE.GrandSTD{ww}(jj,1) 	= HeadFree{ww}.GRAND{jj,catIdx}.CircSTD{10}{6}(:,xIdx);
         if jj==5 || jj==6
             if PHASE.GrandMean{ww}(jj,1)>0.4
-%                 PHASE.GrandMean{ww}(jj,1) 	= PHASE.GrandMean{ww}(jj,1) - pi;
+                PHASE.GrandMean{ww}(jj,1) 	= PHASE.GrandMean{ww}(jj,1) - pi;
             end
         end
 
@@ -65,17 +65,17 @@ hh          = cell(nAmp,1);
 for ww = 1:nAmp % amplitudes
     subplot(2,1,1) ; hold on ; xlim([0 12.5]) ; ylim(1*[0 0.4]) ; title('All','interpreter','latex','FontSize',18)
         h.Fly = errorbar(FREQ.GrandMean{ww},GAIN.GrandMean{ww},2*GAIN.GrandSTD{ww},'-o','Color',CLR(ww,:),'LineWidth',2);
-        ylabel('Gain ($^{\circ}/^{\circ}$)','interpreter','latex','FontSize',15)
+        ylabel('Wing Gain ($^{\circ}/^{\circ}$)','interpreter','latex','FontSize',15)
     subplot(2,1,2) ; hold on ; xlim([0 12.5]) ; ylim(pi*[-1 1])
         h.Fly = errorbar(FREQ.GrandMean{ww},PHASE.GrandMean{ww},2*PHASE.GrandSTD{ww},'-o','Color',CLR(ww,:),'LineWidth',2);
         hh{ww} = h.Fly;
         plot([0 12],[0 0],'--k')
-        ylabel('Phase Difference (rad)','interpreter','latex','FontSize',15)
+        ylabel('Wing Phase (rad)','interpreter','latex','FontSize',15)
         xlabel('Frequency (Hz)','interpreter','latex','FontSize',15)
 end
 legend(cat(1,hh{:}),legList)
 
-figdir = 'F:\DATA\Rigid_Data\FIGURE\';
+figdir = 'H:\DATA\Rigid_Data\FIGURE\';
 saveas(FIG,[figdir FIG.Name '.fig']); % save .fig file
 % print (FIG,[figdir FIG.Name],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
 end

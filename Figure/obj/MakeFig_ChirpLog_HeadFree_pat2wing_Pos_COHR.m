@@ -58,7 +58,7 @@ for jj = 1:HeadFree.N{1,3}
     ax = subplot(1,HeadFree.N{1,3},pp) ; hold on ; xlim([0.1 12]) ; ylim([0 1])
     title([num2str(HeadFree.U{1,3}{1}(jj)) char(176)],'FontSize',15)
         h.patch = PlotPatch(HeadFree.GRAND{jj,catIdx}.Mean{2}{7}(:,xIdx),HeadFree.GRAND{jj,catIdx}.STD{2}{7}(:,xIdx),...
-            HeadFree.GRAND{jj,catIdx}.Mean{2}{8}(:,xIdx),3,HeadFree.N{1,1},'k',[0.4 0.4 0.6],0.5,2);
+            HeadFree.GRAND{jj,catIdx}.Mean{2}{8}(:,xIdx),3,HeadFree.N{1,1},'k',[0.4 0.4 0.6],0.5,3);
                
         if pp==1
             ylabel('Pattern to Wing Coherence','Interpreter','latex','FontSize',15)

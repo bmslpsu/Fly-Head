@@ -5,7 +5,7 @@ function [FIG] = MakeFig_Sine_HeadFree_pat2head_BODE_ALL()
 %   OUTPUTS:
 %       FIG     :   figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'F:\DATA\Rigid_Data\';
+root = 'H:\DATA\Rigid_Data\';
 
 % Select files
 [FILES,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -67,17 +67,17 @@ for ww = 1:nAmp % amplitudes
         h.Fly = errorbar(FREQ.GrandMean{ww},GAIN.GrandMean{ww},2*GAIN.GrandSTD{ww},'-o','Color',CLR(ww,:),'LineWidth',2);
         plot([0 12],[1 1],'--k')
 %         legend(h.Fly,[num2str(Amp(ww)) char(176)])     
-        ylabel('Gain ($^{\circ}/^{\circ}$)','interpreter','latex','FontSize',15)
+        ylabel('Head Gain ($^{\circ}/^{\circ}$)','interpreter','latex','FontSize',15)
     subplot(2,1,2) ; hold on ; xlim([0 12.5]) ; ylim(pi*[-1 1])
         h.Fly = errorbar(FREQ.GrandMean{ww},PHASE.GrandMean{ww},2*PHASE.GrandSTD{ww},'-o','Color',CLR(ww,:),'LineWidth',2);
         hh{ww} = h.Fly;
         plot([0 12],[0 0],'--k')
-        ylabel('Phase Difference (rad)','interpreter','latex','FontSize',15)
+        ylabel('Head Phase (rad)','interpreter','latex','FontSize',15)
         xlabel('Frequency (Hz)','interpreter','latex','FontSize',15)
 end
 legend(cat(1,hh{:}),legList)
 
-figdir = 'F:\DATA\Rigid_Data\FIGURE\';
+figdir = 'H:\DATA\Rigid_Data\FIGURE\';
 saveas(FIG,[figdir FIG.Name '.fig']); % save .fig file
 % print (FIG,[figdir FIG.Name],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
 end

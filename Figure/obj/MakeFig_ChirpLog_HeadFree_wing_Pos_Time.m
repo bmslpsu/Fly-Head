@@ -55,7 +55,7 @@ end
 % Grand Stats
 pp = 1;
 for jj = 1:HeadFree.N{1,3}
-    ax = subplot(HeadFree.N{1,3},1,pp) ; hold on ; xlim([0 20]) ; ylim(3*[-1 1])
+    ax = subplot(HeadFree.N{1,3},1,pp) ; hold on ; xlim([0 20]) ; ylim(4*[-1 1])
     title([num2str(HeadFree.U{1,3}{1}(jj)) char(176)],'FontSize',15)
         h.patch = PlotPatch(HeadFree.GRAND{jj,catIdx}.Mean{2}{6}(:,xIdx),HeadFree.GRAND{jj,catIdx}.STD{2}{6}(:,xIdx),...
             HeadFree.GRAND{jj,catIdx}.Mean{2}{5},3,HeadFree.N{1,1},'k',[0.4 0.4 0.6],0.5,3);
