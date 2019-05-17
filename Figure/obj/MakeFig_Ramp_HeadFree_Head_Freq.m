@@ -5,7 +5,7 @@ function [FIG] = MakeFig_Ramp_HeadFree_Head_Freq()
 %   OUTPUTS:
 %       FIG     :   figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'F:\DATA\Rigid_Data';
+root = 'H:\DATA\Rigid_Data';
 
 spatFreq = [22.5 30 60 0];
 nFreq = length(spatFreq);

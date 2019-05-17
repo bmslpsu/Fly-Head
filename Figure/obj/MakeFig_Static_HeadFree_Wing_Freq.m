@@ -1,5 +1,5 @@
-function [] = MakeFig_Static_HeadFree_Head_Freq()
-%% MakeFig_Ramp_HeadFree_Head_Freq: head frequency spectrum plot for ramp
+function [] = MakeFig_Static_HeadFree_Wing_Freq()
+%% MakeFig_Static_HeadFree_Wing_Freq: wing frequency spectrum plot for ramp
 %   INPUTS:
 %       -
 %   OUTPUTS:
@@ -9,7 +9,7 @@ function [] = MakeFig_Static_HeadFree_Head_Freq()
 root = 'H:\DATA\Rigid_Data\';
 figNum = 1;
 %---------------------------------------------------------------------------------------------------------------------------------
-filename = 'Static_HeadFree_Head_Freq'; % name of figure to save
+filename = 'Static_HeadFree_Wing_Freq'; % name of figure to save
 HeadFree = load(fullfile(root, 'Static_HeadFree_DATA.mat'),'TRIAL','FLY','GRAND','U','N'); % load data structure
 %%
 FIG = figure (figNum); clf % figure handle
@@ -17,7 +17,7 @@ FIG.Color = 'w';
 FIG.Position = [100 100 1100/5 800];
 FIG.Name = filename;
 hold on
-catIdx = 1;
+catIdx = 2;
 xIdx = 1;
 
 % Trials

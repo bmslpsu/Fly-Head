@@ -1,11 +1,11 @@
-function [FIG] = MakeFig_Sine_HeadFree_err2wing_BODE_ALL()
-%% MakeFig_Sine_HeadFree_err2wing_BODE_ALL:
+function [FIG] = MakeFig_Sine_HeadFree_head2wing_BODE_ALL()
+%% MakeFig_Sine_HeadFree_head2wing_BODE_ALL:
 %   INPUTS:
-%      CLR      :   line color
+%       -
 %   OUTPUTS:
 %       FIG     :   figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'H:\DATA\Rigid_Data\';
+root = 'F:\DATA\Rigid_Data\';
 
 % Select files
 [FILES,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -25,7 +25,7 @@ for ww = 1:nAmp
 end
 
 figNum = 1;
-filename = 'Sine_HeadFree_err2wing_BODE_ALL'; % name of figure to save
+filename = 'Sine_HeadFree_head2wing_BODE_ALL'; % name of figure to save
 catIdx = 7; % pat2head
 xIdx = 1;
 
@@ -44,7 +44,7 @@ for ww = 1:nAmp % amplitudes
         PHASE.GrandSTD{ww}(jj,1) 	= HeadFree{ww}.GRAND{jj,catIdx}.CircSTD{10}{6}(:,xIdx);
         if jj==5 || jj==6
             if PHASE.GrandMean{ww}(jj,1)>0.4
-%                 PHASE.GrandMean{ww}(jj,1) 	= PHASE.GrandMean{ww}(jj,1) - pi;
+                PHASE.GrandMean{ww}(jj,1) 	= PHASE.GrandMean{ww}(jj,1) - pi;
             end
         end
 

@@ -1,11 +1,11 @@
-function [FIG] = MakeFig_ChirpLog_HeadFree_err2wing_Pos_COHR()
-%% MakeFig_ChirpLog_HeadFree_err2wing_Pos_COHR:
+function [FIG] = MakeFig_ChirpLog_HeadFixed_err2wing_Pos_COHR()
+%% MakeFig_ChirpLog_HeadFixed_err2wing_Pos_COHR:
 %   INPUTS:
 %       -
 %   OUTPUTS:
 %       FIG     :   figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'F:\DATA\Rigid_Data\';
+root = 'H:\DATA\Rigid_Data\';
 
 % Select files
 [FILE,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -15,10 +15,10 @@ FILE = cellstr(FILE)';
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','FLY','GRAND','U','N'); % load data structure
 
 figNum = 1;
-catIdx = 6;
+catIdx = 3;
 xIdx = 1;
 
-filename = 'ChirpLog_HeadFree_err2wing_Pos_COHR'; % name of figure to save
+filename = 'ChirpLog_HeadFixed_err2wing_Pos_COHR'; % name of figure to save
 
 FIG = figure (figNum); clf % figure handle
 FIG.Color = 'w';

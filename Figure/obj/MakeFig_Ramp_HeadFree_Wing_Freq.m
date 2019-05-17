@@ -20,7 +20,7 @@ figNum = 1;
 catIdx = 3;
 xIdx = 1;
 
-FIG = figure (figNum); % figure handle
+FIG = figure (figNum); clf% figure handle
 FIG.Color = 'w';
 FIG.Position = [100 100 1100 800];
 FIG.Name = filename;
