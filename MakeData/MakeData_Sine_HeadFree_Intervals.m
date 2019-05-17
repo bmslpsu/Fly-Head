@@ -9,7 +9,7 @@ function [] = MakeData_Sine_HeadFree_Intervals(rootdir,Amp)
 %       HEAD  	: head structure
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
-Amp = 15;
+Amp = 11.25;
 rootdir = 'H:\EXPERIMENTS\Experiment_Sinusoid\';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -62,7 +62,7 @@ for kk = 1:N{1,4}
     % Check WBF
 	wing.f = 100*(data(:,6)); % wing beat frequency
     if min(wing.f)<150 || mean(wing.f)<180 % check WBF, if too low then don't use trial
-        fprintf('Low WBF: Fly %i Trial %i \n',FD.Fly(kk),FD.Trial(kk))
+%         fprintf('Low WBF: Fly %i Trial %i \n',FD.Fly(kk),FD.Trial(kk))
         continue
     else
         pp = pp + 1; % set next index to store data
