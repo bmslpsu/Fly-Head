@@ -5,7 +5,7 @@ function [FIG] = MakeFig_ChirpLog_HeadFixed_err2wing_Pos_BODE()
 %   OUTPUTS:
 %       FIG     :   figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'F:\DATA\Rigid_Data\';
+root = 'H:\DATA\Rigid_Data\';
 
 % Select files
 [FILE,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
