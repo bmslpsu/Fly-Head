@@ -5,7 +5,7 @@ function [] = MakeFig_Sine_HeadFree_Head_Time()
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'H:\DATA\Rigid_Data\';
+root = 'F:\DATA\Rigid_Data\';
 
 % Select files
 [FILES,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -92,7 +92,7 @@ for ww = 1:nAmp % amplitudes
     end
 end
 
-figdir = 'H:\DATA\Rigid_Data\FIGURE\';
-saveas(FIG,[figdir FIG.Name '.fig']); % save .fig file
+%figdir = 'H:\DATA\Rigid_Data\FIGURE\';
+%saveas(FIG,[figdir FIG.Name '.fig']); % save .fig file
 %print (FIG,[figdir FIG.Name],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
 end

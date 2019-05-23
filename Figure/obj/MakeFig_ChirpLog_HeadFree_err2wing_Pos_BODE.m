@@ -15,7 +15,7 @@ FILE = cellstr(FILE)';
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','FLY','GRAND','U','N'); % load data structure
 
 figNum = 1;
-catIdx = 6;
+catIdx = 3;
 xIdx = 1;
 
 filename = 'ChirpLog_HeadFree_err2wing_Pos_BODE'; % name of figure to save
