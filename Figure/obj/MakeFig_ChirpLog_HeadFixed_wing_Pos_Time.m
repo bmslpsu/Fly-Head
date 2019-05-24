@@ -22,7 +22,7 @@ filename = 'ChirpLog_HeadFixed_wing_Pos_Time'; % name of figure to save
 
 FIG = figure (figNum); clf % figure handle
 FIG.Color = 'w';
-FIG.Position = [100 100 900 600];
+FIG.Position = [100 100 900 600/4];
 FIG.Name = filename;
 movegui(FIG,'center')
 hold on
@@ -54,8 +54,8 @@ hold on
 
 % Grand Stats
 pp = 1;
-for jj = 1:HeadFixed.N{1,3}
-    ax = subplot(HeadFixed.N{1,3},1,pp) ; hold on ; xlim([0 20]) ; ylim(4*[-1 1])
+for jj = 3
+    ax = subplot(1,1,pp) ; hold on ; xlim([0 20]) ; ylim(4*[-1 1])
     title([num2str(HeadFixed.U{1,3}{1}(jj)) char(176)],'FontSize',14)
         h.patch = PlotPatch(HeadFixed.GRAND{jj,catIdx}.Mean{2}{6}(:,xIdx),HeadFixed.GRAND{jj,catIdx}.STD{2}{6}(:,xIdx),...
             HeadFixed.GRAND{jj,catIdx}.Mean{2}{5},3,HeadFixed.N{1,1},'c',[0.4 0.4 0.6],0.5,3);
