@@ -27,7 +27,7 @@ HeadFree = cell(nAmp,1);
 for ww = 1:nAmp
     HeadFree{ww} = load(fullfile(root,FILES{ww}),'TRIAL','FLY','GRAND','U','N');
 end
-
+%%
 % Fly Stats
 FREQ.FlyMean    = cell(nAmp,1);
 GAIN.FlyMean  	= cell(nAmp,1);
@@ -85,13 +85,10 @@ for ww = 1:nAmp % amplitudes
         h.Fly.Color(4) = 0.5;
         ylabel(['Gain (' char(176) '/' char(176) ')'])
     subplot(2,1,2) ; hold on ; xlim([0 12.5]) ; ylim(pi*[-1 1])
-        h.Fly = errorbar(FREQ.GrandMean{ww},PHASE.GrandMean{ww},2*PHASE.GrandSTD{ww},'-ok','LineWidth',3);
+%         h.Fly = errorbar(FREQ.GrandMean{ww},PHASE.GrandMean{ww},2*PHASE.GrandSTD{ww},'-ok','LineWidth',3);
         h.Fly.Color(4) = 0.5;
         ylabel(['Phase Difference (rad)'])
         xlabel('Frequency (Hz)')
 end
 
-figdir = 'H:\DATA\Rigid_Data\FIGURE\';
-saveas(FIG,[figdir FIG.Name '.fig']); % save .fig file
-% print (FIG,[figdir FIG.Name],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
 end

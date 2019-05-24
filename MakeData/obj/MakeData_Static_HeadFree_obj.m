@@ -5,7 +5,7 @@ function [] = MakeData_Static_HeadFree_obj(rootdir)
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-% rootdir = 'H:\EXPERIMENTS\Experiment_Static_SpatFreq\';
+% rootdir = 'F:\EXPERIMENTS\Experiment_Static_SpatFreq\';
 filename = 'Static_HeadFree_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -107,7 +107,7 @@ clear jj ii
 %% SAVE %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
-save(['H:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
+save(['F:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
     'ALL','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
 disp('SAVING DONE')
 end
