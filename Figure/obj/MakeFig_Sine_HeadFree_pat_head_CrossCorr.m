@@ -1,5 +1,5 @@
-function [] = MakeFig_Sine_HeadFree_pat_head_Time()
-%% MakeFig_Sine_HeadFree_pat_head_Time:
+function [] = MakeFig_Sine_HeadFree_pat_head_CrossCorr()
+%% MakeFig_Sine_HeadFree_pat_head_CrossCorr:
 %   INPUTS:
 %       -
 %   OUTPUTS:
@@ -23,11 +23,11 @@ HeadFree = cell(nAmp,1);
 for ww = 1:nAmp
     HeadFree{ww} = load(fullfile(root,FILES{ww}),'TRIAL','FLY','GRAND','U','N');
 end
-
-filename = 'Sine_HeadFree_pat_head_Time';
+%%
+filename = 'Sine_HeadFree_pat_head_CrossCorr';
 
 hold on
-catIdx = 2;
+catIdx = 5;
 xIdx = 1;
 figNum = 1;
 
@@ -40,19 +40,20 @@ for ww = 1:nAmp
    FIG.Name = [FIG.Name '_' num2str(Amp(ww))];  
 end
 
-% Grand Stats
 for ww = 1:nAmp % amplitudes 
     pp = 1;
     for jj = 1:HeadFree{ww}.N{1,3} % frequencies
         freq = HeadFree{ww}.U{1,3}{1}(jj);
-     	subplot(HeadFree{ww}.N{1,3},1,pp)  ; hold on ; xlim([0 10]) ; ylim(20*[-1 1])
+     	subplot(HeadFree{ww}.N{1,3},1,pp)  ; hold on
      	title([num2str(freq) ' Hz'],'FontSize',14,'FontWeight','bold')
         
-        yyaxis left ; ax.L = gca;
+        ax.L = gca;
         ax.L.YColor = [0 0 0];
-        ax.L.YLabel.String = ['Head (' char(176) ')'];
+        ax.L.YLabel.String = 'Cross Corr';
         ax.L.YLabel.FontSize = 14;
         ax.L.FontSize = 12;
+%         ax.YLim = 1000*[-1 1];
+%         ax.XLim = 20*[0 1];
         if pp==HeadFree{ww}.N{1,3}
             ax.L.XLabel.String = 'Time (s)';
             ax.L.XLabel.FontSize = 14;
@@ -60,21 +61,28 @@ for ww = 1:nAmp % amplitudes
             ax.L.XTickLabels = [];
         end
         
-        h.patch = PlotPatch(HeadFree{ww}.GRAND{jj,catIdx}.Mean{2}{6}(:,xIdx),HeadFree{ww}.GRAND{jj,catIdx}.STD{2}{6}(:,xIdx),...
-            HeadFree{ww}.GRAND{jj,catIdx}.Mean{2}{5},2,HeadFree{ww}.N{1,1},'b',[0.4 0.4 0.6],0.5,3);
+        h.patch = PlotPatch(HeadFree{ww}.GRAND{jj,catIdx}.Mean{2}{10}(:,xIdx),HeadFree{ww}.GRAND{jj,catIdx}.STD{2}{10}(:,xIdx),...
+            HeadFree{ww}.GRAND{jj,catIdx}.Mean{2}{11}(:,xIdx),2,HeadFree{ww}.N{1,1},'b',[0.4 0.4 0.6],0.5,3);
         
-        yyaxis right ; ax.R = gca;
-        ax.R.YColor = [0 1 0];
-        ax.R.YLabel.String = ['Stimulus (' char(176) ')'];
-        ax.R.YLabel.FontSize = 14;
-        if pp==HeadFree{ww}.N{1,3}
-            ax.R.XLabel.String = 'Time (s)';
-            ax.R.XLabel.FontSize = 14;
-        end
-        plot(HeadFree{ww}.TRIAL{5,jj}{2,1}.Time,HeadFree{ww}.TRIAL{5,jj}{2,1}.X(:,xIdx),'-g','LineWidth',2)
-        
-        pp = pp + 1;
+       pp = pp + 1;
     end
 end
+
+TimeDiff = cell(nAmp,HeadFree{ww}.N{1,3});
+for ww = 1:nAmp % amplitudes 
+    for jj = 1:HeadFree{ww}.N{1,3} % frequencies
+        for kk = 1:HeadFree{ww}.N{1,1} % flies
+            for ii = 1:size(HeadFree{ww}.TRIAL{kk,jj},1) % trials
+                TimeDiff{ww,jj}(end+1,1) = HeadFree{ww}.TRIAL{kk,jj}{ii,catIdx}.TimeDiff(:,xIdx);
+            end
+        end
+    end
+end
+
+BOX = figure (figNum+1); clf
+BOX.Color = 'w';
+BOX.Position = [100 100 1100 800];
+movegui(BOX,'center')
+
 
 end

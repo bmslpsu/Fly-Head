@@ -5,7 +5,7 @@ function [FIG] = MakeFig_Chirp_Sine_HeadFree_pat2head_BODE()
 %   OUTPUTS:
 %       FIG     : figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'F:\DATA\Rigid_Data\';
+root = 'H:\DATA\Rigid_Data\';
 
 % Select sine files
 [SINE,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -31,12 +31,11 @@ end
 
 HeadFree{nAmp+1} = load(fullfile(root,CHIRP{ww}),'TRIAL','FLY','GRAND','U','N');
 
-%%
 figNum = 4;
 filename = 'Chirp_Sine_HeadFree_pat2head_BODE'; % name of figure to save
 catIdx = 5;
 xIdx = 1;
-chirpIdx = 4;
+chirpIdx = 3;
 
 FREQ.GrandMean	= cell(nAmp,1);
 GAIN.GrandMean 	= cell(nAmp,1);
@@ -71,7 +70,7 @@ for ww = 1:nAmp % amplitudes
         ax1.Title.FontSize = 16;
         ax1.FontSize = 12;
         ax1.YLabel.String = ['Gain (' char(176) '/' char(176) ')'];
-        ax1.YLabel.FontSize = 12;
+        ax1.YLabel.FontSize = 14;
         ax1.YLim = [0 1];
        	ax1.XLim = [0.1 8];
         ax1.XTickLabels = '';
