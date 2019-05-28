@@ -6,6 +6,7 @@ function [FIG] = MakeFig_Chirp_Sine_HeadFree_pat2head_BODE()
 %       FIG     : figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
 root = 'H:\DATA\Rigid_Data\';
+root = 'C:\Users\boc5244\Downloads\';
 
 % Select sine files
 [SINE,~] = uigetfile({'*.mat', 'DAQ-files'}, ...

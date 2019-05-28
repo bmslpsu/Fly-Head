@@ -103,7 +103,7 @@ classdef GrandStats
         
             freq = obj.Median{2}{7}(:,1);
             if nargin==1
-                n = 1:size(obj.All{6},2);
+                n = 1:size(obj.All{1}{7},2);
                 lim = freq(end);
             elseif nargin<=2
                 lim = freq(end);
@@ -162,9 +162,9 @@ classdef GrandStats
             %       n       : derivaties of X to plot, default is all
             %       lim     : x-limit
         
-            freq = obj.Median{2}{7}(:,1);
+            freq = obj.Median{2}{1}(:,1);
             if nargin==1
-                n = 1:size(obj.All{6},2);
+                n = 1:size(obj.All{1}{1},2);
                 lim = freq(end);
             elseif nargin<=2
                 lim = freq(end);
@@ -216,9 +216,9 @@ classdef GrandStats
             %       n       : derivaties of X to plot, default is all
             %       lim     : x-limit
         
-            freq = obj.Median{2}{7}(:,1);
+            freq = obj.Median{2}{1}(:,1);
             if nargin==1
-                n = 1:size(obj.All{6},2);
+                n = 1:size(obj.All{1}{1},2);
                 lim = freq(end);
             elseif nargin<=2
                 lim = freq(end);
@@ -270,7 +270,7 @@ classdef GrandStats
             %       n       : derivaties of X to plot, default is all
             %       lim     : x-limit
         
-            freq = obj.Median{2}{8}(:,1);
+            freq = obj.Median{2}{1}(:,1);
             if nargin==1
                 n = 1:size(obj.All{2}{6},2);
                 lim = freq(end);

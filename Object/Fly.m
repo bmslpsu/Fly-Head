@@ -1,10 +1,10 @@
 classdef Fly
     %% Fly: computes time domain, frequency domain quantities
     %   INPUTS:
-    %       data    : raw daa
+    %       data    : raw data
     %       time    : time
     %       Fc      : cutoff frequency
-  	%       IOFreq 	: discrete frequency inpus
+  	%       IOFreq 	: discrete frequency inputs
     %       tt      : interpolated time (optional)
     
     properties (GetAccess=private) % properties only avaiable to class
@@ -90,7 +90,7 @@ classdef Fly
             % Input-Output frequency data           
             obj = IO_Freq(obj,IOFreq);
             
-            % Saccade detetcion and data          
+            % Saccade detetcion        
             [Sacd,thresh,count,rate] = SacdDetect(obj.X(:,1),obj.Time,2.75,false);
             
             obj.SacdThresh	= thresh;
