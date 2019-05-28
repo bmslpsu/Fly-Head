@@ -3,7 +3,7 @@
 clear;close all;clc
 
 % root = 'F:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast\0\Vid\';
-root = 'H :\EXPERIMENTS\Experiment_SOS\Vid';
+root = 'F:\EXPERIMENTS\Experiment_SOS_v2\';
 % root = 'F:\EXPERIMENTS\Experiment_Static_SpatFreq\Vid';
 [FILES, dirpath] = uigetfile({'*.mat', 'DAQ-files'}, ... % select video files
     'Select fly trials', root, 'MultiSelect','on');
@@ -16,7 +16,7 @@ nTrial = length(FILES); % total # of trials
 %---------------------------------------------------------------------------------------------------------------------------------
 for jj = 1:nTrial
     % Load video data
-    load([dirpath FILES{jj}]); % load video data
+    load([dirpath FILES{jj}],'vidData','t_v'); % load video data
     disp('Load File: Done')
     
     % Set tracking parametrs
@@ -26,10 +26,10 @@ for jj = 1:nTrial
     
     % Run tracking
     [hAngles,hCenter] = HeadTracker(vidData,t_v,nPoints,playBack,debug);
-    
+     
     % Filter head angles
     Fs = 1/mean(diff(t_v)); % sampling rate [Hz]
-    Fc = 20; % cutoff frequency for head angles [Hz]
+    Fc = 40; % cutoff frequency for head angles [Hz]
     [b, a] = butter(2, 15/(Fs/2),'low');  % filter design
     hAnglesFilt = filtfilt(b,a,hAngles);  % zero-phase filter for head angles [deg]
     

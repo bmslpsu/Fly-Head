@@ -250,7 +250,7 @@ classdef GrandStats
                     err = 2*obj.CircSTD{9}{6}(:,kk);
                     errorbar(obj.Median{2}{4},obj.CircMean{9}{6}(:,kk),err,'-ok','LineWidth',2)
                     xlim([0 lim])
-                    ylim(max(ax.YLim)*[-1 1])
+                    ylim(max(abs(ax.YLim))*[-1 1])
                     ylabel('Phase')
 
                     if (pp+length(n))>n(end)

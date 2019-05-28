@@ -5,13 +5,14 @@ function [] = MakeData_SOS_HeadFree_obj(rootdir)
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-rootdir = 'F:\EXPERIMENTS\Experiment_SOS';
+rootdir = 'F:\EXPERIMENTS\Experiment_SOS_v2';
 filename = 'SOS_HeadFree_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
 root.daq = rootdir;
-root.ang = fullfile(root.daq,'\Vid\Angles\');
+% root.ang = fullfile(root.daq,'\Vid\Angles\');
+root.ang = fullfile(root.daq,'\Angles\');
 
 % Select files
 [FILES, PATH.ang] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -25,7 +26,8 @@ PATH.daq = root.daq;
 clear rootdir
 %% Get Data %%
 %---------------------------------------------------------------------------------------------------------------------------------
-IOFreq = 0.1*round(linspace(0.1,8,10)/0.1)';
+% IOFreq = 0.1*round(linspace(0.1,8,10)/0.1)';
+IOFreq = [1, 3.1, 5.3, 7.4, 9.6];
 disp('Loading...')
 ALL 	= cell([N{1,end},10]); % cell array to store all data objects
 TRIAL  	= cell(N{1,1},1);
@@ -100,7 +102,7 @@ end
 ALL( all(cellfun(@isempty, ALL),2), : ) = []; % get rid of emtpty rows becuase of low WBF
 
 clear jj ii kk pp qq ww n a b spant_p t_v hAngles data head wing pat bode tt ...
-    Head Pat Wing Err pat2head err2wing head2wing vars root
+    Head Pat Wing Err pat2head pat2wing err2wing head2wing vars root t_p span
 disp('LOADING DONE')
 
 %% Fly Statistics %%
