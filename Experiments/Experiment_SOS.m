@@ -1,14 +1,12 @@
 function [] = Experiment_SOS(Fn)
 %% Experiment_SOS: runs a experiment using the LED arena and fly panel
 % Fn is the fly number
-% Experiment Template written by Ben Cellini
-% This code is written for Panel Controller v3 and NiDAQ seesion mode
 daqreset
 imaqreset
 %% Set directories & experimental paramters %%
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'D:\EXPERIMENTS\Experiment_SOS\';
-viddir = [root 'Vid\'];
+root = 'D:\EXPERIMENTS\Experiment_SOS_v2\';
+% viddir = [root 'Vid\'];
 
 % EXPERIMENTAL PARAMETERS
 n_tracktime = 21;	% length(func)/fps; seconds for each EXPERIMENT
@@ -73,8 +71,8 @@ vid.TriggerRepeat = nFrame-1; % # triggers
 % Configure vidobj source properties.
 srcObj1 = get(vid, 'Source');
 srcObj1.Gamma = 0.386367797851563;
-srcObj1.GainRaw = 964;
-srcObj1.ExposureTimeAbs = 8000;
+srcObj1.GainRaw = 750;
+% srcObj1.ExposureTimeAbs = 8000;
 % srcObj1(1).ExposureMode = 'Timed'; % exposure time controlled by pulse width
 
 % Trigger config
@@ -113,7 +111,7 @@ for ii = 1:n_trial
     % EXPERIMENT SETUP %
     disp('Play Stimulus: ')
     Panel_com('set_pattern_id', 2); pause(n_pause)                	% set pattern to "Pattern_spatFreq_22_30_60"
-    Panel_com('set_position',[1 , 4]); pause(n_pause)             	% set starting position (xpos,ypos)
+    Panel_com('set_position',[15 , 4]); pause(n_pause)             	% set starting position (xpos,ypos)
     Panel_com('set_posfunc_id',[1, 1]); pause(n_pause)              % arg1 = channel (x=1,y=2); arg2 = funcid
 	Panel_com('set_funcX_freq', 200); pause(n_pause)                % 100Hz update rate for x-channel
     Panel_com('set_funcY_freq', 50); pause(n_pause)              	% 50Hz update rate for y-channel
@@ -145,8 +143,8 @@ for ii = 1:n_trial
     %-----------------------------------------------------------------------------------------------------------------------------
     % SAVE DATA %
     disp('Saving...') ; disp('----------------------------------------------------------------------')
-    save([root   'fly_' num2str(Fn) '_trial_' num2str(ii)  '_SOS.mat'],'-v7.3','data','t_p');
-    save([viddir 'fly_' num2str(Fn) '_trial_' num2str(ii)  '_SOS.mat'],'-v7.3','vidData','t_v');
+    save([root   'fly_' num2str(Fn) '_trial_' num2str(ii)  '_SOS.mat'],'-v7.3','data','t_p','vidData','t_v');
+%     save([viddir 'fly_' num2str(Fn) '_trial_' num2str(ii)  '_SOS.mat'],'-v7.3','vidData','t_v');
     %-----------------------------------------------------------------------------------------------------------------------------
 end
 
