@@ -1,25 +1,21 @@
-function [] = MakeData_SOS_HeadFree_obj(rootdir)
-%% MakeData_SOS_HeadFree_obj: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
+function [] = MakeData_SOS_HeadFixed_obj(rootdir)
+%% MakeData_SOS_HeadFixed_obj: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
 %   INPUTS:
 %       rootdir    	:   root directory
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-% rootdir = 'F:\EXPERIMENTS\Experiment_SOS_v2';
-filename = 'SOS_HeadFree_DATA';
+% rootdir = 'F:\EXPERIMENTS\Experiment_SOS_v2_HeadFixed';
+filename = 'SOS_HeadFixed_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
 root.daq = rootdir;
-% root.ang = fullfile(root.daq,'\Vid\Angles\');
-root.ang = fullfile(root.daq,'\Angles\');
 
 % Select files
-[FILES, PATH.ang] = uigetfile({'*.mat', 'DAQ-files'}, ...
-    'Select head angle trials', root.ang, 'MultiSelect','on');
+[FILES, PATH.daq] = uigetfile({'*.mat', 'DAQ-files'}, ...
+    'Select head angle trials', root.daq, 'MultiSelect','on');
 FILES = cellstr(FILES)';
-
-PATH.daq = root.daq;
 
 [D,I,N,U,T] = GetFileData(FILES);
 
@@ -29,7 +25,7 @@ clear rootdir
 % IOFreq = 0.1*round(linspace(0.1,8,10)/0.1)';
 IOFreq = [1, 3.1, 5.3, 7.4, 9.6];
 disp('Loading...')
-ALL 	= cell([N{1,end},10]); % cell array to store all data objects
+ALL 	= cell([N{1,end},5]); % cell array to store all data objects
 TRIAL  	= cell(N{1,1},1);
 n.catg  = size(N,2) - 1;
 pp = 0;
@@ -37,10 +33,9 @@ span = 1:2100;
 tt = linspace(0,20,2000)';
 for kk = 1:N{1,end}
     disp(kk)
-    % Load HEAD & DAQ data
+    % Load DAQ data
     data = [];
 	load(fullfile(PATH.daq, FILES{kk}),'data','t_p'); % load pattern x-position
-    load(fullfile(PATH.ang, FILES{kk}),'hAngles','t_v'); % load head angles % time arrays
     %-----------------------------------------------------------------------------------------------------------------------------
     % Check WBF
 	wing.f = 100*(data(:,6)); % wing beat frequency
@@ -50,11 +45,6 @@ for kk = 1:N{1,end}
     else
         pp = pp + 1; % set next index to store data
     end
-    %-----------------------------------------------------------------------------------------------------------------------------
-    % Get head data
-    head.Time = t_v(span);
-    head.Pos = hAngles - mean(hAngles);
-    Head = Fly(head.Pos(span),head.Time,20,IOFreq,tt); % head object
   	%-----------------------------------------------------------------------------------------------------------------------------
     % Get wing data from DAQ
     wing.Time       = t_p; % wing time [s]
@@ -71,24 +61,20 @@ for kk = 1:N{1,end}
     pat.Time	= t_p;
     pat.Pos 	= panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]  
     pat.Pos  	= FitPanel(pat.Pos,pat.Time,tt); % fit panel data
- 	Pat      	= Fly(pat.Pos,Head.Time,0.4*Head.Fs,IOFreq); % pattern object
+ 	Pat      	= Fly(pat.Pos,tt,0.4*100,IOFreq); % pattern object
 	%-----------------------------------------------------------------------------------------------------------------------------
  	% Calculate error between head & pattern
-    head.Err = Pat.X(:,1) - Head.X(:,1); % calculate position error between head & pattern [deg]
-    Err = Fly(head.Err,Head.Time,0.4*Head.Fs,IOFreq); % error object
+    Err = Pat; % error object
     %-----------------------------------------------------------------------------------------------------------------------------
     % Calculate iput-output relationships
-    pat2head    = IO_Class(Pat,Head);
-    err2wing    = IO_Class(Err,Wing);
-	head2wing   = IO_Class(Head,Wing);
-    pat2wing    = IO_Class(Pat,Wing);
+    err2wing = IO_Class(Err,Wing);
     %-----------------------------------------------------------------------------------------------------------------------------
     % Store objects in cells
     for jj = 1:n.catg
         ALL{pp,jj} = I{kk,jj};
     end
 
-	vars = {Pat,Head,Wing,Err,pat2head,err2wing,head2wing,pat2wing};
+	vars = {Pat,Wing,err2wing};
     for jj = 1:length(vars)
         ALL{pp,n.catg+jj} = vars{jj};
     end
