@@ -85,6 +85,4 @@ for jj = 1:HeadFree.N{1,3}
     pp = pp + 1;
 end
 
-%saveas(FIG,[root 'FIGURE\' filename '.fig']); % save .fig file
-% print(gcf,[root 'FIGURE\' filename],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
 end

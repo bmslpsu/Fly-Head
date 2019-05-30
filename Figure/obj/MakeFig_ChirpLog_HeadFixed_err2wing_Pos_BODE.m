@@ -5,7 +5,7 @@ function [FIG] = MakeFig_ChirpLog_HeadFixed_err2wing_Pos_BODE()
 %   OUTPUTS:
 %       FIG     :   figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'H:\DATA\Rigid_Data\';
+root = 'F:\DATA\Rigid_Data\';
 
 % Select files
 [FILE,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -13,7 +13,7 @@ root = 'H:\DATA\Rigid_Data\';
 FILE = cellstr(FILE)';
 
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','FLY','GRAND','U','N'); % load data structure
-%%
+
 figNum = 1;
 catIdx = 3;
 xIdx = 1;

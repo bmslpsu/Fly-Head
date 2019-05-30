@@ -15,7 +15,7 @@ CHIRP = cellstr(CHIRP)';
 
 HeadFree = load(fullfile(root,CHIRP{1}),'GRAND','U','N');
 %%
-figNum = 4;
+figNum = 1;
 filename = 'ChirpLog_HeadFree_pat2head_Pos_BODE_ALL_new'; % name of figure to save
 catIdx = 5;
 xIdx = 1;
@@ -23,7 +23,8 @@ CC = [0 0 0.7];
 
 FIG = figure (figNum); clf % figure handle
 FIG.Color = 'w';
-FIG.Position = [100 100 1500 680];
+FIG.Position = [100 100 1200 650];
+% FIG.OuterPosition = FIG.Position + [0 0 1 400];
 FIG.Name = filename;
 movegui(FIG,'center')
 hold on
@@ -54,8 +55,9 @@ for jj = 1:HeadFree.N{1,3} % amplitudes
      	ax1.XLabel.String = 'Frequency (Hz)';
         ax1.XLabel.FontSize = ax1.YLabel.FontSize;
         ax1.XLabel.Color = 'w';
-       	ax1.XLim = [0.5 10];
+       	ax1.XLim = [0.3 10];
         ax1.XTickLabels = '';
+%         ax1.OuterPosition = ax1.OuterPosition + [0 0 0 0.1];
         
         if pp>1
             ax1.YLabel.String = '';
@@ -66,7 +68,9 @@ for jj = 1:HeadFree.N{1,3} % amplitudes
         h.patch = PlotPatch(GAIN(:,jj),...
                             HeadFree.GRAND{jj,catIdx}.STD{2}{2}(:,xIdx),...
                             FREQ(:,jj) ,...
-                            2,HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,2);
+                            3,HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,2);
+                        
+        plot([0 12],[1 1],'--g','LineWidth',2);           
               
         ax1.XTick = unique(sort([min(ax1.XLim) ax1.XTick]));
         vel = round(AMP(:,jj)*2*pi*ax1.XTick);

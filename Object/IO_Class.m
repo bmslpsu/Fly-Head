@@ -37,6 +37,8 @@ classdef IO_Class
         r                   = []; % correlation r-valuets
     	m                   = []; % linear fit slope
         b                   = []; % linear fit y-intercept
+        
+        FREQ                = []; % output/input complex frequency domain data
 
     end
     
@@ -62,6 +64,8 @@ classdef IO_Class
             obj.IOFreq              = In.IOFreq;
             obj.IOBodeGain          = Out.IOMag ./ In.IOMag;
             obj.IOBodePhaseDiff     = -(In.IOPhase - Out.IOPhase);
+            
+            obj.FREQ                = In.FREQ./Out.FREQ;
             
             for kk = 1:size(In.X,2)
                 [obj.Coherence(:,kk),obj.CoherenceFV(:,kk)] = mscohere(In.X(:,kk) , Out.X(:,kk) ,[],[] , In.Fv(:,kk) , In.Fs);

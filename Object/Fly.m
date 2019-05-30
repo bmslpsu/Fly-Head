@@ -39,6 +39,7 @@ classdef Fly
     	SacdCount      	= [];       % saccades in data set
         SacdRate      	= [];       % saccade rate
         SACD            = [];       % saccade data table
+        FREQ            = [];       % complex frequency domain data
     end
     
     methods
@@ -84,7 +85,8 @@ classdef Fly
                 obj.STD(1,kk)     	= std(obj.X(:,kk));                	% std: data & derivatives
                 obj.AbsSTD(1,kk)   	= std(obj.X(:,kk));               	% std: absolute value of data & derivatives
                 
-                [obj.Fv(:,kk),obj.Mag(:,kk),obj.Phase(:,kk)] = FFT(obj.Time,obj.X(:,kk)); % transform data into frequency domain
+                [obj.Fv(:,kk),obj.Mag(:,kk),obj.Phase(:,kk), obj.FREQ(:,kk)] = ...
+                    FFT(obj.Time,obj.X(:,kk)); % transform data into frequency domain
             end
             
             % Input-Output frequency data           
