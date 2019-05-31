@@ -1,5 +1,5 @@
-function [FIG] = MakeFig_SOS_HeadFree_pat2head_Pos_BODE()
-%% MakeFig_SOS_HeadFree_pat2head_Pos_BODE: BODE head position for SOS
+function [FIG] = MakeFig_SOS_HeadFree_pat2head_BODE_new()
+%% MakeFig_SOS_HeadFree_pat2head_BODE_new: BODE head position for SOS
 %   INPUTS:
 %       -
 %   OUTPUTS:
@@ -13,12 +13,12 @@ root = 'H:\DATA\Rigid_Data\';
 FILE = cellstr(FILE)';
 
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','FLY','GRAND','U','N'); % load data structure
-%%
+
 figNum = 1;
 catIdx = 5;
 xIdx = 1;
 
-filename = 'SOS_HeadFree_pat2head_Pos_BODE'; % name of figure to save
+filename = 'SOS_HeadFree_pat2head_BODE_new'; % name of figure to save
 
 FIG = figure (figNum); clf % figure handle
 FIG.Color = 'w';

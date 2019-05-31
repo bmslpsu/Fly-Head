@@ -5,7 +5,7 @@ function [FIG] = MakeFig_ChirpLog_HeadFixed_err2wing_Pos_BODE()
 %   OUTPUTS:
 %       FIG     :   figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'F:\DATA\Rigid_Data\';
+root = 'H:\DATA\Rigid_Data\';
 
 % Select files
 [FILE,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -93,6 +93,4 @@ for jj = 1:HeadFree.N{1,3}
     pp = pp + 1;
 end
 
-saveas(FIG,[root 'FIGURE\' filename '.fig']); % save .fig file
-% print(gcf,[root 'FIGURE\' filename],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
 end
