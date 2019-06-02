@@ -2,7 +2,7 @@
 %---------------------------------------------------------------------------------------------------------------------------------
 clear;close all;clc
 
-root = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\Vid';
+root = 'F:\EXPERIMENTS\Experiment_ChirpLog_LargeAmp';
 
 [FILES, dirpath] = uigetfile({'*.mat', 'DAQ-files'}, ... % select video files
     'Select fly trials', root, 'MultiSelect','on'); 
@@ -15,8 +15,9 @@ nTrial = length(FILES); % total # of trials
 %---------------------------------------------------------------------------------------------------------------------------------
 for jj = 1:nTrial
     % Load video data
-    load([dirpath FILES{jj}]); % load video data
-    disp('Load File: Done')
+    load([dirpath FILES{jj}],'vidData','t_v'); % load video data
+%     disp('Load File: Done')
+    disp(FILES{jj})
     
     % Set tracking parametrs
     nPoints = 4; 
@@ -44,7 +45,7 @@ for jj = 1:nTrial
 
     % Save data
     disp('Save Data...')
-    save(fullfile(dirpath,'Angles\',FILES{jj}),'-v7.3','hAngles','t_v','hCenter');
+    save(fullfile(dirpath,'Angles',FILES{jj}),'-v7.3','hAngles','t_v','hCenter');
     
     close all
     clc

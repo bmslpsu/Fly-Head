@@ -165,9 +165,9 @@ classdef GrandStats
             freq = obj.Median{2}{1}(:,1);
             if nargin==1
                 n = 1:size(obj.All{1}{1},2);
-                lim = freq(end);
+                lim = [0 freq(end)];
             elseif nargin<=2
-                lim = freq(end);
+                lim = [0 freq(end)];
             end
             
             figure('Name',['Grand BODE (# Fly = ' num2str(obj.nFly) ')'])
@@ -183,7 +183,7 @@ classdef GrandStats
                     PlotPatch(obj.Median{2}{2}(:,kk),obj.STD{2}{2}(:,kk),obj.Median{2}{1}(:,kk),2,obj.nFly,...
                         'k',[0.4 0.4 0.6],0.5,2);
 
-                    xlim([0 lim])
+                    xlim(lim)
                     ylim(1.2*[0 1])
                     ylabel('Gain')
                 
@@ -196,7 +196,7 @@ classdef GrandStats
                 	PlotPatch(obj.CircMean{9}{3}(:,kk),obj.CircSTD{9}{3}(:,kk),obj.Median{2}{1}(:,kk),2,obj.nFly,...
                         'k',[0.4 0.4 0.6],0.5,2);
                     
-                    xlim([0 lim])
+                    xlim(lim)
                     ylim(max(ax.YLim)*[-1 1])
                     ylabel('Phase')
 
