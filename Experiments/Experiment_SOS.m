@@ -5,7 +5,7 @@ daqreset
 imaqreset
 %% Set directories & experimental paramters %%
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'D:\EXPERIMENTS\Experiment_SOS_v2\';
+root = 'D:\EXPERIMENTS\Experiment_SOS_v2_HeadFixed\';
 % viddir = [root 'Vid\'];
 
 % EXPERIMENTAL PARAMETERS
