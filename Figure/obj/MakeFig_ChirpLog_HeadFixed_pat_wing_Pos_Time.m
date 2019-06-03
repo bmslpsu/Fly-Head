@@ -5,7 +5,7 @@ function [FIG] = MakeFig_ChirpLog_HeadFixed_pat_wing_Pos_Time()
 %   OUTPUTS:
 %       FIG     :   figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'H:\DATA\Rigid_Data\';
+root = 'F:\DATA\Rigid_Data\';
 
 % Select files
 [FILE,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -61,7 +61,7 @@ for jj = 3
        	a = get(ax.L,'YTickLabel');
         set(ax.L,'YTickLabel',a,'FontName','Times','fontsize',12)
         h.patch = PlotPatch(HeadFixed.GRAND{jj,catIdx}.Mean{2}{6}(:,xIdx),HeadFixed.GRAND{jj,catIdx}.STD{2}{6}(:,xIdx),...
-            HeadFixed.GRAND{jj,catIdx}.Mean{2}{5},3,HeadFixed.N{1,1},'r',[0.4 0.4 0.6],0.5,3);
+            HeadFixed.GRAND{jj,catIdx}.Mean{2}{5},2,HeadFixed.N{1,1},'r',[0.4 0.4 0.6],0.5,3);
         
         xlabel('Time (s)','FontSize',14)
 end

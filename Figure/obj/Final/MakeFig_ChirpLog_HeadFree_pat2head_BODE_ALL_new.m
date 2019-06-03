@@ -5,7 +5,7 @@ function [FIG] = MakeFig_ChirpLog_HeadFree_pat2head_BODE_ALL_new()
 %   OUTPUTS:
 %       FIG     : figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'H:\DATA\Rigid_Data\';
+root = 'F:\DATA\Rigid_Data\';
 
 % Select chirp files
 [CHIRP,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -41,6 +41,16 @@ for jj = 1:HeadFree.N{1,3} % amplitudes
     VEL(:,jj) 	= AMP(:,jj)*2*pi*FREQ(:,jj);
     GAIN(:,jj)  = HeadFree.GRAND{jj,catIdx}.Mean{2}{2}(:,xIdx);
     PHASE(:,jj) = rad2deg(HeadFree.GRAND{jj,catIdx}.CircMean{9}{3}(:,xIdx));
+ 	GSTD(:,jj)  = HeadFree.GRAND{jj,catIdx}.STD{2}{2}(:,xIdx);
+    PSTD(:,jj)  = rad2deg(HeadFree.GRAND{jj,catIdx}.CircSTD{9}{3}(:,xIdx));
+    
+  	[b,a] = butter(2,0.7,'low');
+    [bb,aa] = butter(2,0.7,'low');
+    mff = 2;
+    PHASE(:,jj) = filtfilt(bb,aa,medfilt1(filtfilt(b,a,PHASE(:,jj)),mff));
+    GAIN(:,jj)  = filtfilt(bb,aa,medfilt1(filtfilt(b,a,GAIN(:,jj)),mff));
+    GSTD(:,jj)  = filtfilt(bb,aa,medfilt1(filtfilt(b,a,GSTD(:,jj)),mff));
+    PSTD(:,jj)  = filtfilt(bb,aa,medfilt1(filtfilt(b,a,PSTD(:,jj)),mff));
     
     ax1 = subplot(2,HeadFree.N{1,3},pp);
         hold on
@@ -51,6 +61,7 @@ for jj = 1:HeadFree.N{1,3} % amplitudes
         ax1.YLabel.String = ['Gain (' char(176) '/' char(176) ')'];
         ax1.YLabel.FontSize = 14;
         ax1.YLim = [0 1.2];
+        ax1.YTick = unique(sort([ax1.YTick ax1.YLim(2)]));
      	ax1.XLabel.String = 'Frequency (Hz)';
         ax1.XLabel.FontSize = ax1.YLabel.FontSize;
         ax1.XLabel.Color = 'w';
@@ -64,9 +75,7 @@ for jj = 1:HeadFree.N{1,3} % amplitudes
         end
         hold on
 
-        h.patch = PlotPatch(GAIN(:,jj),...
-                            HeadFree.GRAND{jj,catIdx}.STD{2}{2}(:,xIdx),...
-                            FREQ(:,jj) ,...
+        h.patch = PlotPatch(GAIN(:,jj), GSTD(:,jj), FREQ(:,jj) ,...
                             3,HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,2);
                         
         plot([0 12],[1 1],'--g','LineWidth',2);           
@@ -96,9 +105,8 @@ for jj = 1:HeadFree.N{1,3} % amplitudes
             ax2.YTickLabels = '';
         end
         
-        h.patch = PlotPatch(PHASE(:,jj),...
-            rad2deg(HeadFree.GRAND{jj,catIdx}.CircSTD{9}{3}(:,xIdx)),...
-            FREQ(:,jj) ,3,HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,2);
+        h.patch = PlotPatch(PHASE(:,jj), PSTD(:,jj),FREQ(:,jj),...
+            3,HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,2);
                 
         plot([0 12],[0 0],'--g','LineWidth',2);
         
