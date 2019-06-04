@@ -5,7 +5,7 @@ function [FIG] = MakeFig_ChirpLog_HeadFixed_pat2wing_BODE_ALL_new()
 %   OUTPUTS:
 %       FIG     : figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'F:\DATA\Rigid_Data\';
+root = 'H:\DATA\Rigid_Data\';
 
 % Select chirp files
 [CHIRP,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -46,7 +46,7 @@ for jj = 1:HeadFree.N{1,3} % amplitudes
   	[b,a] = butter(2,0.4,'low');
     [bb,aa] = butter(2,0.4,'low');
     mff = 4;
-    PHASE(:,jj) = filtfilt(bb,aa,medfilt1(filtfilt(b,a,PHASE(:,jj)),mff));
+    PHASE(:,jj) = filtfilt(bb,a,medfilt1(filtfilt(b,a,PHASE(:,jj)),mff));
     GAIN(:,jj)  = filtfilt(bb,aa,medfilt1(filtfilt(b,a,GAIN(:,jj)),mff));
     GSTD(:,jj)  = filtfilt(bb,aa,medfilt1(filtfilt(b,a,GSTD(:,jj)),mff));
     PSTD(:,jj)  = filtfilt(bb,aa,medfilt1(filtfilt(b,a,PSTD(:,jj)),mff));

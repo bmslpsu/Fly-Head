@@ -13,7 +13,7 @@ root = 'H:\DATA\Rigid_Data\';
 FILE = cellstr(FILE)';
 
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','GRAND','U','N'); % load data structure
-%%
+
 figNum = 1;
 catIdx = 3;
 xIdx = 1;
@@ -39,12 +39,11 @@ for jj = 3
         ax.R.YColor = [0 1 0];
         ax.R.XLabel.String = 'Time (s)';
         ax.R.FontSize = 12;
-        ylabel(['Stimulus (' char(176) ')'],'FontSize',14)
-        ylim(20*[-1 1])
-        a = get(ax.R,'XTickLabel');
-        set(ax.R,'XTickLabel',a,'FontName','Times','fontsize',12)
+        ax.R.YLabel.String = ['Stimulus (' char(176) ')'];
+        ax.R.YLabel.FontSize = 14;
+        ax.R.YLim = 20*[-1 1];
 
-        plot(HeadFree.TRIAL{8,jj}{2,1}.Time,HeadFree.TRIAL{1,jj}{1,1}.X(:,xIdx),'Color','g','LineWidth',2)
+        plot(HeadFree.TRIAL{8,jj}{2,1}.Time,HeadFree.TRIAL{4,jj}{1,1}.X(:,xIdx),'Color','g','LineWidth',2)
         
 %         h.patch = PlotPatch(HeadFree.GRAND{jj,2}.Mean{2}{6}(:,xIdx),HeadFree.GRAND{jj,2}.STD{2}{6}(:,xIdx),...
 %             HeadFree.GRAND{jj,2}.Mean{2}{5},2,HeadFree.N{1,1},'b',[0.4 0.4 0.6],0.5,3);
@@ -53,21 +52,17 @@ for jj = 3
         ax.L = gca;
         ax.L.YColor = [0 0 0];
         ax.L.XLabel.String = 'Time (s)';
-        ax.L.FontSize = 12;
-        ylabel('\Delta WBA (V)','FontSize',14)
-        ylim(3*[-1 1])
-        a = get(ax.L,'XTickLabel');
-        set(ax.L,'XTickLabel',a,'FontName','Times','fontsize',12)
-        h.patch = PlotPatch(HeadFree.GRAND{jj,catIdx}.Mean{2}{6}(:,xIdx),HeadFree.GRAND{jj,catIdx}.STD{2}{6}(:,xIdx),...
-            HeadFree.GRAND{jj,catIdx}.Mean{2}{5},3,HeadFree.N{1,1},'r',[0.4 0.4 0.6],0.5,3);
-        
+        ax.L.FontSize = ax.R.FontSize;
+       	ax.L.YLabel.String = '\Delta WBA (V)';
+        ax.L.YLabel.FontSize = ax.R.YLabel.FontSize;
+        ax.L.YLim = 3*[-1 1];
+        ax.R.XLabel.String = 'Time (s)';
+     	ax.R.XLabel.FontSize = ax.R.YLabel.FontSize;
 
-    
-        xlabel('Time (s)','FontSize',14)
+      	PlotPatch(HeadFree.GRAND{jj,catIdx}.Mean{2}{6}(:,xIdx),HeadFree.GRAND{jj,catIdx}.STD{2}{6}(:,xIdx),...
+            HeadFree.GRAND{jj,catIdx}.Mean{2}{5},3,HeadFree.N{1,1},'r',[0.4 0.4 0.6],0.5,3);
         
     pp = pp + 1;
 end
 
-%saveas(FIG,[root 'FIGURE\' filename '.fig']); % save .fig file
-% print(gcf,[root 'FIGURE\' filename],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
 end

@@ -1,5 +1,5 @@
-function [FIG] = MakeFig_ChirpLog_HeadFree_err2wing_BODE_ALL_new()
-%% MakeFig_ChirpLog_HeadFree_err2wing_BODE_ALL_new:
+function [FIG] = MakeFig_ChirpLog_HeadFree_head2wing_BODE_ALL_new()
+%% MakeFig_ChirpLog_HeadFree_head2wing_BODE_ALL_new:
 %   INPUTS:
 %       -
 %   OUTPUTS:
@@ -14,10 +14,10 @@ CHIRP = cellstr(CHIRP)';
 HeadFree = load(fullfile(root,CHIRP{1}),'GRAND','U','N');
 
 figNum = 1;
-filename = 'ChirpLog_HeadFree_err2wing_BODE_ALL_new';
-catIdx = 6;
+filename = 'ChirpLog_HeadFree_head2wing_BODE_ALL_new';
+catIdx = 7;
 xIdx = 1;
-CC = [0.7 0 0 ];
+CC = [0.2 0.5 1];
 
 FIG = figure (figNum); clf
 FIG.Color = 'w';
@@ -52,7 +52,7 @@ for jj = 1:HeadFree.N{1,3}
         ax1.FontSize = 12;
         ax1.YLabel.String = ['Gain (V/' char(176) ')'];
         ax1.YLabel.FontSize = 14;
-        ax1.YLim = [0 0.4];
+        ax1.YLim = [0 0.7];
      	ax1.XLabel.String = 'Frequency (Hz)';
         ax1.XLabel.FontSize = ax1.YLabel.FontSize;
         ax1.XLabel.Color = 'w';

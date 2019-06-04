@@ -5,7 +5,7 @@ function [FIG] = MakeFig_ChirpLog_HeadFree_pat_head_Time()
 %   OUTPUTS:
 %       FIG     :   figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'F:\DATA\Rigid_Data\';
+root = 'H:\DATA\Rigid_Data\';
 
 [FILE,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
     'Select head angle trials', root, 'MultiSelect','off');
@@ -28,7 +28,7 @@ movegui(FIG,'center')
 hold on
 
 pp = 1;
-for jj = 3
+for jj = 1
     subplot(1,1,pp) ; hold on ; xlim([0 20])
     title([num2str(HeadFree.U{1,3}{1}(jj)) char(176)],'FontSize',15)
     
@@ -41,7 +41,7 @@ for jj = 3
         ax.R.YLabel.FontSize = 14;
         ax.R.YLim = 20*[-1 1];
 
-        plot(HeadFree.TRIAL{8,jj}{2,1}.Time,HeadFree.TRIAL{1,jj}{1,1}.X(:,xIdx),'Color','g','LineWidth',2)
+        plot(HeadFree.TRIAL{8,jj}{2,1}.Time,HeadFree.TRIAL{10,jj}{1,1}.X(:,xIdx),'Color','g','LineWidth',2)
     
 	yyaxis left
         ax.L = gca;

@@ -49,9 +49,9 @@ for kk = 1:N{1,end}
     end
     %-----------------------------------------------------------------------------------------------------------------------------
     % Get head data
-    head.Time = t_v(span);
+    head.Time = t_v;
     head.Pos = hAngles;
-    Head = Fly(head.Pos(span),head.Time,40,IOFreq); % head object
+    Head = Fly(head.Pos,head.Time,40,IOFreq); % head object
   	%-----------------------------------------------------------------------------------------------------------------------------
     % Get wing data from DAQ
     wing.Time       = t_p; % wing time [s]

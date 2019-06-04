@@ -52,7 +52,7 @@ for kk = 1:N{1,end}
     %-----------------------------------------------------------------------------------------------------------------------------
     % Get head data
     head.Time = t_v(span);
-    head.Pos = hAngles;
+    head.Pos = hAngles - mean(hAngles);
     Head = Fly(head.Pos(span),head.Time,40,IOFreq(I{kk,3})); % head object
   	%-----------------------------------------------------------------------------------------------------------------------------
     % Get wing data from DAQ
