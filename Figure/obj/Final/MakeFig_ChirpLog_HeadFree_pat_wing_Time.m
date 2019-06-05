@@ -1,5 +1,5 @@
-function [FIG] = MakeFig_ChirpLog_HeadFree_pat_head_Time()
-%% MakeFig_ChirpLog_HeadFree_pat_head_Time.m:
+function [FIG] = MakeFig_ChirpLog_HeadFree_pat_wing_Time()
+%% MakeFig_ChirpLog_HeadFree_pat_wing_Time:
 %   INPUTS:
 %       -
 %   OUTPUTS:
@@ -14,10 +14,10 @@ FILE = cellstr(FILE)';
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','GRAND','U','N');
 
 figNum = 1;
-catIdx = 2;
+catIdx = 3;
 xIdx = 1;
 
-filename = 'ChirpLog_HeadFree_pat_head_Time';
+filename = 'ChirpLog_HeadFree_pat_wing_Time';
 
 FIG = figure (figNum); clf
 FIG.Color = 'w';
@@ -49,12 +49,12 @@ for jj = 3
         ax.L.FontSize = ax.R.FontSize;
      	ax.L.YLabel.String = ['Head (' char(176) ')'];
         ax.L.YLabel.FontSize = ax.R.YLabel.FontSize;
-        ax.L.YLim = 20*[-1 1];
+        ax.L.YLim = 2*[-1 1];
      	ax.L.XLabel.String = 'Time (s)';
         ax.L.XLabel.FontSize = ax.R.YLabel.FontSize;
 
         PlotPatch(HeadFree.GRAND{jj,catIdx}.Mean{2}{6}(:,xIdx),HeadFree.GRAND{jj,catIdx}.STD{2}{6}(:,xIdx),...
-            HeadFree.GRAND{jj,catIdx}.Mean{2}{5},3,HeadFree.N{1,1},'b',[0.1 0.1 0.6],0.3,3);
+            HeadFree.GRAND{jj,catIdx}.Mean{2}{5},3,HeadFree.N{1,1},'r',[0.1 0.1 0.6],0.3,3);
      
     pp = pp + 1;
 end

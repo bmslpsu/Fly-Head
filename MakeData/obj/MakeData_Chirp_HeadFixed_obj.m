@@ -5,7 +5,7 @@ function [] = MakeData_Chirp_HeadFixed_obj(rootdir)
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-rootdir = 'F:\EXPERIMENTS\Experiment_ChirpLog_HeadFixed';
+rootdir = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFixed';
 filename = 'Chirp_HeadFixed_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -22,7 +22,7 @@ FILES = cellstr(FILES)';
 clear rootdir
 %% Get Data %%
 %---------------------------------------------------------------------------------------------------------------------------------
-IOFreq = 1;
+IOFreq = [];
 disp('Loading...')
 ALL 	= cell([N{1,end},3]); % cell array to store all data objects
 TRIAL  	= cell(N{1,1},N{1,3});
@@ -60,7 +60,7 @@ for kk = 1:N{1,end}
     pat.Time	= t_p;
     pat.Pos 	= panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]  
     pat.Pos  	= FitPanel(pat.Pos,pat.Time,Head.Time); % fit panel data
- 	Pat      	= Fly(pat.Pos,Head.Time,0.4*Head.Fs,IOFreq); % pattern object
+ 	Pat      	= Fly(pat.Pos,Head.Time,[],IOFreq); % pattern object
 	%-----------------------------------------------------------------------------------------------------------------------------
  	% Calculate error between head & pattern
     Err = Pat;
@@ -112,7 +112,7 @@ clear jj ii
 %% SAVE %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
-save(['F:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
+save(['H:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
     'ALL','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
 disp('SAVING DONE')
 end

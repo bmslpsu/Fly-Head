@@ -32,9 +32,9 @@ for jj = 1:HeadFree.N{1,3}
     FREQ(:,jj)  = HeadFree.GRAND{jj,catIdx}.Mean{2}{1}(:,xIdx);
     VEL(:,jj) 	= AMP(:,jj)*2*pi*FREQ(:,jj);
     GAIN(:,jj)  = HeadFree.GRAND{jj,catIdx}.Mean{2}{2}(:,xIdx);
-    PHASE(:,jj) = rad2deg(HeadFree.GRAND{jj,catIdx}.CircMean{9}{3}(:,xIdx));
+    PHASE(:,jj) = rad2deg(HeadFree.GRAND{jj,catIdx}.CircMean{7}{3}(:,xIdx));
     GSTD(:,jj)  = HeadFree.GRAND{jj,catIdx}.STD{2}{2}(:,xIdx);
-    PSTD(:,jj)  = rad2deg(HeadFree.GRAND{jj,catIdx}.CircSTD{9}{3}(:,xIdx));
+    PSTD(:,jj)  = rad2deg(HeadFree.GRAND{jj,catIdx}.CircSTD{7}{3}(:,xIdx));
     
     [b,a] = butter(2,0.5,'low');
     [bb,aa] = butter(2,0.5,'low');

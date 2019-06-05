@@ -38,7 +38,7 @@ classdef IO_Class
     	m                   = []; % linear fit slope
         b                   = []; % linear fit y-intercept
         
-        FREQ                = []; % output/input complex frequency domain data
+%         FREQ                = []; % output/input complex frequency domain data
 
     end
     
@@ -65,11 +65,11 @@ classdef IO_Class
             obj.IOBodeGain          = Out.IOMag ./ In.IOMag;
             obj.IOBodePhaseDiff     = -(In.IOPhase - Out.IOPhase);
             
-            obj.FREQ                = In.FREQ./Out.FREQ;
+%             obj.FREQ                = In.FREQ./Out.FREQ;
             
             for kk = 1:size(In.X,2)
-                [obj.Coherence(:,kk),obj.CoherenceFV(:,kk)] = mscohere(In.X(:,kk) , Out.X(:,kk) ,[],[] , In.Fv(:,kk) , In.Fs);
-                [obj.IOCoherence(:,kk)] = Get_IO_Cohr(obj.CoherenceFV(:,kk),obj.Coherence(:,kk),In.IOFreq);
+                [obj.Coherence(:,kk),obj.CoherenceFV(:,1)] = mscohere(In.X(:,kk) , Out.X(:,kk) ,[],[] , In.Fv(:,1) , In.Fs);
+                [obj.IOCoherence(:,kk)] = Get_IO_Cohr(obj.CoherenceFV(:,1),obj.Coherence(:,kk),In.IOFreq);
 
                 [obj.CrossCorr(:,kk), obj.TimeLags(:,kk) ,obj.MaxCC(:,kk) ,obj.TimeDiff(:,kk)] ...
                     = CrossCorr(In.X(:,kk),Out.X(:,kk),In.Fs);

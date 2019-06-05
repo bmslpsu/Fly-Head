@@ -26,13 +26,13 @@ svel            = avel.data;                        % preallocate velocity data 
 svel(avel.data<thresh) = 0;                         % velocity data above threshold
 
 % Variable names
-varnames = {'Duration','Amplitude','Direction','StartIdx','PeakIdx','EndIdx','StartTime','PeakTime','EndTime','StartPos','PeakPos','EndPos'...
-            'StartVel','PeakVel','EndVel','StartAbsVel','PeakAbsVel','EndAbsVel'};
+varnames = {'Duration','Amplitude','Direction','StartIdx','PeakIdx','EndIdx','StartTime','PeakTime','EndTime','StartPos',...
+                'PeakPos','EndPos','StartVel','PeakVel','EndVel','StartAbsVel','PeakAbsVel','EndAbsVel'};
 
-% Find velcocity spikes
+% Find velocity spikes
 [avel.pks, loc.pks] = findpeaks(svel,'MINPEAKDISTANCE',40); % find local maxima
 window      = n*0.015;  % window length (in samples)
-I           = find(loc.pks > (window) & loc.pks < ((length(vel.data) - (window+1)))); % ignore saccades at beginning and end
+I           = find(loc.pks > (window) & loc.pks < ((length(vel.data) - (window+1)))); % ignore saccades at start & end
 loc.pks   	= loc.pks(I);
 avel.pks  	= avel.pks(I);
 vel.pks    	= avel.pks.*sign(vel.data(loc.pks));
@@ -84,8 +84,8 @@ if ~isempty(I)
     dir             = sign(vel.pks);
     
     % All data
-    DATA = [time.dur , pos.amp , dir, loc.start , loc.pks , loc.end , time.start , time.pks , time.end , pos.start , pos.pks , pos.end ,...
-            vel.start , vel.pks , vel.end , avel.start , avel.pks , avel.end];
+    DATA = [time.dur , pos.amp , dir, loc.start , loc.pks , loc.end , time.start , time.pks , time.end , pos.start , pos.pks, ...
+                pos.end ,vel.start , vel.pks , vel.end , avel.start , avel.pks , avel.end];
 	
 else % no saccades
     DATA    = nan(1,length(varnames));

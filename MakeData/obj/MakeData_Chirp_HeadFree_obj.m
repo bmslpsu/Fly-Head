@@ -5,7 +5,7 @@ function [] = MakeData_Chirp_HeadFree_obj(rootdir)
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-rootdir = 'F:\EXPERIMENTS\Experiment_ChirpLog_HeadFree';
+rootdir = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFree';
 filename = 'Chirp_HeadFree_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -25,13 +25,13 @@ PATH.daq = root.daq;
 clear rootdir
 %% Get Data %%
 %---------------------------------------------------------------------------------------------------------------------------------
-IOFreq = 1;
+IOFreq = [];
 disp('Loading...')
 ALL 	= cell([N{1,end},11]); % cell array to store all data objects
 TRIAL  	= cell(N{1,1},N{1,3});
 n.catg  = size(N,2) - 1;
 pp = 0;
-span = 1:4000;
+% span = 1:4000;
 for kk = 1:N{1,end}
     disp(kk)
     % Load HEAD & DAQ data
@@ -50,7 +50,7 @@ for kk = 1:N{1,end}
     %-----------------------------------------------------------------------------------------------------------------------------
     % Get head data
     head.Time = t_v;
-    head.Pos = hAngles;
+    head.Pos = hAngles - mean(hAngles);
     Head = Fly(head.Pos,head.Time,40,IOFreq); % head object
   	%-----------------------------------------------------------------------------------------------------------------------------
     % Get wing data from DAQ
@@ -68,7 +68,7 @@ for kk = 1:N{1,end}
     pat.Time	= t_p;
     pat.Pos 	= panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]  
     pat.Pos  	= FitPanel(pat.Pos,pat.Time,Head.Time); % fit panel data
- 	Pat      	= Fly(pat.Pos,Head.Time,0.4*Head.Fs,IOFreq); % pattern object
+ 	Pat      	= Fly(pat.Pos,Head.Time,[],IOFreq); % pattern object
 	%-----------------------------------------------------------------------------------------------------------------------------
  	% Calculate error between head & pattern
     head.Err = Pat.X(:,1) - Head.X(:,1); % calculate position error between head & pattern [deg]
@@ -125,7 +125,7 @@ clear jj ii
 %% SAVE %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
-save(['F:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
+save(['H:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
     'ALL','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
 disp('SAVING DONE')
 end

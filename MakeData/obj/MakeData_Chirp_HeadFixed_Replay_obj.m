@@ -22,7 +22,7 @@ FILES = cellstr(FILES)';
 clear rootdir
 %% Get Data %%
 %---------------------------------------------------------------------------------------------------------------------------------
-IOFreq = 1;
+IOFreq = [];
 disp('Loading...')
 ALL 	= cell([N{1,end},3]); % cell array to store all data objects
 TRIAL  	= cell(N{1,1},N{1,3});
@@ -60,7 +60,7 @@ for kk = 1:N{1,end}
     pat.Time	= t_p;
     pat.Pos 	= panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]  
     pat.Pos  	= FitPanel(pat.Pos,pat.Time,Head.Time); % fit panel data
- 	Pat      	= Fly(pat.Pos,Head.Time,0.4*Head.Fs,IOFreq); % pattern object
+ 	Pat      	= Fly(pat.Pos,Head.Time,[],IOFreq); % pattern object
 	%-----------------------------------------------------------------------------------------------------------------------------
  	% Calculate error between head & pattern
     Err = Pat;

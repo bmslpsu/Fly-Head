@@ -9,7 +9,7 @@ function [] = MakeData_Sine_HeadFree_Intervals(rootdir,Amp)
 %       HEAD  	: head structure
 %---------------------------------------------------------------------------------------------------------------------------------
 % EXAMPLE INPUT %
-Amp = 11.25;
+Amp = 15;
 rootdir = 'H:\EXPERIMENTS\Experiment_Sinusoid\';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -166,7 +166,11 @@ end
 %%
 %---------------------------------------------------------------------------------------------------------------------------------
 cFlow = jet(N{1,3});
-figure (2) ; clf ; hold on
+FIG = figure (2) ; clf ; hold on
+FIG.Color = 'w';
+FIG.Position = [100 100 800 500];
+ax = gca;
+ax.FontSize = 12;
 xlabel('Interval')
 ylabel(['Phase (' char(176) ')'])
 % xlim([1 nInt])
@@ -180,20 +184,6 @@ for kk = 1:N{1,3}
    legList{kk} = [num2str(U{1,3}{1}(kk)) ' Hz'];    
 end
 legend(legList)
-
-% for kk = 1:N{1,1}
-%     for jj = 1:N{1,3}
-%         for ii = 1:size(IO.pat2head{kk}{jj},1)
-%             for ww = 1:size(IO.pat2head{kk}{jj},2)
-%                 plot(ww,rad2deg(IO.pat2head{kk}{jj}{ii,ww}.IOBodePhaseDiff(:,1)),...
-%                    '-+','Color',cFlow(jj,:))
-%             end
-%         end
-%     end
-% end
-
-
-
 
 %% Save ouputs as structure %%
 %---------------------------------------------------------------------------------------------------------------------------------

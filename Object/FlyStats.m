@@ -17,10 +17,8 @@ classdef FlyStats
         Mean        = [];       % mean of objects
         Median   	= [];       % median of objects
         STD         = [];       % std of objects
-        Var         = [];       % variance of objects
         Max         = [];       % max of objects
         Min         = [];       % min of objects
-        Mode        = [];       % mode of objects
         Range       = [];       % range of objects
         CircMean  	= [];       % circular mean of objects
         CircSTD   	= [];       % circular std of objects
@@ -56,16 +54,14 @@ classdef FlyStats
             end
             
             % Statistics
-            obj.Mean        = cellfun(@(x) mean(x,3),           obj.All,'UniformOutput',false);
-            obj.Median      = cellfun(@(x) median(x,3),         obj.All,'UniformOutput',false);
-            obj.STD         = cellfun(@(x) std(x,0,3),          obj.All,'UniformOutput',false);
-            obj.Var         = cellfun(@(x) var(x,0,3),          obj.All,'UniformOutput',false);
-            obj.Max         = cellfun(@(x) max(x,[],3),         obj.All,'UniformOutput',false);
-            obj.Min         = cellfun(@(x) min(x,[],3),         obj.All,'UniformOutput',false);
-            obj.Mode        = cellfun(@(x) mode(x,3),           obj.All,'UniformOutput',false);
-            obj.Range       = cellfun(@(x) range(x,3),          obj.All,'UniformOutput',false);
-        	obj.CircMean    = cellfun(@(x) circ_mean(x,[],3),   obj.All,'UniformOutput',false);
-            obj.CircSTD     = cellfun(@(x) circ_std(x,[],[],3), obj.All,'UniformOutput',false);
+            obj.Mean        = cellfun(@(x) nanmean(x,3),            obj.All,'UniformOutput',false);
+            obj.Median      = cellfun(@(x) nanmedian(x,3),          obj.All,'UniformOutput',false);
+            obj.STD         = cellfun(@(x) nanstd(x,0,3),           obj.All,'UniformOutput',false);
+            obj.Max         = cellfun(@(x) nanmax(x,[],3),          obj.All,'UniformOutput',false);
+            obj.Min         = cellfun(@(x) nanmin(x,[],3),       	obj.All,'UniformOutput',false);
+            obj.Range       = cellfun(@(x) range(x,3),              obj.All,'UniformOutput',false);
+        	obj.CircMean    = cellfun(@(x) circ_mean(x,[],3),       obj.All,'UniformOutput',false);
+            obj.CircSTD     = cellfun(@(x) circ_std(x,[],[],3),     obj.All,'UniformOutput',false);
 
         end
         

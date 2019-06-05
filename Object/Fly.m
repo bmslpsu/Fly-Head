@@ -71,10 +71,13 @@ classdef Fly
             obj.n      	= length(obj.Time);                             % # of data points
             obj.Ts     	= mean(diff(obj.Time));                         % sampling Time
             obj.Fs   	= 1/obj.Ts;                                     % sampling frequency
-            [b,a]      	= butter(2,obj.Fc/(obj.Fs/2),'low');            % 2nd-order low-pass butterworth filter
-            obj.X(:,1) 	= filtfilt(b,a,obj.X);                          % filtered data
+            
+            if ~isempty(obj.Fc)
+            	[b,a]      	= butter(2,obj.Fc/(obj.Fs/2),'low');     	% 2nd-order low-pass butterworth filter
+                obj.X(:,1) 	= filtfilt(b,a,obj.X);                   	% filtered data
+            end
             obj.X(:,2)	= [diff(obj.X(:,1))/obj.Ts ; 0];                % 1st derivative of data
-            obj.X(:,3)	= [diff(obj.X(:,2))/obj.Ts ; 0];                % 2nd derivative of data
+            obj.X(:,3)	= [diff(obj.X(:,2))/obj.Ts ; 0];                % 2nd derivative of data    
             
             % Stats
             for kk = 1:size(obj.X,2)
@@ -85,12 +88,14 @@ classdef Fly
                 obj.STD(1,kk)     	= std(obj.X(:,kk));                	% std: data & derivatives
                 obj.AbsSTD(1,kk)   	= std(obj.X(:,kk));               	% std: absolute value of data & derivatives
                 
-                [obj.Fv(:,kk),obj.Mag(:,kk),obj.Phase(:,kk), obj.FREQ(:,kk)] = ...
+                [obj.Fv(:,1),obj.Mag(:,kk),obj.Phase(:,kk), obj.FREQ(:,kk)] = ...
                     FFT(obj.Time,obj.X(:,kk)); % transform data into frequency domain
             end
             
-            % Input-Output frequency data           
-            obj = IO_Freq(obj,IOFreq);
+            % Input-Output frequency data     
+            if ~isempty(IOFreq)
+                obj = IO_Freq(obj,IOFreq);
+            end
             
             % Saccade detetcion        
             [Sacd,thresh,count,rate] = SacdDetect(obj.X(:,1),obj.Time,2.75,false);
@@ -105,7 +110,7 @@ classdef Fly
             % IO_Freq: extract frequency domain data at discrete frequencies
             obj.IOFreq = IOFreq(:);
             for kk = 1:size(obj.X,2)
-                [obj.IOMag(:,kk),obj.IOPhase(:,kk)] = Get_IO_Freq(obj.Fv(:,kk),obj.Mag(:,kk),obj.Phase(:,kk),obj.IOFreq);
+                [obj.IOMag(:,kk),obj.IOPhase(:,kk)] = Get_IO_Freq(obj.Fv(:,1),obj.Mag(:,kk),obj.Phase(:,kk),obj.IOFreq);
             end
         end
         

@@ -12,10 +12,10 @@ root = 'F:\DATA\Rigid_Data\';
 CHIRP = cellstr(CHIRP)';
 
 HeadFree = load(fullfile(root,CHIRP{1}),'GRAND','U','N');
-
+%%
 figNum = 1;
 filename = 'ChirpLog_HeadFree_pat2wing_BODE_ALL_new';
-catIdx = 6;
+catIdx = 8;
 xIdx = 1;
 CC = [0.9 0 0 ];
 
@@ -32,9 +32,9 @@ for jj = 1:HeadFree.N{1,3}
     FREQ(:,jj)  = HeadFree.GRAND{jj,catIdx}.Mean{2}{1}(:,xIdx);
     VEL(:,jj) 	= AMP(:,jj)*2*pi*FREQ(:,jj);
     GAIN(:,jj)  = HeadFree.GRAND{jj,catIdx}.Mean{2}{2}(:,xIdx);
-    PHASE(:,jj) = rad2deg(HeadFree.GRAND{jj,catIdx}.CircMean{9}{3}(:,xIdx));
+    PHASE(:,jj) = rad2deg(HeadFree.GRAND{jj,catIdx}.CircMean{7}{3}(:,xIdx));
     GSTD(:,jj)  = HeadFree.GRAND{jj,catIdx}.STD{2}{2}(:,xIdx);
-    PSTD(:,jj)  = rad2deg(HeadFree.GRAND{jj,catIdx}.CircSTD{9}{3}(:,xIdx));
+    PSTD(:,jj)  = rad2deg(HeadFree.GRAND{jj,catIdx}.CircSTD{8}{3}(:,xIdx));
     
     [b,a] = butter(2,0.5,'low');
     [bb,aa] = butter(2,0.5,'low');

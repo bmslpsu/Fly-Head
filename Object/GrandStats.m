@@ -17,10 +17,8 @@ classdef GrandStats
         Mean        = [];       % mean of objects
         Median   	= [];       % median of objects
         STD         = [];       % std of objects
-        Var         = [];       % variance of objects
         Max         = [];       % max of objects
         Min         = [];       % min of objects
-        Mode        = [];       % mode of objects
         Range       = [];       % range of objects
         CircMean  	= [];       % circular mean of objects
         CircSTD   	= [];       % circular std of objects
@@ -46,16 +44,14 @@ classdef GrandStats
             
             % Statistics
             for ii = 1:length(obj.All)
-                obj.Mean        {ii,1}   	= cellfun(@(x) mean(x,3),           obj.All{ii},'UniformOutput',false);
-                obj.Median      {ii,1}      = cellfun(@(x) median(x,3),         obj.All{ii},'UniformOutput',false);
-                obj.STD         {ii,1}   	= cellfun(@(x) std(x,0,3),          obj.All{ii},'UniformOutput',false);
-                obj.Var         {ii,1}   	= cellfun(@(x) var(x,0,3),          obj.All{ii},'UniformOutput',false);
-                obj.Max         {ii,1}      = cellfun(@(x) max(x,[],3),         obj.All{ii},'UniformOutput',false);
-                obj.Min         {ii,1}  	= cellfun(@(x) min(x,[],3),         obj.All{ii},'UniformOutput',false);
-                obj.Mode        {ii,1}  	= cellfun(@(x) mode(x,3),           obj.All{ii},'UniformOutput',false);
-                obj.Range       {ii,1}      = cellfun(@(x) range(x,3),          obj.All{ii},'UniformOutput',false);
-                obj.CircMean 	{ii,1}   	= cellfun(@(x) circ_mean(x,[],3),  	obj.All{ii},'UniformOutput',false);
-                obj.CircSTD 	{ii,1}   	= cellfun(@(x) circ_std(x,[],[],3),	obj.All{ii},'UniformOutput',false);
+                obj.Mean        {ii,1}   	= cellfun(@(x) nanmean(x,3),            obj.All{ii},'UniformOutput',false);
+                obj.Median      {ii,1}      = cellfun(@(x) nanmedian(x,3),          obj.All{ii},'UniformOutput',false);
+                obj.STD         {ii,1}   	= cellfun(@(x) nanstd(x,0,3),       	obj.All{ii},'UniformOutput',false);
+                obj.Max         {ii,1}      = cellfun(@(x) nanmax(x,[],3),          obj.All{ii},'UniformOutput',false);
+                obj.Min         {ii,1}  	= cellfun(@(x) nanmin(x,[],3),          obj.All{ii},'UniformOutput',false);
+                obj.Range       {ii,1}      = cellfun(@(x) range(x,3),              obj.All{ii},'UniformOutput',false);
+                obj.CircMean 	{ii,1}   	= cellfun(@(x) circ_mean(x,[],3),       obj.All{ii},'UniformOutput',false);
+                obj.CircSTD 	{ii,1}   	= cellfun(@(x) circ_std(x,[],[],3),     obj.All{ii},'UniformOutput',false);
             end
         end
         
@@ -117,14 +113,18 @@ classdef GrandStats
                     for jj = 1:size(obj.All{1}{1},3)
                         h = plot(obj.All{2}{7}(:,1,jj),obj.All{2}{8}(:,kk,jj));
                         h.Color(4) = 0.5;
-                       	h = plot(obj.All{2}{10}(:,1,jj),obj.All{2}{11}(:,kk,jj));
-                        h.Color(4) = 0.5;
+                        try
+                            h = plot(obj.All{2}{10}(:,1,jj),obj.All{2}{11}(:,kk,jj));
+                            h.Color(4) = 0.5;
+                        end
                     end
 
                     PlotPatch(obj.Median{2}{8}(:,kk),obj.STD{2}{8}(:,kk),freq,2,obj.nFly,'k',[0.4 0.4 0.6],0.5,2);
-
-                    err = 2*obj.STD{2}{11}(:,kk);
-                    errorbar(obj.Median{2}{10},obj.Median{2}{11}(:,kk),err,'-or','LineWidth',2)
+                    
+                    try
+                        err = 2*obj.STD{2}{11}(:,kk);
+                        errorbar(obj.Median{2}{10},obj.Median{2}{11}(:,kk),err,'-or','LineWidth',2)
+                    end
 
                     xlim([0 lim])
                     ylim(max(ax.YLim)*[0 1])
@@ -132,16 +132,19 @@ classdef GrandStats
                 
                 ax = subplot(2,length(n),pp+length(n)) ; hold on ; grid on                               
                     for jj = 1:size(obj.All{5},3)
-                        h = plot(obj.All{2}{7}(:,1,jj),obj.All{9}{9}(:,kk,jj));
+                        h = plot(obj.All{2}{7}(:,1,jj),obj.All{7}{9}(:,kk,jj));
                         h.Color(4) = 0.5;
-                     	h = plot(obj.All{2}{10}(:,1,jj),obj.All{9}{12}(:,kk,jj));
-                        h.Color(4) = 0.5;
+                        try
+                            h = plot(obj.All{2}{10}(:,1,jj),obj.All{7}{12}(:,kk,jj));
+                            h.Color(4) = 0.5;
+                        end
                     end
 
-                    PlotPatch(obj.CircMean{9}{9}(:,kk),obj.CircSTD{9}{9}(:,kk),freq,2,obj.nFly,'k',[0.4 0.4 0.6],0.5,2);
-
-                    err = 2*obj.CircSTD{9}{12}(:,kk);
-                    errorbar(obj.Median{2}{10},obj.CircMean{9}{12}(:,kk),err,'-or','LineWidth',2)
+                    PlotPatch(obj.CircMean{7}{9}(:,kk),obj.CircSTD{7}{9}(:,kk),freq,2,obj.nFly,'k',[0.4 0.4 0.6],0.5,2);
+                    try
+                        err = 2*obj.CircSTD{7}{12}(:,kk);
+                        errorbar(obj.Median{2}{10},obj.CircMean{7}{12}(:,kk),err,'-or','LineWidth',2)
+                    end
                     xlim([0 lim])
                     ylim(max(ax.YLim)*[-1 1])
                     ylabel('Phase')
@@ -170,6 +173,10 @@ classdef GrandStats
                 lim = [0 freq(end)];
             end
             
+            if length(lim)==1
+               lim = [0 lim]; 
+            end
+            
             figure('Name',['Grand BODE (# Fly = ' num2str(obj.nFly) ')'])
             pp = 1;
             for kk = n
@@ -180,7 +187,7 @@ classdef GrandStats
                         h.Color(4) = 0.5;
                     end
                     
-                    PlotPatch(obj.Median{2}{2}(:,kk),obj.STD{2}{2}(:,kk),obj.Median{2}{1}(:,kk),2,obj.nFly,...
+                    PlotPatch(obj.Median{2}{2}(:,kk),obj.STD{2}{2}(:,kk),obj.Median{2}{1}(:,1),2,obj.nFly,...
                         'k',[0.4 0.4 0.6],0.5,2);
 
                     xlim(lim)
@@ -189,11 +196,11 @@ classdef GrandStats
                 
                 ax = subplot(2,length(n),pp+length(n)) ; hold on ; grid on                               
                     for jj = 1:size(obj.All{1}{1},3)
-                     	h = plot(obj.All{2}{1}(:,1,jj),obj.All{9}{3}(:,kk,jj),'-');
+                     	h = plot(obj.All{2}{1}(:,1,jj),obj.All{7}{3}(:,kk,jj),'-');
                         h.Color(4) = 0.5;
                     end
                     
-                	PlotPatch(obj.CircMean{9}{3}(:,kk),obj.CircSTD{9}{3}(:,kk),obj.Median{2}{1}(:,kk),2,obj.nFly,...
+                	PlotPatch(obj.CircMean{7}{3}(:,kk),obj.CircSTD{8}{3}(:,kk),obj.Median{2}{1}(:,1),2,obj.nFly,...
                         'k',[0.4 0.4 0.6],0.5,2);
                     
                     xlim(lim)
@@ -243,12 +250,12 @@ classdef GrandStats
                 
                 ax = subplot(2,length(n),pp+length(n)) ; hold on ; grid on                               
                     for jj = 1:size(obj.All{1}{1},3)
-                     	h = plot(obj.All{2}{4}(:,1,jj),obj.All{9}{6}(:,kk,jj),'-o');
+                     	h = plot(obj.All{2}{4}(:,1,jj),obj.All{7}{6}(:,kk,jj),'-o');
                         h.Color(4) = 0.5;
                     end
 
-                    err = 2*obj.CircSTD{9}{6}(:,kk);
-                    errorbar(obj.Median{2}{4},obj.CircMean{9}{6}(:,kk),err,'-ok','LineWidth',2)
+                    err = 2*obj.CircSTD{8}{6}(:,kk);
+                    errorbar(obj.Median{2}{4},obj.CircMean{7}{6}(:,kk),err,'-ok','LineWidth',2)
                     xlim([0 lim])
                     ylim(max(abs(ax.YLim))*[-1 1])
                     ylabel('Phase')

@@ -7,12 +7,12 @@ function [] = Analyze_ChirpReplay_HeadFixed()
 %       
 %---------------------------------------------------------------------------------------------------------------------------------
 showplot.Time = 0;
-showplot.Freq = 1;
+showplot.Freq = 0;
 showplot.Bode = 0;
 showplot.Coher = 0;
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
-root.pat = 'E:\Experiment_HeadExcitation\ChirpReplay_15\';
+root.pat = 'H:\';
 
 % Select files
 [FILES, PATH.pat] = uigetfile({'*.mat', 'DAQ-files'}, ...

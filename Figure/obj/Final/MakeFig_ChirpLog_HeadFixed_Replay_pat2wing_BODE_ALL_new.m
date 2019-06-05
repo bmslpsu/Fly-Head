@@ -1,5 +1,5 @@
-function [FIG] = MakeFig_ChirpLog_HeadFree_pat2head_BODE_ALL_new()
-%% MakeFig_ChirpLog_HeadFree_pat2head_BODE_ALL_new:
+function [FIG] = MakeFig_ChirpLog_HeadFixed_Replay_pat2wing_BODE_ALL_new()
+%% MakeFig_ChirpLog_HeadFixed_Replay_pat2wing_BODE_ALL_new:
 %   INPUTS:
 %       -
 %   OUTPUTS:
@@ -15,15 +15,14 @@ CHIRP = cellstr(CHIRP)';
 HeadFree = load(fullfile(root,CHIRP{1}),'GRAND','U','N');
 %%
 figNum = 1;
-filename = 'ChirpLog_HeadFree_pat2head_BODE_ALL_new'; % name of figure to save
-catIdx = 5;
+filename = 'ChirpLog_HeadFixed_Replay_pat2wing_BODE_ALL_new';
+catIdx = 3;
 xIdx = 1;
-CC = [0 0 0.7];
+CC = [0.3 0 0.7];
 
-FIG = figure (figNum); clf % figure handle
+FIG = figure (figNum); clf
 FIG.Color = 'w';
 FIG.Position = [100 100 1200 650];
-% FIG.OuterPosition = FIG.Position + [0 0 1 400];
 FIG.Name = filename;
 movegui(FIG,'center')
 hold on
@@ -44,10 +43,10 @@ for jj = 1:HeadFree.N{1,3} % amplitudes
  	GSTD(:,jj)  = HeadFree.GRAND{jj,catIdx}.STD{2}{2}(:,xIdx);
     PSTD(:,jj)  = rad2deg(HeadFree.GRAND{jj,catIdx}.CircSTD{7}{3}(:,xIdx));
     
-  	[b,a] = butter(2,0.7,'low');
-    [bb,aa] = butter(2,0.7,'low');
-    mff = 2;
-    PHASE(:,jj) = filtfilt(bb,aa,medfilt1(filtfilt(b,a,PHASE(:,jj)),mff));
+  	[b,a] = butter(2,0.4,'low');
+    [bb,aa] = butter(2,0.4,'low');
+    mff = 4;
+    PHASE(:,jj) = filtfilt(bb,a,medfilt1(filtfilt(b,a,PHASE(:,jj)),mff));
     GAIN(:,jj)  = filtfilt(bb,aa,medfilt1(filtfilt(b,a,GAIN(:,jj)),mff));
     GSTD(:,jj)  = filtfilt(bb,aa,medfilt1(filtfilt(b,a,GSTD(:,jj)),mff));
     PSTD(:,jj)  = filtfilt(bb,aa,medfilt1(filtfilt(b,a,PSTD(:,jj)),mff));
@@ -58,9 +57,9 @@ for jj = 1:HeadFree.N{1,3} % amplitudes
         ax1.Title.Color = 'w';
         ax1.Title.FontSize = 16;
         ax1.FontSize = 12;
-        ax1.YLabel.String = ['Gain (' char(176) '/' char(176) ')'];
+        ax1.YLabel.String = ['Gain (V/' char(176) ')'];
         ax1.YLabel.FontSize = 14;
-        ax1.YLim = [0 1.2];
+        ax1.YLim = [0 0.4];
         ax1.YTick = unique(sort([ax1.YTick ax1.YLim(2)]));
      	ax1.XLabel.String = 'Frequency (Hz)';
         ax1.XLabel.FontSize = ax1.YLabel.FontSize;
