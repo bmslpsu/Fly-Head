@@ -105,6 +105,10 @@ classdef GrandStats
                 lim = freq(end);
             end
             
+            if length(lim)==1
+                lim = [0 lim];
+            end
+            
             figure('Name',['Grand Frequency Domain (# Fly = ' num2str(obj.nFly) ')'])
             pp = 1;
             for kk = n
@@ -126,7 +130,7 @@ classdef GrandStats
                         errorbar(obj.Median{2}{10},obj.Median{2}{11}(:,kk),err,'-or','LineWidth',2)
                     end
 
-                    xlim([0 lim])
+                    xlim(lim)
                     ylim(max(ax.YLim)*[0 1])
                     ylabel('Magnitude')
                 
@@ -145,7 +149,7 @@ classdef GrandStats
                         err = 2*obj.CircSTD{7}{12}(:,kk);
                         errorbar(obj.Median{2}{10},obj.CircMean{7}{12}(:,kk),err,'-or','LineWidth',2)
                     end
-                    xlim([0 lim])
+                    xlim(lim)
                     ylim(max(ax.YLim)*[-1 1])
                     ylabel('Phase')
 
