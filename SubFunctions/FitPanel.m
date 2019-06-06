@@ -27,7 +27,7 @@ m2Idx = [IV(1) ; mean([mIdx(1:end-1),mIdx(2:end)],2) ; IV(end)]; % peak indicies
 m2X = Xw(round(m2Idx)); % peak pattern positions between transition points
 m2t = t(round(m2Idx)); % peak times between transition points
 
-if nargin==4
+if nargin>=4
     if varargin{1}==true
         % Detect transition points not to fit & fix them
         dX = diff(m2X);
@@ -57,7 +57,7 @@ ft = 'linearinterp';
 
 fitData = fitPattern(t_new); % apply fit to new time vector
 
-if nargin==4
+if nargin>=4
     if varargin{1}==true
         % Detect transition points not from fit & fix them
         dX = diff(fitData);
