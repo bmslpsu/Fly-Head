@@ -55,26 +55,36 @@ for kk = 1:n.file
 end
 
 % Compare whether data is string or number >> determine if category or value
-log = nan(1,n.vars);
+log = false(1,n.vars);
 for ii = 1:n.vars
     log(ii) = isnan(str2double(vardata{1,ii}));
 end
+
 if ~log(1) % make sure naming convetion is consistent and file name starts with a category
     warning('file name should not start with a number')
 end
+
 for kk = 1:length(log)-1
    if (log(kk)+log(kk+1))==0 % make sure there are not values without categories
       warning('file naming convention is not correct')
    end
+   
+   if log(kk+1)==1 % if we end on a category, use it as an index
+        catFlag = true;
+   else
+        catFlag = false;
+   end
 end
+
 [~,loc.catg] = find(log==true); % find locations of categorical variable 
 [~,loc.val] = find(log==false); % find locations of value variables
 loc.catg = loc.catg(1:length(loc.val)); % if there are more categories than values >>> get rid of trailing categories
 n.catg = length(loc.val); % # of categories
 n.val = length(loc.catg); % # of values
 if length(varargin)>n.catg
-   error('More variable names than variables') 
+   error('More variable names than variables')
 end
+
 catg = cell(1,length(loc.catg)); % cell to store category names
 for ii = 1:n.val
     catg{ii} = vardata{1,loc.catg(ii)}; % get names
@@ -96,7 +106,7 @@ for kk = 1:n.val
             'UniformOutput',false); % get values from cell array
     end
     
-    numdata(:,kk) = cell2mat(vardata(:,loc.val(kk))); % numeric array of cvategory values
+    numdata(:,kk) = cell2mat(vardata(:,loc.val(kk))); % numeric array of category values
     unq{kk} = sort(unique(numdata(:,kk)),'ascend'); % unique values for category
     
     try
@@ -133,7 +143,25 @@ for jj = 1:nn(1)
     pp = pp + reps{1}(jj); % new start of range
 end
 
-% Let user set variable names if needed
+% If filenames ends on a category, use it as an index
+if catFlag
+  	catIdx  = nan(n.file,1);
+   	catData = vardata(:,end);
+    catUnq  = sort(unique(catData));
+    catN    = length(catUnq);
+    for kk = 1:catN
+        catLoc = strcmp(catData,catUnq{kk});
+      	catIdx(catLoc) = kk;
+    end
+	numdata(:,end+1)	= catIdx;
+    Ind(:,end+1)        = catIdx;
+    nn(end+1)           = catN;
+	idx{end+1}          = (1:catN)';
+    unq{end+1}          = catUnq;
+    catg{end+1}         = 'class';   
+end
+
+% Let user set variable names if specififed
 varnames = catg;
 if nargin>2
     for kk = 1:nargin-2

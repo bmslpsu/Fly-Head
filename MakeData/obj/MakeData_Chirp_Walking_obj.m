@@ -15,10 +15,10 @@ filename = 'Chirp_Walking_DATA';
 [FILES, PATH] = uigetfile({'*.mat', 'DAQ-files'}, ...
     'Select head angle trials', rootdir, 'MultiSelect','on');
 FILES = cellstr(FILES)';
+%%
+[D,I,N,U,T] = GetFileData(FILES{1});
 
-[D,I,N,U,T] = GetFileData(FILES,true);
-
-clear rootdir
+clear root files path kk
 %% Get Data %%
 %---------------------------------------------------------------------------------------------------------------------------------
 IOFreq = 1;
