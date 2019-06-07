@@ -7,23 +7,21 @@ function [FIG] = MakeFig_ChirpLog_HeadFree_pat2head_BODE_ALL_new()
 %---------------------------------------------------------------------------------------------------------------------------------
 root = 'H:\DATA\Rigid_Data\';
 
-% Select chirp files
 [CHIRP,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
     'Select chirp file', root, 'MultiSelect','on');
 CHIRP = cellstr(CHIRP)';
 
 HeadFree = load(fullfile(root,CHIRP{1}),'GRAND','U','N');
-%%
+
 figNum = 1;
-filename = 'ChirpLog_HeadFree_pat2head_BODE_ALL_new'; % name of figure to save
+filename = 'ChirpLog_HeadFree_pat2head_BODE_ALL_new';
 catIdx = 5;
 xIdx = 1;
 CC = [0 0 0.7];
 
-FIG = figure (figNum); clf % figure handle
+FIG = figure (figNum); clf
 FIG.Color = 'w';
 FIG.Position = [100 100 1200 650];
-% FIG.OuterPosition = FIG.Position + [0 0 1 400];
 FIG.Name = filename;
 movegui(FIG,'center')
 hold on
@@ -44,8 +42,8 @@ for jj = 1:HeadFree.N{1,3} % amplitudes
  	GSTD(:,jj)  = HeadFree.GRAND{jj,catIdx}.STD{2}{2}(:,xIdx);
     PSTD(:,jj)  = rad2deg(HeadFree.GRAND{jj,catIdx}.CircSTD{7}{3}(:,xIdx));
     
-  	[b,a] = butter(2,0.7,'low');
-    [bb,aa] = butter(2,0.7,'low');
+  	[b,a] = butter(2,0.5,'low');
+    [bb,aa] = butter(2,0.5,'low');
     mff = 2;
     PHASE(:,jj) = filtfilt(bb,aa,medfilt1(filtfilt(b,a,PHASE(:,jj)),mff));
     GAIN(:,jj)  = filtfilt(bb,aa,medfilt1(filtfilt(b,a,GAIN(:,jj)),mff));
@@ -76,7 +74,7 @@ for jj = 1:HeadFree.N{1,3} % amplitudes
         hold on
 
         h.patch = PlotPatch(GAIN(:,jj), GSTD(:,jj), FREQ(:,jj) ,...
-                            3,HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,2);
+                            2,HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,2);
                         
         plot([0 12],[1 1],'--g','LineWidth',2);           
               
@@ -106,7 +104,7 @@ for jj = 1:HeadFree.N{1,3} % amplitudes
         end
         
         h.patch = PlotPatch(PHASE(:,jj), PSTD(:,jj),FREQ(:,jj),...
-            3,HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,2);
+            2,HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,2);
                 
         plot([0 12],[0 0],'--g','LineWidth',2);
         

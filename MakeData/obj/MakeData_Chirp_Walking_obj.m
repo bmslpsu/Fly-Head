@@ -62,9 +62,9 @@ for kk = 1:N{1,end}
         ALL{kk,n.catg+jj} = vars{jj};
     end
     
-	qq = size(TRIAL{I{kk,1},I{kk,3}},1);
+	qq = size(TRIAL{I{kk,1},1},1);
     for ww = 1:length(vars)
-        TRIAL{I{kk,1},I{kk,3}}{qq+1,ww} = vars{ww};
+        TRIAL{I{kk,1},1}{qq+1,ww} = vars{ww};
     end
 end
 
