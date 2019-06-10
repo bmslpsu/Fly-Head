@@ -1,4 +1,4 @@
-function [MAG,PHASE] = Get_IO_Freq(Freq,Mag,Phase,uFreq,varargin)
+function [MAG,PHASE,fIdx] = Get_IO_Freq(Freq,Mag,Phase,uFreq,varargin)
 %% Get_IO_Freq: gets magnitude & phase values at specified frequenices
 %   INPUTS:
 %       Freq  	: frequency vector
@@ -10,6 +10,7 @@ function [MAG,PHASE] = Get_IO_Freq(Freq,Mag,Phase,uFreq,varargin)
 %   OUTPUTS:
 %       MAG     : manitude at uFreq
 %       PHASE  	: phase at uFreq
+%       fIdx    : index at UFreq
 %---------------------------------------------------------------------------------------------------------------------------------
 if nargin==4
     fTol = 2*mean(diff(Freq)); % default tolerance range
