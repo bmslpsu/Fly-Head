@@ -2,7 +2,7 @@
 %---------------------------------------------------------------------------------------------------------------------------------
 clear ; close all ; clc
 rootdir = 'H:\EXPERIMENTS\Experiment_Sinusoid\';
-Amp = 3.75*[1,2,3,4,5];
+Amp = 3.75*[2,4,5];
 for kk = 1:length(Amp)
     MakeData_Sine_HeadFree_obj(rootdir,Amp(kk));
     beep on

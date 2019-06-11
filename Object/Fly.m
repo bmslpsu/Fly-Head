@@ -39,7 +39,9 @@ classdef Fly
     	SacdCount      	= [];       % saccades in data set
         SacdRate      	= [];       % saccade rate
         SACD            = [];       % saccade data table
+        fIdx            = [];       % indicies at IO frequencies
         FREQ            = [];       % complex frequency domain data
+        IOFREQ        	= [];       % complex frequency domain data at IO frequencies
     end
     
     methods
@@ -109,11 +111,13 @@ classdef Fly
         function obj = IO_Freq(obj,IOFreq)
             % IO_Freq: extract frequency domain data at discrete frequencies
             obj.IOFreq = IOFreq(:);
-            for kk = 1:size(obj.X,2)
-                [obj.IOMag(:,kk),obj.IOPhase(:,kk)] = Get_IO_Freq(obj.Fv(:,1),obj.Mag(:,kk),obj.Phase(:,kk),obj.IOFreq);
-            end
+          	[obj.IOMag(:,1),obj.IOPhase(:,1),obj.fIdx] = Get_IO_Freq(obj.Fv(:,1),obj.Mag(:,1),obj.Phase(:,1),obj.IOFreq);
+            for kk = 2:size(obj.X,2)
+                [obj.IOMag(:,kk),obj.IOPhase(:,kk),~] = Get_IO_Freq(obj.Fv(:,1),obj.Mag(:,kk),obj.Phase(:,kk),obj.IOFreq);
+            end        
+            
+            obj.IOFREQ = obj.FREQ(obj.fIdx,:);
         end
-        
         
         function [] = PlotTime(obj,n)
             % PloTime: plot time domain data

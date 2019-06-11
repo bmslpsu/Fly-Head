@@ -38,8 +38,9 @@ classdef IO_Class
     	m                   = []; % linear fit slope
         b                   = []; % linear fit y-intercept
         
-%         FREQ                = []; % output/input complex frequency domain data
-
+        CmplxGain           = []; % Complex gain
+        IOCmplxGain        	= []; % Complex gain at IO frequencies
+        
     end
     
     methods
@@ -54,8 +55,8 @@ classdef IO_Class
                 error('Input-Output Frequencies much match')
             end
             
-            obj.IN  = In;
-            obj.OUT = Out;
+%             obj.IN  = In;
+%             obj.OUT = Out;
             
             obj.BodeFv              = In.Fv;
             obj.BodeGain            = Out.Mag ./ In.Mag;
@@ -65,17 +66,20 @@ classdef IO_Class
             obj.IOBodeGain          = Out.IOMag ./ In.IOMag;
             obj.IOBodePhaseDiff     = -(In.IOPhase - Out.IOPhase);
             
-%             obj.FREQ                = In.FREQ./Out.FREQ;
+            obj.CmplxGain         	= Out.FREQ./In.FREQ;
+          	obj.IOCmplxGain       	= Out.IOFREQ./In.IOFREQ;
             
-            for kk = 1:size(In.X,2)
-                [obj.Coherence(:,kk),obj.CoherenceFV(:,1)] = mscohere(In.X(:,kk) , Out.X(:,kk) ,[],[] , In.Fv(:,1) , In.Fs);
-                [obj.IOCoherence(:,kk)] = Get_IO_Cohr(obj.CoherenceFV(:,1),obj.Coherence(:,kk),In.IOFreq);
+          	[obj.Coherence(:,1),obj.CoherenceFV(:,1)] = mscohere(In.X(:,1) , Out.X(:,1) ,[],[] , In.Fv(:,1) , In.Fs);
 
-                [obj.CrossCorr(:,kk), obj.TimeLags(:,kk) ,obj.MaxCC(:,kk) ,obj.TimeDiff(:,kk)] ...
-                    = CrossCorr(In.X(:,kk),Out.X(:,kk),In.Fs);
-                
+          	[obj.IOCoherence(:,1)] = Get_IO_Cohr(obj.CoherenceFV(:,1),obj.Coherence(:,1),In.IOFreq);               
+
+            [obj.CrossCorr(:,1), obj.TimeLags(:,1) ,obj.MaxCC(:,1) ,obj.TimeDiff(:,1)] ...
+                        = CrossCorr(In.X(:,1),Out.X(:,1),In.Fs);
+                    
+            for kk = 1:size(In.X,2)
                 [obj.r(1,kk),obj.m(1,kk),obj.b(1,kk)] = regression(In.X(:,kk),Out.X(:,kk),'one');
             end
+            
         end
         
         function [] = PlotIOBode(obj,n,lim)

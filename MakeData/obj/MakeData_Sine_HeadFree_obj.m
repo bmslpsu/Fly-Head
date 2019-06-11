@@ -6,7 +6,7 @@ function [] = MakeData_Sine_HeadFree_obj(rootdir,Amp)
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-% rootdir = 'F:\EXPERIMENTS\Experiment_Sinusoid';
+% rootdir = 'H:\EXPERIMENTS\Experiment_Sinusoid';
 filename = ['Sine_HeadFree_' num2str(Amp) '_DATA'];
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -128,6 +128,6 @@ clear jj ii
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
 save(['H:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
-    'ALL','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
+        'TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
 disp('SAVING DONE')
 end
