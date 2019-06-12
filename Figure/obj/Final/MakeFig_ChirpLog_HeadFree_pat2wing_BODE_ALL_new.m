@@ -5,14 +5,14 @@ function [FIG] = MakeFig_ChirpLog_HeadFree_pat2wing_BODE_ALL_new()
 %   OUTPUTS:
 %       FIG     : figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'F:\DATA\Rigid_Data\';
+root = 'H:\DATA\Rigid_Data\';
 
 [CHIRP,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
     'Select chirp file', root, 'MultiSelect','on');
 CHIRP = cellstr(CHIRP)';
 
 HeadFree = load(fullfile(root,CHIRP{1}),'GRAND','U','N');
-%%
+
 figNum = 1;
 filename = 'ChirpLog_HeadFree_pat2wing_BODE_ALL_new';
 catIdx = 8;

@@ -5,7 +5,7 @@ function [] = MakeData_Chirp_HeadFixed_obj(rootdir)
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-rootdir = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFixed';
+% rootdir = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFixed';
 filename = 'Chirp_HeadFixed_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -113,6 +113,6 @@ clear jj ii
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
 save(['H:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
-    'ALL','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
+    'TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
 disp('SAVING DONE')
 end

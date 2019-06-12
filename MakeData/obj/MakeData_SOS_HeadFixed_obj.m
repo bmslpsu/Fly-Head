@@ -5,7 +5,7 @@ function [] = MakeData_SOS_HeadFixed_obj(rootdir)
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-% rootdir = 'F:\EXPERIMENTS\Experiment_SOS_v2_HeadFixed';
+% rootdir = 'H:\EXPERIMENTS\Experiment_SOS_v2_HeadFixed';
 filename = 'SOS_HeadFixed_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -110,7 +110,7 @@ clear ii
 %% SAVE %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
-save(['F:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
-    'ALL','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
+save(['H:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
+    'TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
 disp('SAVING DONE')
 end

@@ -5,7 +5,7 @@ function [] = MakeData_Chirp_HeadFree_obj(rootdir)
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-rootdir = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFree';
+% rootdir = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFree';
 filename = 'Chirp_HeadFree_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -43,7 +43,7 @@ for kk = 1:N{1,end}
 	wing.f = 100*(data(:,6)); % wing beat frequency
     if min(wing.f)<150 || mean(wing.f)<180 % check WBF, if too low then don't use trial
         fprintf('Low WBF: Fly %i Trial %i \n',D{kk,1},D{kk,2})
-%         continue
+        continue
     else
         pp = pp + 1; % set next index to store data
     end
@@ -126,6 +126,6 @@ clear jj ii
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
 save(['H:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
-    'ALL','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
+    'TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
 disp('SAVING DONE')
 end

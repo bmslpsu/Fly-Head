@@ -7,7 +7,7 @@ function [FIG] = MakeFig_Sine_HeadFree_ComplexGain()
 %---------------------------------------------------------------------------------------------------------------------------------
 root = 'H:\DATA\Rigid_Data\';
 
-[FILES,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
+[FILES,~] = uigetfile({'*.mat', 'DAQ-files'},...
     'Select head angle trials', root, 'MultiSelect','on');
 FILES = cellstr(FILES)';
 
@@ -89,7 +89,7 @@ end
 maxALL = max(maxTrial,[],'all');
 
 CmplxGain = cellfun(@(x,y) (x + 1i*y), Real, Imag, 'UniformOutput', false);
-Gain = cellfun(@(x) 2*abs(x), CmplxGain, 'UniformOutput', false);
+Gain = cellfun(@(x) abs(x), CmplxGain, 'UniformOutput', false);
 Phase = cellfun(@(x) rad2deg(angle(x)), CmplxGain, 'UniformOutput', false);
 GAIN = cellfun(@(x) nanmean(x,1), Gain, 'UniformOutput', false);
 PHASE = cellfun(@(x) nanmean(x,1), Phase, 'UniformOutput', false);
@@ -125,7 +125,7 @@ for jj = 1:nFreq
 end
 
 CmplxGain_Norm      = Real_Norm + 1i*Imag_Norm;
-Gain_Norm           = 2*abs(CmplxGain_Norm);
+Gain_Norm           = abs(CmplxGain_Norm);
 Phase_Norm          = rad2deg(angle(CmplxGain_Norm));
 GAIN_NORM           = nanmean(Gain_Norm,1);
 PHASE_NORM          = nanmean(Phase_Norm,1);
@@ -295,7 +295,7 @@ hold on
 ax1 = subplot(2,1,1) ; hold on
     ax1.FontSize = 12;
     ax1.XLim = [0 12.5]; 
-    ax1.YLim = [0 1.2];
+    ax1.YLim = [0 1.0];
     ax1.XLabel.FontSize = 14;
     ax1.XLabel.Color = 'w';
  	ax1.YLabel.String = ['Gain (' char(176) '/' char(176) ')'];
@@ -347,8 +347,8 @@ hold on
 for ww = 1:nAmp
     ax1 = subplot(2,nAmp,ww) ; hold on
         ax1.FontSize = 12;
-        ax1.XLim = [0 12.5]; 
-        ax1.YLim = [0 1.2];
+        ax1.XLim = [0 12.5];
+        ax1.YLim = [0 1.0];
         ax1.XLabel.FontSize = 14;
         ax1.XLabel.Color = 'w';
         ax1.YLabel.String = ['Gain (' char(176) '/' char(176) ')'];

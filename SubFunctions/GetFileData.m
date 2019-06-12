@@ -1,13 +1,13 @@
 function [D,I,N,U,T,FILES,PATH] = GetFileData(FILES,abscat,varargin)
-%% GetFileData: Parse file name data and returns tables with relevant information, lets user load files if no input is specified
+%% GetFileData: Parse file name data and returns tables with relevant information
 %   INPUTS:
-%       FILES       :   File cells in the form "var1_val1_var2_val2_..._varn_valn". The first variable is
+%       FILES       :   file cells in the form "var1_val1_var2_val2_..._varn_valn". The first variable is
 %                       the control group & the second is the repetions,
 %                       the rest are categories. If "FILES" is a character
 %                       vector, then it is the root directory & user selects files.
 %       abscat      :   if set to true, indexing is based on the absolute
 %                       value of conditions.
-%       varargin    :   User can rename the variables by inputing strings equal to the # of variables in
+%       varargin    :   user can rename the variables by inputing strings equal to the # of variables in
 %                       the file name.
 %   OUTPUTS:
 %       D           :   raw file data table
@@ -120,7 +120,7 @@ for kk = 1:n.val
     end
     
     nn(kk) = length(unq{kk}); % # of values for category
-    idx{kk} = (1:nn(kk))'; % indicies values needed for each category
+    idx{kk} = (1:nn(kk))'; % indicie values needed for each category
     
     % Set up indexing convention
     reps{kk} = nan(nn(kk),1);
@@ -158,7 +158,7 @@ if catFlag
     nn(end+1)           = catN;
 	idx{end+1}          = (1:catN)';
     unq{end+1}          = catUnq;
-    catg{end+1}         = 'class';   
+    catg{end+1}         = 'class';
 end
 
 % Let user set variable names if specififed
@@ -170,19 +170,20 @@ if nargin>2
 end
 
 % Compute trial map for conditions
-cond = nn(3:end); % conditions per category
+cond  = nn(3:end); % conditions per category
 ncatg = length(cond); % # of categories 
-ridx = cell(ncatg,1);
+ridx  = cell(ncatg,1);
 for kk = 1:ncatg
     ridx{kk} = idx{2+kk}';
 end
 allcomb = combvec(ridx{:}); % all unique condition combinations
-map = nan(nn(1),size(allcomb,2)); % map to store # reps for each combination
+ncomb = size(allcomb,2);
+map = nan(nn(1),ncomb); % map to store # reps for each combination
 for kk = 1:nn(1) % per fly
     % Check all combinations & conditions
-    for ii = 1:size(allcomb,2) % each combination
+    for ii = 1:ncomb % each combination
         rr = ones(size(Ind,1),1);
-        for jj = 1:size(allcomb,1) % each condition
+        for jj = 1:ncatg % each condition
             rr = rr & (Ind(:,2+jj)==allcomb(jj,ii));
         end
         map(kk,ii) = sum( rr & Ind(:,1)==kk ); % # of reps
@@ -194,14 +195,18 @@ if isempty(map) % no conditions
    map = reps{:,1};
    mapname = {'reps'};
 else
-    % Make variable names
-    mapname = cell(1,size(allcomb,2));
-    for kk = 1:size(allcomb,2)
-        valstr = [];
-        for jj = 1:size(allcomb,1)
-           valstr = [valstr  '_' num2str(allcomb(jj,kk))];
+    % Make map variable names
+    mapname = cell(1,ncomb);
+    for kk = 1:ncomb
+        valstr = cell(1,ncomb);
+        for jj = 1:ncatg
+            if jj==ncatg
+                valstr{jj} = strcat(varnames{2+jj},['_' num2str(allcomb(jj,kk))]);
+            else
+                valstr{jj} = strcat(varnames{2+jj},['_' num2str(allcomb(jj,kk)) '_']);
+            end
         end
-        mapname{kk} = [strcat(varnames{3:end})  valstr];
+        mapname{kk} = cat(2,valstr{:});
     end
 end
 
@@ -237,8 +242,8 @@ N.Properties.VariableNames = [varnames,'file'];
 U = splitvars(table(unq));
 U.Properties.VariableNames = varnames;
 % Table from map conditions
-A = splitvars(table(mapSum));
-A.Properties.VariableNames = mapname;
+M = splitvars(table(mapSum));
+M.Properties.VariableNames = mapname;
 % Table from all trials ,flies, conditions
 T = splitvars(table(unq{1} , reps{:,1} , map , mpass));
 T.Properties.VariableNames = [varnames(1:2) , mapname ,['CHECK_' num2str(minTrial)]];
@@ -251,5 +256,5 @@ for kk = 3:n.catg
 end
 fprintf('Pass: %i \n',npass)
 disp(T)
-disp(A)
+disp(M)
 end
