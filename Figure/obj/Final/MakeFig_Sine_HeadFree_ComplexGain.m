@@ -1,4 +1,4 @@
-function [] = MakeFig_Sine_HeadFree_ComplexGain()
+function [FIG] = MakeFig_Sine_HeadFree_ComplexGain()
 %% MakeFig_Sine_HeadFree_ComplexGain:
 %   INPUTS:
 %       -
@@ -22,78 +22,43 @@ HeadFree = cell(nAmp,1);
 for ww = 1:nAmp
     HeadFree{ww} = load(fullfile(root,FILES{ww}),'TRIAL','GRAND','U','N');
 end
+%% Complex Gain Calculations
+%---------------------------------------------------------------------------------------------------------------------------------
+clearvars -except nAmp Amp HeadFree
 
 filename = 'Sine_HeadFree_ComplexGain';
 
 catIdx = 5;
 xIdx = 1;
-figNum = 1;
 
-Freq = HeadFree{ww}.U{1,3}{1};
-nFreq = HeadFree{ww}.N{1,3};
-vel = nan(nFreq,1);
+Freq = HeadFree{1}.U{1,3}{1}';
+nFreq = HeadFree{1}.N{1,3};
+fLabel = cellfun(@(x) [num2str(x) ' Hz  : '], num2cell(Freq),'UniformOutput',false);
+
+vel = nan(1,nFreq);
 velIdx = [4,4,3,2,1,1];
-Vel = repmat(2*pi*3.75*HeadFree{1}.U{1,3}{1},1,nAmp);
-for kk = 1:nAmp
-   Vel(:,kk) = round(kk*Vel(:,kk));
+Vel = repmat(2*pi*HeadFree{1}.U{1,3}{1}',nAmp,1);
+for ww = 1:nAmp
+   Vel(ww,:) = round(Amp(ww)*Vel(ww,:));
 end
 for jj = 1:nFreq
-    vel(jj) = Vel(jj,velIdx(jj));
+    vel(jj) = Vel(velIdx(jj),jj);
 end
-vLabel = cellfun(@(x) strcat(num2str(x),[' ' char(176) '/s']), num2cell(vel),'UniformOutput',false);
+vLabel = cellfun(@(x) strcat(num2str(x),[' ' char(176) '/s']), num2cell(Vel),'UniformOutput',false);
+vLabel_Norm = cellfun(@(x) strcat(num2str(x),[' ' char(176) '/s']), num2cell(vel),'UniformOutput',false);
+
+legLabel = cellfun(@(x,y) [x ' ' y], repmat(fLabel,nAmp,1), vLabel,'UniformOutput',false);
+legLabel_Norm = cellfun(@(x,y) [x ' ' y], fLabel, vLabel_Norm,'UniformOutput',false);
+
 cList = jet(nFreq);
-cLabel = cellfun(@(x) [num2str(x) ' Hz  : '], num2cell(Freq),'UniformOutput',false);
 
-legLabel = cellfun(@(x,y) [x ' ' y], cLabel, vLabel,'UniformOutput',false);
-
-FIG = figure (figNum); clf
-FIG.Color = 'w';
-FIG.Position = [100 100 700 700];
-movegui(FIG,'center')
-FIG.Name = filename;
+% Get real & imaginary parts
+maxTrial = nan(nAmp,nFreq);
+Real = cell(nAmp,1);
+Imag = Real;
 for ww = 1:nAmp
-   FIG.Name = [FIG.Name '_' num2str(Amp(ww))];  
-end
-hold on
-
-ax = gca;
-box on
-axis equal
-ax.Color = 'w';
-ax.YLabel.String = 'Img';
-ax.YLabel.FontSize = 14;
-ax.XLabel.String = 'Real';
-ax.XLabel.FontSize = ax.YLabel.FontSize;
-
-if catIdx==5
-    gains = 0.2:0.2:1;
-else
-    gains = 0.05:0.05:0.25;
-end
-maxGain = max(gains);
-
-axisVector = 2*(-maxGain:0.1:maxGain);
-h.xorigin = plot(axisVector,0*axisVector,'--','Color',[0.5 0.5 0.5],'LineWidth',1);
-h.yorigin = plot(0*axisVector,axisVector,'--','Color',[0.5 0.5 0.5],'LineWidth',1);
-for kk = 1:length(gains)
-    h.circle = PlotCircle(0,0,gains(kk));
-    h.circle.Color = [0.5 0.5 0.5 1];
-    h.circle.LineStyle = '-';
-    h.circle.LineWidth = 1;
-    h.text = text(0,1.06*gains(kk),num2str(gains(kk)));
-    h.text.FontWeight = 'bold';
-    if gains(kk)==1
-        h.circle.Color = [0.8 0 0 0.5];
-    end
-end
-ax.XLim = (1.1*maxGain)*[-1 1];
-ax.YLim = (1.1*maxGain)*[-1 1];
-
-
-REAL = cell(nAmp,1);
-IMAG = REAL;
-for ww = 1:nAmp
-    REAL{ww} = nan(100,nFreq);
+    Real{ww} = nan(100,nFreq);
+  	Imag{ww} = nan(100,nFreq);
     for jj = 1:nFreq
         pp = 1;
         for kk = 1:HeadFree{ww}.N{1,1}
@@ -109,62 +74,319 @@ for ww = 1:nAmp
                     R = abs(R);
                 end
                 
-                REAL{ww}(pp,jj) = R;
-                IMAG{ww}(pp,jj) = I;
+                Real{ww}(pp,jj) = R;
+                Imag{ww}(pp,jj) = I;
                 
-                if ww==velIdx(jj)
-                    h.trial = scatter(R,I,40,'o','MarkerEdgeColor','k','MarkerFaceColor',cList(jj,:),...
-                                'MarkerFaceAlpha',0.65,'LineWidth',0.5);
-                end
-                
-%                   plot([0 R],[0 I],'Color',[0.5 0.5 0.5 0.2])
-%                   h.trial = plot(R,I,'.','Color',cList(jj,:),'MarkerSize',20);
-%                   h.trial.Color(4) = 0.2;
                 pp = pp + 1;
             end
+        end
+        maxTrial(ww,jj) = pp - 1;
+    end
+    maxFreq = max(maxTrial(ww,:));
+    Real{ww} = Real{ww}(1:maxFreq,:);
+    Imag{ww} = Imag{ww}(1:maxFreq,:);
+end
+maxALL = max(maxTrial,[],'all');
+
+CmplxGain = cellfun(@(x,y) (x + 1i*y), Real, Imag, 'UniformOutput', false);
+Gain = cellfun(@(x) 2*abs(x), CmplxGain, 'UniformOutput', false);
+Phase = cellfun(@(x) rad2deg(angle(x)), CmplxGain, 'UniformOutput', false);
+GAIN = cellfun(@(x) nanmean(x,1), Gain, 'UniformOutput', false);
+PHASE = cellfun(@(x) nanmean(x,1), Phase, 'UniformOutput', false);
+GAIN_STD = cellfun(@(x) nanstd(x,[],1), Gain, 'UniformOutput', false);
+PHASE_STD = cellfun(@(x) nanstd(x,[],1), Phase, 'UniformOutput', false);
+
+Real_Norm = nan(maxALL,nFreq);
+Imag_Norm = Real_Norm;
+for ww = 1:nAmp
+    for jj = 1:nFreq
+        if ww==velIdx(jj)
+            Real_Norm(1:maxTrial(ww,jj),jj) = Real{ww}(1:maxTrial(ww,jj),jj);
+            Imag_Norm(1:maxTrial(ww,jj),jj) = Imag{ww}(1:maxTrial(ww,jj),jj);
         end
     end
 end
 
-REAL = cellfun(@(x) nanmean(x,1), REAL, 'UniformOutput', false);
-IMAG = cellfun(@(x) nanmean(x,1), IMAG, 'UniformOutput', false);
+REAL = cellfun(@(x) nanmean(x,1), Real, 'UniformOutput', false);
+IMAG = cellfun(@(x) nanmean(x,1), Imag, 'UniformOutput', false);
 REAL = cat(1,REAL{:});
 IMAG = cat(1,IMAG{:});
+
+% REAL_STD = cellfun(@(x) nanstd(x,[],1), Real, 'UniformOutput', false);
+% IMAG_STD = cellfun(@(x) nanstd(x,[],1), Imag, 'UniformOutput', false);
+% REAL_STD = cat(1,REAL_STD{:});
+% IMAG_STD = cat(1,IMAG_STD{:});
+
+REAL_NORM = nan(1,nFreq);
+IMAG_NORM = REAL_NORM;
 for jj = 1:nFreq
-    RR(jj) = REAL(velIdx(jj),jj);
-    II(jj) = IMAG(velIdx(jj),jj);
+    REAL_NORM(jj) = REAL(velIdx(jj),jj);
+    IMAG_NORM(jj) = IMAG(velIdx(jj),jj);
 end
-REAL = RR;
-IMAG = II;
-for ww = 1:1
-    for jj = 1:nFreq
-%         R = real(HeadFree{ww}.GRAND{jj,catIdx}.Mean{1}{18}(:,xIdx));
-%         I = imag(HeadFree{ww}.GRAND{jj,catIdx}.Mean{1}{18}(:,xIdx));
-%         R = REAL{ww}(jj);
-%         I = IMAG{ww}(jj);
-        R = REAL(jj);
-     	I = IMAG(jj);
-        
-       	plot([0 R],[0 I],'Color',[0 0 0 1],'LineWidth',1)
-      	h.grand = scatter(R,I,120,'o','MarkerEdgeColor','k','MarkerFaceColor',cList(jj,:),...
-                        'MarkerFaceAlpha',1,'LineWidth',1.5);
-                    
-        hh(jj) = h.grand;
-%         h.text = text(R,I,vLabel{jj});
-%         h.text.FontWeight = 'bold';
+
+CmplxGain_Norm      = Real_Norm + 1i*Imag_Norm;
+Gain_Norm           = 2*abs(CmplxGain_Norm);
+Phase_Norm          = rad2deg(angle(CmplxGain_Norm));
+GAIN_NORM           = nanmean(Gain_Norm,1);
+PHASE_NORM          = nanmean(Phase_Norm,1);
+GAIN_NORM_STD       = nanstd(Gain_Norm,[],1);
+PHASE_NORM_STD      = nanstd(Phase_Norm,[],1);
+
+gains = 0.1:0.1:0.6;
+maxGain = max(gains);
+
+%% Complex Gain: Normalized Amplitude
+%---------------------------------------------------------------------------------------------------------------------------------
+FIG = figure (1); clf
+FIG.Color = 'w';
+FIG.Position = [100 100 700 700];
+movegui(FIG,'center')
+FIG.Name = filename;
+for ww = 1:nAmp
+   FIG.Name = [FIG.Name '_' num2str(Amp(ww))];  
+end
+ax = gca;
+hold on
+box on
+axis equal
+ax.Color = 'w';
+ax.FontSize = 12;
+ax.Title.String = 'Normalized Complex Gain';
+ax.YLabel.String = 'Img';
+ax.YLabel.FontSize = 14;
+ax.XLabel.String = 'Real';
+ax.XLabel.FontSize = ax.YLabel.FontSize;
+
+axVector = 2*(-maxGain:0.1:maxGain);
+axColor = [1 0 0];
+h.xorigin = plot(axVector,0*axVector,'--','Color',axColor,'LineWidth',1);
+h.yorigin = plot(0*axVector,axVector,'--','Color',axColor,'LineWidth',1);
+gainOff = 160;
+gainR = 1.0*gains;
+gainX = gainR*cosd(gainOff);
+gainY = gainR*sind(gainOff);
+for kk = 1:length(gains)
+    h.circle = PlotCircle(0,0,gains(kk));
+    h.circle.Color = [0.5 0.5 0.5 1];
+    h.circle.LineStyle = '-';
+    h.circle.LineWidth = 1;
+    h.text = text(gainX(kk),gainY(kk),num2str(gains(kk)));
+    h.text.FontWeight = 'bold';
+    if gains(kk)==1
+        h.circle.Color = [0.8 0 0 0.5];
     end
 end
+ax.XLim = (1.1*maxGain)*[-1 1];
+ax.YLim = (1.1*maxGain)*[-1 1];
+ax.XTick = ax.YTick;
 
-leg = legend(hh,legLabel);
+for jj = 1:nFreq
+    h.trial = scatter(Real_Norm(:,jj), Imag_Norm(:,jj), 40, 'o','MarkerEdgeColor','k',...
+        'MarkerFaceColor',cList(jj,:), 'MarkerFaceAlpha', 0.65, 'LineWidth', 0.5);
+    
+	h.rr = plot([0 REAL_NORM(jj)],[0 IMAG_NORM(jj)],'Color',[0 0 0 1],'LineWidth',1);
+    
+    rSTD = PolarSTD(Real_Norm(:,jj),Imag_Norm(:,jj),[REAL_NORM(jj) IMAG_NORM(jj)]);
+    
+	[h.std] = draw_ellipse([REAL_NORM(jj) IMAG_NORM(jj)], 3*rSTD, 0.5, 0, 90, cList(jj,:)); hold on
+    h.std{1}.FaceAlpha = 0.2;
+    for kk = 2:length(h.std)
+       delete(h.std{kk}) 
+    end
+    
+    h.grand = scatter(REAL_NORM(jj),IMAG_NORM(jj),1,'o','MarkerEdgeColor','k','MarkerFaceColor',cList(jj,:),...
+        'MarkerFaceAlpha',1,'LineWidth',1.5);
+    
+    h.leg = scatter(REAL_NORM(jj),IMAG_NORM(jj),40,'o','MarkerEdgeColor','k','MarkerFaceColor','k',...
+        'MarkerFaceAlpha',1,'LineWidth',1.5);
+
+    hh(jj) = h.grand;
+end
+leg = legend(hh,legLabel_Norm);
 leg.Title.String = 'Frequency / Velocity';
-leg.Location = 'northeast';
+leg.Location = 'northwest';
 legend boxoff
 
-CmplxGain = REAL + 1i*IMAG;
-GAIN = 2*abs(CmplxGain);
-PHASE = rad2deg(angle(CmplxGain));
+%% Complex Gain: All Amplitude
+%---------------------------------------------------------------------------------------------------------------------------------
+FIG = figure (2); clf
+FIG.Color = 'w';
+FIG.Position = [100 100 1400 800];
+movegui(FIG,'center')
+FIG.Name = filename;
+for ww = 1:nAmp
+   FIG.Name = [FIG.Name '_' num2str(Amp(ww))];  
+end
 
-figure (2) ; clf
-plot(Freq,PHASE)
+for ww = 1:nAmp
+    ax = subplot(ceil(nAmp/2),2,ww);
+    hold on
+    box on
+    axis equal
+    ax.Color = 'w';
+    ax.FontSize = 12;
+    ax.Title.String = [num2str(Amp(ww)) char(176)];
+    ax.YLabel.String = 'Img';
+    ax.YLabel.FontSize = 14;
+    ax.XLabel.String = 'Real';
+    ax.XLabel.FontSize = ax.YLabel.FontSize;
 
+    axVector = 2*(-maxGain:0.1:maxGain);
+    axColor = [1 0 0];
+    h.xorigin = plot(axVector,0*axVector,'--','Color',axColor,'LineWidth',1);
+    h.yorigin = plot(0*axVector,axVector,'--','Color',axColor,'LineWidth',1);
+    gainOff = 160;
+    gainR = 1.0*gains;
+    gainX = gainR*cosd(gainOff);
+    gainY = gainR*sind(gainOff);
+    for kk = 1:length(gains)
+        h.circle = PlotCircle(0,0,gains(kk));
+        h.circle.Color = [0.5 0.5 0.5 1];
+        h.circle.LineStyle = '-';
+        h.circle.LineWidth = 1;
+        h.text = text(gainX(kk),gainY(kk),num2str(gains(kk)));
+        h.text.FontWeight = 'bold';
+        if gains(kk)==1
+            h.circle.Color = [0.8 0 0 0.5];
+        end
+    end
+    ax.XLim = (1.1*maxGain)*[-1 1];
+    ax.YLim = (1.1*maxGain)*[-1 1];
+ 	ax.XTick = ax.YTick;
+
+  	for jj = 1:nFreq
+        h.trial = scatter(Real{ww}(:,jj), Imag{ww}(:,jj), 40, 'o','MarkerEdgeColor','k',...
+            'MarkerFaceColor',cList(jj,:), 'MarkerFaceAlpha', 0.65, 'LineWidth', 0.5);
+
+        h.r = plot([0 REAL(ww,jj)],[0 IMAG(ww,jj)],'Color',[0 0 0 1],'LineWidth',1);
+        
+        rSTD = PolarSTD(Real{ww}(:,jj),Imag{ww}(:,jj),[REAL(ww,jj) IMAG(ww,jj)]);
+
+        [h.std] = draw_ellipse([REAL(ww,jj) IMAG(ww,jj)], 3*rSTD, 0.5, 0, 90, cList(jj,:)); hold on
+        h.std{1}.FaceAlpha = 0.2;
+        for kk = 2:length(h.std)
+           delete(h.std{kk}) 
+        end
+
+        h.grand = scatter(REAL(ww,jj),IMAG(ww,jj),1,'o','MarkerEdgeColor','k','MarkerFaceColor',cList(jj,:),...
+            'MarkerFaceAlpha',1,'LineWidth',1.5);
+
+        h.leg = scatter(REAL(ww,jj),IMAG(ww,jj),40,'o','MarkerEdgeColor','k','MarkerFaceColor','k',...
+            'MarkerFaceAlpha',1,'LineWidth',1.5);
+
+        hh(jj) = h.grand;
+    end
+    leg = legend(hh,legLabel{ww,:});
+    leg.Title.String = 'Frequency / Velocity';
+    leg.Location = 'northwest';
+    leg.Position = leg.Position + [-0.2 0 0 0];
+    legend boxoff
+end
+
+%% Complex Gain: Normalized Bode Plot
+%---------------------------------------------------------------------------------------------------------------------------------
+FIG = figure (3); clf
+FIG.Color = 'w';
+FIG.Position = [100 100 800 800];
+FIG.Name = 'Normalized Bode';
+movegui(FIG,'center')
+hold on
+
+ax1 = subplot(2,1,1) ; hold on
+    ax1.FontSize = 12;
+    ax1.XLim = [0 12.5]; 
+    ax1.YLim = [0 1.2];
+    ax1.XLabel.FontSize = 14;
+    ax1.XLabel.Color = 'w';
+ 	ax1.YLabel.String = ['Gain (' char(176) '/' char(176) ')'];
+    ax1.YLabel.FontSize = ax1.XLabel.FontSize;
+  	ax1.XTick = Freq;
+    ax1.XTickLabel = '';
+
+    errorbar(Freq,GAIN_NORM,2*GAIN_NORM_STD,'-k','LineWidth',4)
+    
+ax2 = subplot(2,1,2) ; hold on
+    ax2.FontSize = ax1.FontSize;
+    ax2.XLim = ax1.XLim;
+    ax2.YLim = [-180 180];
+   	ax2.XLabel.String = 'Frequency (Hz)';
+    ax2.XLabel.FontSize = 14;
+    ax2.XLabel.Color = 'k';
+ 	ax2.YLabel.String = ['Phase (' char(176) ')'];
+    ax2.YLabel.FontSize = ax1.XLabel.FontSize;
+    ax2.XTick = ax1.XTick;
+    ax2.YTick = -180:60:180;
+    
+    errorbar(Freq,PHASE_NORM,2*PHASE_NORM_STD,'-k','LineWidth',4)
+    plot([0 12.5],[0 0],'--g','LineWidth',1)
+    
+ax3 = axes;
+    ax3.Position = ax1.Position + [0 -0.00 0 0];
+    ax3.FontSize = ax1.FontSize ;
+    ax3.Color = 'none';
+    ax3.YAxisLocation = 'right';
+    ax3.YAxis.Color = 'none';
+    ax3.XAxisLocation = 'top';
+    ax3.XLim = ax1.XLim;
+    ax3.XTick = ax1.XTick;
+    
+    velLabel = cellfun(@(x) num2str(x), num2cell(vel),'UniformOutput',false);
+    
+    ax3.XTickLabels = velLabel;
+    ax3.XLabel.String = ['Peak Velocity (' char(176) '/s)'];
+    ax3.XLabel.FontSize = ax1.YLabel.FontSize;
+
+%% Complex Gain: All Bode Plot
+%---------------------------------------------------------------------------------------------------------------------------------
+FIG = figure (4); clf
+FIG.Color = 'w';
+FIG.Position = [100 100 1200 800];
+FIG.Name = 'All Bode';
+movegui(FIG,'center')
+hold on
+for ww = 1:nAmp
+    ax1 = subplot(2,nAmp,ww) ; hold on
+        ax1.FontSize = 12;
+        ax1.XLim = [0 12.5]; 
+        ax1.YLim = [0 1.2];
+        ax1.XLabel.FontSize = 14;
+        ax1.XLabel.Color = 'w';
+        ax1.YLabel.String = ['Gain (' char(176) '/' char(176) ')'];
+        ax1.YLabel.FontSize = ax1.XLabel.FontSize;
+        ax1.XTick = Freq;
+        ax1.XTickLabel = '';
+
+        errorbar(Freq,GAIN{ww},2*GAIN_STD{ww},'-k','LineWidth',4)
+
+    ax2 = subplot(2,nAmp,ww+nAmp) ; hold on
+        ax2.FontSize = ax1.FontSize;
+        ax2.XLim = ax1.XLim;
+        ax2.YLim = [-180 180];
+        ax2.XLabel.String = 'Frequency (Hz)';
+        ax2.XLabel.FontSize = 14;
+        ax2.XLabel.Color = 'k';
+        ax2.YLabel.String = ['Phase (' char(176) ')'];
+        ax2.YLabel.FontSize = ax1.XLabel.FontSize;
+        ax2.XTick = ax1.XTick;
+        ax2.YTick = -180:60:180;
+
+        errorbar(Freq,PHASE{ww},2*PHASE_STD{ww},'-k','LineWidth',4)
+        plot([0 12.5],[0 0],'--g','LineWidth',1)
+
+	ax3 = axes;
+        ax3.Position = ax1.Position + [0 -0.00 0 0];
+        ax3.FontSize = ax1.FontSize ;
+        ax3.Color = 'none';
+        ax3.YAxisLocation = 'right';
+        ax3.YAxis.Color = 'none';
+        ax3.XAxisLocation = 'top';
+        ax3.XLim = ax1.XLim;
+        ax3.XTick = ax1.XTick;
+
+        velLabel = cellfun(@(x) num2str(x), num2cell(Vel(ww,:)),'UniformOutput',false);
+
+        ax3.XTickLabels = velLabel;
+        ax3.XLabel.String = ['Peak Velocity (' char(176) '/s)'];
+        ax3.XLabel.FontSize = ax1.YLabel.FontSize;
+end
 end

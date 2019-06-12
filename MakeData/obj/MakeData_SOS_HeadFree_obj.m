@@ -5,7 +5,7 @@ function [] = MakeData_SOS_HeadFree_obj(rootdir)
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-% rootdir = 'F:\EXPERIMENTS\Experiment_SOS_v2';
+rootdir = 'H:\EXPERIMENTS\Experiment_SOS_v2';
 filename = 'SOS_HeadFree_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%

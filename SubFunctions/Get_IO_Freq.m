@@ -1,4 +1,4 @@
-function [MAG,PHASE,fIdx] = Get_IO_Freq(Freq,Mag,Phase,uFreq,varargin)
+function [MAG,PHASE,FIdx] = Get_IO_Freq(Freq,Mag,Phase,uFreq,varargin)
 %% Get_IO_Freq: gets magnitude & phase values at specified frequenices
 %   INPUTS:
 %       Freq  	: frequency vector
@@ -28,11 +28,12 @@ elseif nargin<4
 else
     error('Not Possible')
 end
-
-nFreq = length(uFreq);  % # of frequencies to use
-Ff      = nan(nFreq,1); % closest frequency that max mag occurs
-MAG     = nan(nFreq,1); % magnitude at frequencies
-PHASE   = nan(nFreq,1); % phase at frequencies
+nn      = length(Freq);
+nFreq   = length(uFreq);    % # of frequencies to use
+Ff      = nan(nFreq,1);     % closest frequency that max mag occurs
+MAG     = nan(nFreq,1);     % magnitude at frequencies
+PHASE   = nan(nFreq,1);     % phase at frequencies
+FIdx    = nan(nn,nFreq);    % indicies at frequencies
 for kk = 1:nFreq
     fRange = [uFreq(kk)-fTol , uFreq(kk)+fTol]; % frequency search range
     idxRange = Freq>=fRange(1) & Freq<=fRange(2); % index search range
@@ -42,7 +43,16 @@ for kk = 1:nFreq
     
     MAG(kk) = max(magRange); % store magnitude at uFreq
     PHASE(kk) = Phase(fIdx); % store phase at uFreq
+    
+    FIdx(:,kk) = fIdx;
 end
+
+FIdx = logical(sum(FIdx,2));
+if sum(FIdx,1)<nFreq
+    error('Error: conflicting frequencies')
+end
+[FIdx,~] = find(FIdx==true);
+
 
 if debug % plot magnitude & phase
 figure ; clf

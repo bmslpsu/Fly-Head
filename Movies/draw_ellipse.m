@@ -4,7 +4,7 @@ function [h,top,bot] = draw_ellipse(center,L,ratio,ecc,ang,C)
 %       center      : center point [x,y]
 %       L           : length of ellipse
 %       ratio       : portion of ellipse length below center
-%       ecc       	: eccentricity
+%       ecc       	: eccentricity (circle = 0)
 %       ang       	: angle of ellispe in degrees
 %       C       	: patch color
 %   OUTPUT:

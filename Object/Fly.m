@@ -82,6 +82,10 @@ classdef Fly
             obj.X(:,3)	= [diff(obj.X(:,2))/obj.Ts ; 0];                % 2nd derivative of data    
             
             % Stats
+            
+            [obj.Fv(:,1),obj.Mag(:,1),obj.Phase(:,1), obj.FREQ(:,1)] = ...
+                    FFT(obj.Time,obj.X(:,1));
+            
             for kk = 1:size(obj.X,2)
                 obj.Mean(1,kk)     	= mean(obj.X(:,kk));             	% mean: data & derivatives
             	obj.AbsMean(1,kk)	= mean(abs(obj.X(:,kk)));          	% mean: absolute value of data & derivatives
@@ -90,7 +94,7 @@ classdef Fly
                 obj.STD(1,kk)     	= std(obj.X(:,kk));                	% std: data & derivatives
                 obj.AbsSTD(1,kk)   	= std(obj.X(:,kk));               	% std: absolute value of data & derivatives
                 
-                [obj.Fv(:,1),obj.Mag(:,kk),obj.Phase(:,kk), obj.FREQ(:,kk)] = ...
+                [~,obj.Mag(:,kk),obj.Phase(:,kk), obj.FREQ(:,kk)] = ...
                     FFT(obj.Time,obj.X(:,kk)); % transform data into frequency domain
             end
             
