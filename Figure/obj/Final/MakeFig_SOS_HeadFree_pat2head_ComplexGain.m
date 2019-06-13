@@ -48,9 +48,10 @@ PHASE_STD   = std(Phase,[],1);
 
 REAL        = mean(Real,1);
 IMAG        = mean(Imag,1);
+
 % CMPLXGAIN   = REAL + 1i*IMAG;
-% GAIN    = abs(CMPLXGAIN);
-% PHASE   = rad2deg(angle((CMPLXGAIN)));
+% GAIN        = abs(CMPLXGAIN);
+% PHASE       = rad2deg(angle((CMPLXGAIN)));
 
 cList = jet(nFreq);
 
@@ -64,41 +65,7 @@ movegui(FIG,'center')
 hold on
 
 gains = 0.2:0.2:1;
-maxGain = max(gains);
-
-ax = gca; hold on
-axis square
-box on
-ax.Color = 'w';
-ax.FontSize = 12;
-ax.Title.String = 'Complex Gain';
-ax.YLabel.String = 'Img';
-ax.YLabel.FontSize = 14;
-ax.XLabel.String = 'Real';
-ax.XLabel.FontSize = ax.YLabel.FontSize;
-
-axVector = 2*(-maxGain:0.1:maxGain);
-axColor = [1 0 0];
-h.xorigin = plot(axVector,0*axVector,'--','Color',axColor,'LineWidth',1);
-h.yorigin = plot(0*axVector,axVector,'--','Color',axColor,'LineWidth',1);
-gainOff = 160;
-gainR = 1.0*gains;
-gainX = gainR*cosd(gainOff);
-gainY = gainR*sind(gainOff);
-for kk = 1:length(gains)
-    h.circle = PlotCircle(0,0,gains(kk));
-    h.circle.Color = [0.5 0.5 0.5 1];
-    h.circle.LineStyle = '-';
-    h.circle.LineWidth = 1;
-    h.text = text(gainX(kk),gainY(kk),num2str(gains(kk)));
-    h.text.FontWeight = 'bold';
-    if gains(kk)==1
-        h.circle.Color = [0.8 0 0 0.5];
-    end
-end
-ax.XLim = (1.1*maxGain)*[-1 1];
-ax.YLim = (1.1*maxGain)*[-1 1];
-ax.XTick = ax.YTick;
+[ax,~] = ComplexAxes(gains);
 
 for jj = 1:nFreq
     h.trial = scatter(Real(:,jj), Imag(:,jj), 40, 'o','MarkerEdgeColor','k',...

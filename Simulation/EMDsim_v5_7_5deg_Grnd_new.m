@@ -13,7 +13,9 @@ patfile = fullfile(dirPat,file);
 load(patfile,'pattern');
 
 % make eye filters
-[eye_filt, num_samp_pts, num_receptors] = make_eye_filters();
+delta_phi = 4.6*pi/180; % angle between adjacent ommatidia
+n_receptor = 64;
+Eye = EYE(delta_phi,n_receptor);
 
 % % TEMPORALLY FILTER SPACE-TIME EYE SIGNAL
 % t  = 0:0.001:0.060;
