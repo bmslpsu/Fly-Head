@@ -52,6 +52,8 @@ classdef EYE
                 eye_filt(:,j) = circshift(obj.filt, [0 -cnt*15]);
                 cnt = cnt + 1;
             end
+            
+            obj.filt = eye_filt;
 
             eye_filt(eye_filt < 0.005) = 0;  % set vey low values to
             % zero, so may be able to use eye_filt as a sparse matrix...not a time
