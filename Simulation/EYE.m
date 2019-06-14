@@ -3,15 +3,16 @@ classdef EYE
     % system
     
     properties
-        n_receptor     	% # of ommatidia (default = 2)
-        n_pts           % sample points
-        delta_phi       % angle between adjacent ommatidia
+        delta_phi       % angle between adjacent ommatidia [deg]
+        time_constant   % temporal filter time constant [s]
         delta_rho       % 
-        filt            % spatial blurring filter 
+        filt            % spatial blurring filter
+       	n_receptor     	% # of ommatidia (default = 2)
+        n_pts           % sample points
     end
     
     methods
-        function obj = EYE(delta_phi,n)
+        function obj = EYE(delta_phi,time_constant,n)
             % EYE Construct an instance of this class
             %   Input the angle between adjacent ommatidia & the # of ommatidia
             if nargin==0
@@ -23,7 +24,7 @@ classdef EYE
             end
             
             obj.delta_phi = delta_phi; % angle between adjacent ommatidia
-            
+            obj.time_constant = time_constant;
             obj = SetProp(obj,n);
        	end
         

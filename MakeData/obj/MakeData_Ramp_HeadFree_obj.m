@@ -7,12 +7,15 @@ function [] = MakeData_Ramp_HeadFree_obj(rootdir,Amp)
 %---------------------------------------------------------------------------------------------------------------------------------
 % rootdir = 'F:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast';
 % Amp = 60;
-filename = ['Ramp_HeadFree_' num2str(Amp) '_DATA'];
+% filename = ['Ramp_HeadFree_' num2str(Amp) '_DATA'];
+filename = 'Ramp_HeadFree_SACCD';
+rootdir = 'H:\EXPERIMENTS\Experiment_Ramp';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
-root.daq = fullfile(rootdir,num2str(Amp));
-root.ang = fullfile(root.daq,'\Vid\HeadAngles\');
+% root.daq = fullfile(rootdir,num2str(Amp));
+root.daq = rootdir;
+root.ang = fullfile(root.daq,'\Vid\Angles\');
 
 % Select files
 [FILES, PATH.ang] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -22,17 +25,15 @@ FILES = cellstr(FILES)';
 PATH.daq = root.daq;
 
 [D,I,N,U,T] = GetFileData(FILES,true);
-
+[D_dir] = GetFileData(FILES,false);
 clear rootdir
 %% Get Data %%
 %---------------------------------------------------------------------------------------------------------------------------------
-IOFreq = 0.1*round(linspace(0.1,8,10)/0.1);
 disp('Loading...')
-ALL 	= cell([N{1,end},6]); % cell array to store all data objects
-TRIAL  	= cell(N{1,1},N{1,3});
-n.catg  = size(N,2) - 1;
+TRIAL = cell(N{1,1},N{1,3});
+SACCD.Head = [];
+SACCD.Wing = [];
 pp = 0;
-span = 1:2000;
 for kk = 1:N{1,end}
     disp(kk)
     % Load HEAD & DAQ data
@@ -50,9 +51,9 @@ for kk = 1:N{1,end}
     end
     %-----------------------------------------------------------------------------------------------------------------------------
     % Get head data
-    head.Time = t_v(span);
+    head.Time = t_v;
     head.Pos = hAngles;
-    Head = Fly(head.Pos(span),head.Time,40,IOFreq); % head object
+    Head = Fly(head.Pos,head.Time,40,[]); % head object
   	%-----------------------------------------------------------------------------------------------------------------------------
     % Get wing data from DAQ
     wing.Time       = t_p; % wing time [s]
@@ -63,43 +64,60 @@ for kk = 1:N{1,end}
     wing.Right      = filtfilt(b,a,(data(:,5))); % right wing [V]
     wing.Pos        = wing.Left - wing.Right; % dWBA (L-R) [V]
   	wing.Pos        = wing.Pos - mean(wing.Pos); % subtract mean [V]
-   	Wing = Fly(wing.Pos,t_p,40,IOFreq,Head.Time); % wing object
+   	Wing = Fly(wing.Pos,t_p,40,[],Head.Time); % wing object
 	%-----------------------------------------------------------------------------------------------------------------------------
 	% Get pattern data from DAQ
     pat.Time	= t_p;
     pat.Pos 	= panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]  
     pat.Pos  	= FitPanel(pat.Pos,pat.Time,Head.Time); % fit panel data
- 	Pat      	= Fly(pat.Pos,Head.Time,0.4*Head.Fs,IOFreq); % pattern object
-	%-----------------------------------------------------------------------------------------------------------------------------
-%  	% Calculate error between head & pattern
-%     head.Err = Pat.X(:,1) - Head.X(:,1); % calculate position error between head & pattern [deg]
-%     Err = Fly(head.Err,Head.Time,0.4*Head.Fs,IOFreq); % error object
-%     %-----------------------------------------------------------------------------------------------------------------------------
-%     % Calculate iput-output relationships
-%     pat2head    = IO_Class(Pat,Head);
-%     err2wing    = IO_Class(Err,Head);
-%     head2wing   = IO_Class(Head,Wing);
+ 	Pat      	= Fly(pat.Pos,Head.Time,[],[]); % pattern object
     %-----------------------------------------------------------------------------------------------------------------------------
     % Store objects in cells
-    for jj = 1:n.catg-1
-        ALL{pp,jj} = I{kk,jj};
-    end
-    
-	vars = {Pat,Head,Wing};
-    for jj = 1:length(vars)
-        ALL{pp,n.catg+jj-1} = vars{jj};
-    end
-    
+    vars = {Pat,Head,Wing};
 	qq = size(TRIAL{I{kk,1},I{kk,3}},1);
     for ww = 1:length(vars)
         TRIAL{I{kk,1},I{kk,3}}{qq+1,ww} = vars{ww};
     end
+    
+    [head.SACCD,head.thresh,head.count,head.rate] = GetSaccade(Head,2.5,true);
+    [wing.SACCD,wing.thresh,wing.count,wing.rate] = GetSaccade(Wing,1.75,true);
+    
+    head.match = table(head.SACCD.Direction*sign(D_dir{kk,end}));
+    head.match.Properties.VariableNames = {'Match'};
+  	wing.match = table(wing.SACCD.Direction*sign(D_dir{kk,end}));
+    wing.match.Properties.VariableNames = {'Match'};
+    
+    head.SACCD = [head.SACCD , head.match];
+    wing.SACCD = [wing.SACCD , wing.match];
+    
+   	Dir = table(sign(D{kk,3}),'VariableNames',{'Dir'});
+    I_table = [I(kk,1:2) , D(kk,3) , Dir];
+    
+    if isnan(head.count)
+        head.I_table = I_table;
+    else
+        head.I_table = repmat(I_table,head.count,1);
+    end
+    
+    if isnan(wing.count)
+        wing.I_table = I_table;
+    else
+        wing.I_table = repmat(I_table,wing.count,1);
+    end
+    
+    head.SACCD = [head.I_table , head.SACCD];
+  	wing.SACCD = [wing.I_table , wing.SACCD];
+    
+    SACCD.Head = [SACCD.Head ; head.SACCD];
+    SACCD.Wing = [SACCD.Wing ; wing.SACCD];
+    
 end
 
-ALL( all(cellfun(@isempty, ALL),2), : ) = []; % get rid of emtpty rows becuase of low WBF
+% SACCD.Head( table2array(varfun(@isnan, SACCD.Head)), : ) = [];
+% SACCD.Wing( table2array(varfun(@isnan, SACCD.Wing)), : ) = [];
 
-clear jj ii kk pp qq ww n a b spant_p t_v hAngles data head wing pat bode tt ...
-    Head Pat Wing Err pat2head err2wing head2wing vars root t_p span
+clear jj ii kk pp qq ww n a b  t_v hAngles data head wing pat tt ...
+    Head Pat Wing  vars root t_p 
 disp('LOADING DONE')
 
 %% Fly Statistics %%
@@ -125,6 +143,7 @@ clear jj ii
 %% SAVE %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
-save(['F:\DATA\Rigid_Data\' filename '.mat'],'ALL','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
+save(['H:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
+    'SACCD','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
 disp('SAVING DONE')
 end

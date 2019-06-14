@@ -11,8 +11,8 @@ if nargin==1
 end
 
 tt.n      = length(time_in);
-tt.min    = round(min(time_in),2);
-tt.max    = round(max(time_in),2);
+tt.min    = round(min(time_in),1);
+tt.max    = round(max(time_in),1);
 tt.T      = range([tt.min tt.max]);
 tt.fs     = round(1/mean(diff(time_in)),2);
 tt.ts     = 1/tt.fs;

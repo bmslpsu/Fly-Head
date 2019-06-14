@@ -53,11 +53,11 @@ classdef Fly
             if nargin==3
                 IOFreq = 0;
             elseif nargin==5 % interpolate if new time vector is input
+                if min(tt)<min(obj.Time) || max(tt)>max(obj.Time)
+                   warning('Interpolation time outside of range')
+                end
                 obj.X = interp1(obj.Time, obj.X , tt, 'nearest'); % interpolate to match new time
                 obj.Time = tt;
-                if min(tt)<min(obj.Time) || max(tt)<max(obj.Time)
-                   error('Interpolation time outside of range')
-                end
             elseif nargin>5
                 error('Too many inputs')
             elseif nargin<3
@@ -104,13 +104,27 @@ classdef Fly
             end
             
             % Saccade detetcion        
-            [Sacd,thresh,count,rate] = SacdDetect(obj.X(:,1),obj.Time,2.75,false);
+            [Sacd,thresh,count,rate] = SacdDetect(obj.X(:,1),obj.Time,2.5,false);
             
             obj.SacdThresh	= thresh;
             obj.SacdCount   = count;
             obj.SacdRate    = rate;
             obj.SACD        = mean(table2array(Sacd),1);
         end
+        
+        function [SACD,THRESH,COUNT,RATE]  = GetSaccade(obj,SD,debug)
+            % GetSaccade: get saccade table
+            if nargin<3
+                debug = false;
+                if nargin==1
+                    SD = 2.75;
+                end
+            end
+            
+            [SACD,THRESH,COUNT,RATE] = SacdDetect(obj.X(:,1),obj.Time,SD,debug);
+        end
+        
+        
             
         function obj = IO_Freq(obj,IOFreq)
             % IO_Freq: extract frequency domain data at discrete frequencies
