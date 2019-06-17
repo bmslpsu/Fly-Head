@@ -56,7 +56,7 @@ classdef Fly
                 if min(tt)<min(obj.Time) || max(tt)>max(obj.Time)
                    warning('Interpolation time outside of range')
                 end
-                obj.X = interp1(obj.Time, obj.X , tt, 'nearest'); % interpolate to match new time
+                obj.X = interp1(obj.Time, obj.X , tt, 'linear','extrap'); % interpolate to match new time
                 obj.Time = tt;
             elseif nargin>5
                 error('Too many inputs')

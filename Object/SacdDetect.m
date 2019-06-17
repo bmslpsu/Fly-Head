@@ -1,27 +1,31 @@
-function [SACD,thresh,count,rate] = SacdDetect(xx,tt,N,debug)
-%% SacdDetect: Reads in all raw trials, transforms data, and saves in organized structure
+function [SACD,thresh,count,rate,SaccdRmv_X] = SacdDetect(xx,tt,N,debug)
+%% SacdDetect: detetcs saccades and calculates stats
 %   INPUTS:
-%       xx    	: position
-%       tt  	: time vector
-%       N   	: STD detection threshold (default: N=2.75)
+%       xx          :   position
+%       tt          :   time vector
+%       N           :   STD detection threshold (default: N=2.75), if N>5 it is interpreted as the raw
+%       velocity threshold
+%       debug       :   showplot boolean
 %   OUTPUTS:
-%       SACD    : saccade data table
-%       thresh 	: saccade detetcion threshold
-%       count 	: # of saccades
-%       rate 	: saccades/s
+%       SACD        :   saccade data table
+%       thresh      :   saccade detetcion threshold
+%       count       :   # of saccades
+%       rate        :   saccades/s
+%       SaccdRmv_X  :   positon data without saccades
 %---------------------------------------------------------------------------------------------------------------------------------
 n = length(xx); % # of data points
 IDX = (1:n)'; % index vector
 if nargin<3
     N = 2.75; % default STD detection threshold
+	debug = false;
     if nargin<2
         tt = IDX; % use index if no time data
     end
-end
+end  
 
 time.data       = tt;                               % time vector
 Ts              = mean(diff(time.data));        	% sampling time
-time.new        = (min(time.data):Ts:max(time.data))'; % new time vector for interpolation
+% time.new        = (min(time.data):Ts:max(time.data))'; % new time vector for interpolation
 pos.data        = xx;                               % position
 vel.data        = [0 ; diff(pos.data)/Ts];          % velocity
 avel.data       = abs(vel.data);                    % absolute velocity
@@ -30,11 +34,15 @@ vel.std       	= std(vel.data);                    % std absolute velocity
 thresh          = vel.mean + N*vel.std;             % saccade detetcion threshold
 svel            = avel.data;                        % preallocate velocity data above threshold
 
-svel(avel.data<thresh) = 0;                         % velocity data above threshold
+% User can set the threshold manually using the 3rd input
+if N>5
+    thresh = N;
+end
+svel(avel.data<thresh) = 0; % velocity data above threshold
 
 % Variable names
 varnames = {'Duration','Amplitude','Direction','StartIdx','PeakIdx','EndIdx','StartTime','PeakTime','EndTime','StartPos',...
-                'PeakPos','EndPos','StartVel','PeakVel','EndVel','StartAbsVel','PeakAbsVel','EndAbsVel'};
+                'PeakPos','EndPos','StartVel','PeakVel','EndVel','StartAbsVel','PeakAbsVel','EndAbsVel','Threshold'};
 
 % Find velocity spikes
 [avel.pks, loc.pks] = findpeaks(svel,'MINPEAKDISTANCE',40); % find local maxima
@@ -47,7 +55,7 @@ pos.pks     = pos.data(loc.pks);
 time.pks    = time.data(loc.pks);
 count       = length(loc.pks);
 rate        = count/(time.data(end)-time.data(1));
-boundThresh = 1/8;
+boundThresh = 1/4;
 if ~isempty(I)
     for ww = 1:count % every saccade
         % Find start & end velocity
@@ -59,8 +67,8 @@ if ~isempty(I)
         else
             loc.end(ww,1) = 1;
         end
-
     end
+    
     % Stats
     avel.start  	= avel.data(loc.start);
     avel.end        = avel.data(loc.end);
@@ -74,10 +82,11 @@ if ~isempty(I)
     time.dur        = time.end - time.start;
     dir             = sign(vel.pks);
     
+    THRESH = repmat(thresh,count,1); % assign threshold used to all saccades
+    
     % All data
     DATA = [time.dur , pos.amp , dir, loc.start , loc.pks , loc.end , time.start , time.pks , time.end , pos.start , pos.pks, ...
-                pos.end ,vel.start , vel.pks , vel.end , avel.start , avel.pks , avel.end];
-	
+                pos.end ,vel.start , vel.pks , vel.end , avel.start , avel.pks , avel.end, THRESH];
 else % no saccades
     DATA    = nan(1,length(varnames));
     count   = nan;
@@ -121,16 +130,18 @@ if ~isempty(I)
     pos.rmv_n = pos.rmv;
     
     for ww = 1:count
-        pos.rmv_n(loc.end(ww)-1:end) = pos.rmv_n(loc.end(ww)-1:end) - (pos.end(ww) - pos.start(ww));
+        pos.rmv_n(loc.end(ww):end) = pos.rmv_n(loc.end(ww):end) - (pos.end(ww) - pos.start(ww));
     end
   	pos.nan         = pos.rmv_n;
     pos.rmv_n       = pos.rmv_n(~isnan(pos.rmv_n));
     time.rmv        = time.rmv(~isnan(time.rmv));
-    pos.rmv_intrp   = interp1(time.rmv,pos.rmv_n,time.new,'linear');
+    pos.rmv_intrp   = interp1(time.rmv,pos.rmv_n,time.data,'linear');
 
 else
-    pos.rmv_n = pos.data;
+    pos.rmv_intrp = pos.data;
 end
+
+SaccdRmv_X = pos.rmv_intrp;
 
 % Debug plots
 if debug
@@ -171,21 +182,4 @@ if debug
         xlabel('Time')
 end
 
-
-%         % Inter-saccade interval
-%         if ww ~= 1 % disregard first saccade interval
-% %             disp(ww)
-%             % Raw
-%             loc.inter           = loc.end(ww-1):loc.start(ww);
-%             time.inter          = time.data(loc.inter);
-%             pos.inter           = pos.data(loc.inter);
-%             vel.inter           = vel.data(loc.inter);
-%             avel.inter          = avel.data(loc.inter);
-%             % Normalized
-%             loc.Ninter          = loc.inter - loc.inter(1);
-%             time.Ninter         = time.inter - time.inter(1);
-%             pos.Ninter          = pos.inter  - pos.inter(1);
-%             vel.Ninter          = vel.inter  - vel.inter(1);
-%             avel.ninter         = avel.inter  - avel.inter(1);
-%         end
 end
