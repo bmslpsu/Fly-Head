@@ -14,6 +14,12 @@ function [Saccade,Interval,Stimulus,Error,IntError] = SaccdInter(xx,tt,SACD,matc
 %       Error       :   error intervals
 %       IntError  	:   integrated error intervals
 %---------------------------------------------------------------------------------------------------------------------------------
+% Check if there are any saccades in the data
+if isnan(SACD.Duration(1))
+    SACD(1,:) = [];
+    warning('No saccades detected')
+end
+
 if nargin>3
   	matchFlag = false;
     % Remove saccades in specified direction

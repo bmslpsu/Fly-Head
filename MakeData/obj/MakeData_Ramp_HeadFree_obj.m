@@ -24,9 +24,9 @@ FILES = cellstr(FILES)';
 
 PATH.daq = root.daq;
 
-[D,I,N,U,T] = GetFileData(FILES,true);
-[D_dir,I_dir,~,U_dir,~] = GetFileData(FILES,false);
-clear rootdir
+[D,I,N,U,T] = GetFileData(FILES,false);
+[D,I,N,U,~] = GetFileData(FILES,false);
+% clear rootdir
 %% Get Data %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Loading...')
@@ -35,12 +35,12 @@ TRIAL = cell(N{1,1},N{1,3});
 clear SACD
 SACD.Head = [];
 SACD.Wing = [];
-SACD.Saccade.Head = [];
-SACD.Interval.Head = [];
-SACD.Stimulus.Saccade.Head = [];
-SACD.Stimulus.Interval.Head = [];
+SACD.Saccade.Head = cell(N{1,3},1);
+SACD.Interval.Head = cell(N{1,3},1);
+SACD.Stimulus.Saccade.Head = cell(N{1,3},1);
+SACD.Stimulus.Interval.Head = cell(N{1,3},1);
 
-Vel = 3.75*U_dir{1,3}{1};
+Vel = 3.75*U{1,3}{1};
 tt = (0:(1/200):9.8)';
 Stim = (Vel*tt')';
 pp = 0;
@@ -89,19 +89,19 @@ for kk = 1:N{1,end}
     end
     %-----------------------------------------------------------------------------------------------------------------------------
     % Get Saccade Stats
-    [head.SACCD,head.thresh,head.count,head.rate] = GetSaccade(Head,2.75,false);
+    [head.SACCD,head.thresh,head.count,head.rate] = GetSaccade(Head,300,false);
     [wing.SACCD,wing.thresh,wing.count,wing.rate] = GetSaccade(Wing,1.75,false);
     
-    head.match = table(head.SACCD.Direction*sign(D_dir{kk,end}));
+    head.match = table(head.SACCD.Direction*sign(D{kk,end}));
     head.match.Properties.VariableNames = {'Match'};
-  	wing.match = table(wing.SACCD.Direction*sign(D_dir{kk,end}));
+  	wing.match = table(wing.SACCD.Direction*sign(D{kk,end}));
     wing.match.Properties.VariableNames = {'Match'};
     
     head.SACCD = [head.SACCD , head.match];
     wing.SACCD = [wing.SACCD , wing.match];
     
    	Dir = table(sign(D{kk,3}),'VariableNames',{'Dir'});
-    I_table = [I(kk,1:2) , D(kk,3) , Dir];
+    I_table = [I(kk,1:2) , rowfun(@(x) abs(x), D(kk,3)), Dir];
     
     if isnan(head.count)
         head.I_table = I_table;
@@ -121,46 +121,107 @@ for kk = 1:N{1,end}
     SACD.Head = [SACD.Head ; head.SACCD];
     SACD.Wing = [SACD.Wing ; wing.SACCD];
     
-    [Saccade,Interval,Stimulus,Error,IntError] = SaccdInter(Head.X(:,1),Head.Time(:,1),head.SACCD,nan,Stim(:,I_dir{kk,3}),false);
+    [Saccade,Interval,Stimulus,Error,IntError] = SaccdInter(Head.X(:,1),Head.Time(:,1),head.SACCD,nan,Stim(:,I{kk,3}),false);
     
-    var1 = {Saccade.Time,Saccade.Pos,Saccade.Vel,Error.Saccade.Pos,Error.Saccade.Vel,IntError.Saccade.Pos,IntError.Saccade.Vel};
-	var2 = {Interval.Time,Interval.Pos,Interval.Vel,Error.Interval.Pos,Error.Interval.Vel,IntError.Interval.Pos,...
-                IntError.Interval.Vel};
-	var3 = {Stimulus.Saccade.Pos , Stimulus.Saccade.Vel};
-    var4 = {Stimulus.Interval.Pos , Stimulus.Interval.Vel};
-    
-    SACD.Saccade.Head   = [SACD.Saccade.Head ; var1];
-    SACD.Interval.Head	= [SACD.Interval.Head  ; var2];
-    
-    SACD.Stimulus.Saccade.Head   = [SACD.Stimulus.Saccade.Head ; var3];
-	SACD.Stimulus.Interval.Head  = [SACD.Stimulus.Interval.Head ; var4];
+    var1 = {Saccade.Time, Saccade.Pos,Saccade.Vel, Error.Saccade.Pos, Error.Saccade.Vel,...
+                IntError.Saccade.Pos, IntError.Saccade.Vel, Stimulus.Saccade.Pos , Stimulus.Saccade.Vel};
+            
+	var2 = {Interval.Time, Interval.Pos, Interval.Vel, Error.Interval.Pos, Error.Interval.Vel,...
+                IntError.Interval.Pos, IntError.Interval.Vel, Stimulus.Interval.Pos , Stimulus.Interval.Vel};
+                
+    SACD.Saccade.Head{I{kk,3},1}  = [SACD.Saccade.Head{I{kk,3},1}  ; var1];
+    SACD.Interval.Head{I{kk,3},1} = [SACD.Interval.Head{I{kk,3},1} ; var2];
     close all
 end
 
-% SACCD.Head( table2array(varfun(@isnan, SACCD.Head)), : ) = [];
-% SACCD.Wing( table2array(varfun(@isnan, SACCD.Wing)), : ) = [];
-
-% clear jj ii kk pp qq ww n a b  t_v hAngles data head wing pat tt ...
-%     Head Pat Wing  vars root t_p 
+clear jj ii kk pp qq ww n a b  t_v hAngles data head wing pat tt ...
+    Head Pat Wing  vars root t_p 
 disp('LOADING DONE')
 
-%%
+%% Transfrom data to arrays
+%---------------------------------------------------------------------------------------------------------------------------------
+varnames = {'Time','Position','Velocity','Position_Error','Velocity_Error',...
+                'Position_IntError','Velocity_IntError','Stimulus_Position','Stimulus_Velocity'};
 
-POS = [];
-[TIME,~,~,~,dR] = nancat_center(SACD.Saccade.Head(:,1),0,1);
-for jj = 1:size(SACD.Saccade.Head,1)
-    for kk = 1:size(SACD.Saccade.Head{jj,2},2)
-        POS{jj,1}(:,kk) = cat_pad(SACD.Saccade.Head{jj,3}(:,kk), dR{jj}(:,1),nan);
+clear SACCADE
+SACCADE.Head = cell(N{1,3},9);
+dR = cell(N{1,3},1);
+center = 0;
+dim = 1;
+for jj = 1:N{1,3}
+    [SACCADE.Head{jj,1},~,~,~,dR{jj}] = nancat_center(SACD.Saccade.Head{jj}(:,1), center, dim);
+    for ww = 2:size(SACD.Saccade.Head{jj},2)
+        for kk = 1:size(SACD.Saccade.Head{jj},1)
+            for ii = 1:size(SACD.Interval.Head{jj}{kk,ww},2)
+                SACCADE.Head{jj,ww}{kk,1}(:,ii) = cat_pad(SACD.Saccade.Head{jj}{kk,ww}(:,ii), dR{jj}{kk}(:,ii),nan);
+            end
+        end
+    	SACCADE.Head{jj,ww} = cat(2,SACCADE.Head{jj,ww}{:});
     end
 end
-POS = cat(2,POS{:});
+SACCADE.Head = cell2table(SACCADE.Head,'VariableNames',varnames);
+
+clear INTERVAL
+INTERVAL.Head = cell(N{1,3},9);
+dR = cell(N{1,3},1);
+center = 0;
+dim = 1;
+for jj = 1:N{1,3}
+    [INTERVAL.Head{jj,1},~,~,~,dR{jj}] = nancat_center(SACD.Interval.Head{jj}(:,1), center, dim);
+    for ww = 2:size(SACD.Interval.Head{jj},2)
+        for kk = 1:size(SACD.Interval.Head{jj},1)
+            for ii = 1:size(SACD.Interval.Head{jj}{kk,ww},2)
+                INTERVAL.Head{jj,ww}{kk,1}(:,ii) = cat_pad(SACD.Interval.Head{jj}{kk,ww}(:,ii), dR{jj}{kk}(:,ii),nan);
+            end
+        end
+    	INTERVAL.Head{jj,ww} = cat(2,INTERVAL.Head{jj,ww}{:});
+    end
+end
+INTERVAL.Head = cell2table(INTERVAL.Head,'VariableNames',varnames);
+
+INTERVAL.Head
 
 
 
+%%
+TIME = cell(N{1,3},1);
+POS  = cell(N{1,3},1);
+dR   = cell(N{1,3},1);
+for jj = 1:N{1,3}
+    [TIME{jj},~,~,~,dR{jj}] = nancat_center(SACD.Interval.Head{jj}(:,1),0,1);
+    for kk = 1:size(SACD.Interval.Head{jj},1)
+        for ii = 1:size(SACD.Interval.Head{jj}{kk,2},2)
+            POS{jj}{kk,1}(:,ii) = cat_pad(SACD.Interval.Head{jj}{kk,2}(:,ii), dR{jj}{kk}(:,1),nan);
+        end
+    end
+	POS{jj} = cat(2,POS{jj}{:});
+end
 
+figure (1) ; clf
+for jj = 1:N{1,3}
+    subplot(2,3,jj) ; hold on
+    plot(TIME{jj},POS{jj})
+%     if jj<=3
+%         ylim([-100 1000])
+%     else
+%         ylim([-1000 100])
+%     end
+%     xlim(0.06*[-1 1])
 
+    xlim([0 2])
+end
 
-
+CC = repmat({'r','g','b'},1,2);
+FIG = figure (2) ; clf
+FIG.Color = 'k';
+ax = gca;
+ax.Color = 'k';
+set(ax,'YColor','w','XColor','w')
+for jj = [1 4 2 5 3 6]
+	hold on
+    plot(TIME{jj},POS{jj},'Color',CC{jj})
+    xlim([0 2])
+end
 
 %% Fly Statistics %%
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -186,6 +247,6 @@ clear jj ii
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
 save(['H:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
-    'SACCD','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
+    'SACCADE','INTERVAL','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
 disp('SAVING DONE')
 end

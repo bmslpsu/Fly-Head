@@ -107,7 +107,7 @@ for kk = 1:n.val
     end
     
     numdata(:,kk) = cell2mat(vardata(:,loc.val(kk))); % numeric array of category values
-    unq{kk} = sort(unique(numdata(:,kk)),'ascend'); % unique values for category
+    unq{kk} = abs_sort(unique(numdata(:,kk))); % unique values for category
     
     try
         nanIdx = find(isnan(unq{3}));
