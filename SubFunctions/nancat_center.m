@@ -1,10 +1,11 @@
-function [centData,cIdx,cVal,R,dR,new_length,n_vector] = nancat_center(data,center,dim,Cent)
+function [centData,cIdx,cVal,R,dR,new_length,n_vector] = nancat_center(data,center,dim,Cent,Even)
 %% nancat_center: centers input data around given value and pads with Nan's so all vectors are the same size
 %   INPUTS:
 %       data       	:   input data (matrix or cell of vectors)
 %       center     	:   data center value (set to empty when using Cent)
 %       dim         :   dimension to center around
 %       Cent     	:   center index , overrides center value
+%       Even     	:   if true,euqual sizing on each side of "center"
 %   OUTPUTS:
 %       centDara    :   centered data
 %       cIdx        :   center indicies
@@ -63,7 +64,9 @@ for jj = 1:n_data % for each cell
     for kk = 1:n_array(jj)
         [cIdx(jj,kk),~] = find( data{jj}(:,kk)==cVal{jj}(1,kk) ); % find location of center value
         if nargin==4
-            if isnan(Cent)
+            if isempty(Cent)
+                % no affect
+            elseif isnan(Cent)
                 cIdx(jj,kk) = n_center(jj); % for last index
             else
                 cIdx(jj,kk) = Cent;
@@ -74,11 +77,15 @@ for jj = 1:n_data % for each cell
     end
 end
 
-%     dR = cellfun(@(x) diff(x), R, 'UniformOutput', false); % change in length needed to center data for each column
-%     dR = cell2mat(dR);
 maxR = cellfun(@(x) max(x,[],2)', R, 'UniformOutput', false);
 maxR = cell2mat(maxR);
 maxR_ALL = max(maxR,[],1)';
+
+if nargin==5
+    if Even % even padding around center
+        maxR_ALL = max(maxR_ALL)*ones(size(maxR_ALL));
+    end
+end
 
 n_vector = sum(n_array); % total # of vectors from cells
 new_length = sum(maxR_ALL) + 1; % new length with Nan's

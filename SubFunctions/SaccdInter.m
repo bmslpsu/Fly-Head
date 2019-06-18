@@ -1,4 +1,4 @@
-function [Saccade,Interval,Stimulus,Error,IntError] = SaccdInter(xx,tt,SACD,match,STIM,debug)
+function [Saccade,Interval,Stimulus,Error,IntError,matchFlag] = SaccdInter(xx,tt,SACD,match,STIM,debug)
 %% SaccdInter: extracts saccade & inter-saccade intervals
 %   INPUTS:
 %       xx          :   position
@@ -13,6 +13,7 @@ function [Saccade,Interval,Stimulus,Error,IntError] = SaccdInter(xx,tt,SACD,matc
 %       Stimulus   	:   stimulus intervals
 %       Error       :   error intervals
 %       IntError  	:   integrated error intervals
+%       matchFlag  	:   true if there are no saccades with this condition
 %---------------------------------------------------------------------------------------------------------------------------------
 % Check if there are any saccades in the data
 if isnan(SACD.Duration(1))
@@ -147,10 +148,45 @@ Error.Saccade.Vel = Stimulus.Saccade.Vel - Saccade.Vel;
 Error.Interval.Pos = Stimulus.Interval.Pos - Interval.Pos;
 Error.Interval.Vel = Stimulus.Interval.Vel - Interval.Vel;
 
-IntError.Saccade.Pos = nancumsum(Error.Saccade.Pos,1,2);
-IntError.Saccade.Vel = nancumsum(Error.Saccade.Vel,1,2);
-IntError.Interval.Pos = nancumsum(Error.Interval.Pos,1,2);
-IntError.Interval.Vel = nancumsum(Error.Interval.Vel,1,2);
+if n==0
+    IntError.Saccade.Pos(:,kk) = nan(1,1);
+    IntError.Saccade.Vel(:,kk) = nan(1,1);
+
+    IntError.Interval.Pos = nan(1,1);
+    IntError.Interval.Vel = nan(1,1);
+else
+    for kk = 1:n
+        err_saccd_time = Saccade.Time(:,kk);
+        saccd_nanIdx = ~isnan(err_saccd_time);
+        err_saccd_time = err_saccd_time(saccd_nanIdx);
+
+        err_saccd_pos = Error.Saccade.Pos(:,kk);   
+        err_saccd_pos = err_saccd_pos(saccd_nanIdx);
+
+        err_saccd_vel = Error.Saccade.Vel(:,kk);   
+        err_saccd_vel = err_saccd_vel(saccd_nanIdx);
+
+        err_inter_time = Interval.Time(:,kk);
+        inter_nanIdx = ~isnan(err_inter_time);
+        err_inter_time = err_inter_time(inter_nanIdx);
+
+        err_inter_pos = Error.Interval.Pos(:,kk);   
+        err_inter_pos = err_inter_pos(inter_nanIdx);
+
+        err_inter_vel= Error.Interval.Vel(:,kk);   
+        err_inter_vel = err_inter_vel(inter_nanIdx);
+
+        IntError.Saccade.Pos(:,kk) = nan(length(saccd_nanIdx),1);
+        IntError.Saccade.Pos(saccd_nanIdx,kk) = cumtrapz(err_saccd_pos,err_saccd_time);
+        IntError.Saccade.Vel(:,kk) = nan(length(saccd_nanIdx),1);
+        IntError.Saccade.Vel(saccd_nanIdx,kk) = cumtrapz(err_saccd_vel,err_saccd_time);
+
+        IntError.Interval.Pos(:,kk) = nan(length(inter_nanIdx),1);
+        IntError.Interval.Pos(inter_nanIdx,kk) = cumtrapz(err_inter_pos,err_inter_time);
+        IntError.Interval.Vel(:,kk)  = nan(length(inter_nanIdx),1);
+        IntError.Interval.Vel(inter_nanIdx,kk) = cumtrapz(err_inter_vel,err_inter_time);
+    end
+end
 
 Sacd_Pos_Mean = nanmean(Saccade.Pos,2);
 Sacd_Vel_Mean = nanmean(Saccade.Vel,2);

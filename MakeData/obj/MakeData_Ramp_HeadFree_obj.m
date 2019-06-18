@@ -1,4 +1,4 @@
-function [] = MakeData_Ramp_HeadFree_obj(rootdir,Amp)
+function [] = MakeData_Ramp_HeadFree_obj()
 %% MakeData_Ramp_HeadFree: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
 %   INPUTS:
 %       root    : root directory
@@ -8,7 +8,7 @@ function [] = MakeData_Ramp_HeadFree_obj(rootdir,Amp)
 % rootdir = 'F:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast';
 % Amp = 60;
 % filename = ['Ramp_HeadFree_' num2str(Amp) '_DATA'];
-filename = 'Ramp_HeadFree_SACCD';
+filename = 'Ramp_HeadFree_SACCD_Anti';
 rootdir = 'H:\EXPERIMENTS\Experiment_Ramp';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -25,8 +25,8 @@ FILES = cellstr(FILES)';
 PATH.daq = root.daq;
 
 [D,I,N,U,T] = GetFileData(FILES,false);
-[D,I,N,U,~] = GetFileData(FILES,false);
-% clear rootdir
+% [D,I,N,U,~] = GetFileData(FILES,false);
+clear rootdir
 %% Get Data %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Loading...')
@@ -43,7 +43,6 @@ SACD.Stimulus.Interval.Head = cell(N{1,3},1);
 Vel = 3.75*U{1,3}{1};
 tt = (0:(1/200):9.8)';
 Stim = (Vel*tt')';
-pp = 0;
 for kk = 1:N{1,end}
     disp(kk)
     % Load HEAD & DAQ data
@@ -55,8 +54,6 @@ for kk = 1:N{1,end}
     if min(wing.f)<150 || mean(wing.f)<180 % check WBF, if too low then don't use trial
         warning('Low WBF: Fly %i Trial %i \n',D{kk,1},D{kk,2})
         continue
-    else
-        pp = pp + 1; % set next index to store data
     end
     %-----------------------------------------------------------------------------------------------------------------------------
     % Get head data
@@ -102,7 +99,55 @@ for kk = 1:N{1,end}
     
    	Dir = table(sign(D{kk,3}),'VariableNames',{'Dir'});
     I_table = [I(kk,1:2) , rowfun(@(x) abs(x), D(kk,3)), Dir];
+    I_table.Properties.VariableNames{3} = 'speed';
     
+    [Saccade,Interval,Stimulus,Error,IntError,matchFlag] = SaccdInter(Head.X(:,1),Head.Time(:,1),head.SACCD, ...
+                                                                    -1 ,Stim(:,I{kk,3}),false);
+    
+    var1 = {Saccade.Time, Saccade.Pos,Saccade.Vel, Error.Saccade.Pos, Error.Saccade.Vel,...
+                IntError.Saccade.Pos, IntError.Saccade.Vel, Stimulus.Saccade.Pos , Stimulus.Saccade.Vel};
+            
+    var2 = {Interval.Time, Interval.Pos, Interval.Vel, Error.Interval.Pos, Error.Interval.Vel,...
+                IntError.Interval.Pos, IntError.Interval.Vel, Stimulus.Interval.Pos , Stimulus.Interval.Vel};
+    
+    if isnan(head.count)
+        Err_table = nan(1,5);
+        loop = [];
+        emptyFlag = true;
+    else
+        Err_table = nan(head.count,5);
+        loop = size(Error.Interval.Pos,2);
+       	if matchFlag
+            emptyFlag = true;
+        else
+            emptyFlag = false;
+        end
+    end
+    
+    
+    for jj = 2:loop
+        pos_err = Error.Interval.Pos(:,jj);
+        pos_err = pos_err(~isnan(pos_err));
+     	vel_err = Error.Interval.Vel(:,jj);
+        vel_err = vel_err(~isnan(vel_err));
+        
+        pos_int_err = IntError.Interval.Pos(:,jj);
+        pos_int_err = pos_int_err(~isnan(pos_int_err));
+      	vel_int_err = IntError.Interval.Vel(:,jj);
+        vel_int_err = vel_int_err(~isnan(vel_int_err));
+        
+        stim_pos = Stimulus.Interval.Pos(:,jj);
+     	stim_pos = stim_pos(~isnan(stim_pos));
+
+        Err_table(jj,1) = mean(pos_err(end-5:end),1);
+        Err_table(jj,2) = mean(vel_err(end-5:end),1);
+        Err_table(jj,3) = pos_int_err(end);
+        Err_table(jj,4) = vel_int_err(end);
+        Err_table(jj,5) = stim_pos(end);
+    end
+    Err_table = splitvars(table(Err_table));
+    Err_table.Properties.VariableNames = {'Position_Error','Velocity_Error','Position_IntError',...
+                                                'Velocity_IntError','Stimulus_Position'};
     if isnan(head.count)
         head.I_table = I_table;
     else
@@ -115,28 +160,23 @@ for kk = 1:N{1,end}
         wing.I_table = repmat(I_table,wing.count,1);
     end
     
-    head.SACCD = [head.I_table , head.SACCD];
+	head.SACCD = [head.I_table , [head.SACCD , Err_table]];
   	wing.SACCD = [wing.I_table , wing.SACCD];
     
     SACD.Head = [SACD.Head ; head.SACCD];
     SACD.Wing = [SACD.Wing ; wing.SACCD];
     
-    [Saccade,Interval,Stimulus,Error,IntError] = SaccdInter(Head.X(:,1),Head.Time(:,1),head.SACCD,nan,Stim(:,I{kk,3}),false);
+    if ~emptyFlag
+        SACD.Saccade.Head{I{kk,3},1}  = [SACD.Saccade.Head{I{kk,3},1}  ; var1];
+        SACD.Interval.Head{I{kk,3},1} = [SACD.Interval.Head{I{kk,3},1} ; var2];
+    end
     
-    var1 = {Saccade.Time, Saccade.Pos,Saccade.Vel, Error.Saccade.Pos, Error.Saccade.Vel,...
-                IntError.Saccade.Pos, IntError.Saccade.Vel, Stimulus.Saccade.Pos , Stimulus.Saccade.Vel};
-            
-	var2 = {Interval.Time, Interval.Pos, Interval.Vel, Error.Interval.Pos, Error.Interval.Vel,...
-                IntError.Interval.Pos, IntError.Interval.Vel, Stimulus.Interval.Pos , Stimulus.Interval.Vel};
-                
-    SACD.Saccade.Head{I{kk,3},1}  = [SACD.Saccade.Head{I{kk,3},1}  ; var1];
-    SACD.Interval.Head{I{kk,3},1} = [SACD.Interval.Head{I{kk,3},1} ; var2];
     close all
 end
 
-clear jj ii kk pp qq ww n a b  t_v hAngles data head wing pat tt ...
-    Head Pat Wing  vars root t_p 
-disp('LOADING DONE')
+% clear jj ii kk pp qq ww n a b  t_v hAngles data head wing pat tt I_table Dir loop Saccade Interval Stimulus Error IntError...
+%     Head Pat Wing  vars root t_p var1 var2 Err_table pos_err vel_err pos_int_err vel_int_err stim_pos
+% disp('LOADING DONE')
 
 %% Transfrom data to arrays
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -145,11 +185,12 @@ varnames = {'Time','Position','Velocity','Position_Error','Velocity_Error',...
 
 clear SACCADE
 SACCADE.Head = cell(N{1,3},9);
+SACCADE.cIdx = cell(N{1,3},1);
 dR = cell(N{1,3},1);
 center = 0;
 dim = 1;
 for jj = 1:N{1,3}
-    [SACCADE.Head{jj,1},~,~,~,dR{jj}] = nancat_center(SACD.Saccade.Head{jj}(:,1), center, dim);
+    [SACCADE.Head{jj,1},SACCADE.cIdx{jj},~,~,dR{jj}] = nancat_center(SACD.Saccade.Head{jj}(:,1), center, dim, [], []);
     for ww = 2:size(SACD.Saccade.Head{jj},2)
         for kk = 1:size(SACD.Saccade.Head{jj},1)
             for ii = 1:size(SACD.Interval.Head{jj}{kk,ww},2)
@@ -160,6 +201,8 @@ for jj = 1:N{1,3}
     end
 end
 SACCADE.Head = cell2table(SACCADE.Head,'VariableNames',varnames);
+SACCADE.HeadStats = cell2table(cellfun(@(x) MatStats(x,2), table2cell(SACCADE.Head),...
+                            'UniformOutput',false),'VariableNames',varnames);
 
 clear INTERVAL
 INTERVAL.Head = cell(N{1,3},9);
@@ -178,10 +221,8 @@ for jj = 1:N{1,3}
     end
 end
 INTERVAL.Head = cell2table(INTERVAL.Head,'VariableNames',varnames);
-
-INTERVAL.Head
-
-
+INTERVAL.HeadStats = cell2table(cellfun(@(x) MatStats(x,2), table2cell(INTERVAL.Head),...
+                            'UniformOutput',false),'VariableNames',varnames);
 
 %%
 TIME = cell(N{1,3},1);
@@ -247,6 +288,6 @@ clear jj ii
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
 save(['H:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
-    'SACCADE','INTERVAL','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
+    'SACD','SACCADE','INTERVAL','Stim','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
 disp('SAVING DONE')
 end
