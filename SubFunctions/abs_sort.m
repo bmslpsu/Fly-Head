@@ -5,12 +5,16 @@ function [sortData] = abs_sort(data)
 %   OUTPUTS:
 %       sortData	:   sorted data
 %---------------------------------------------------------------------------------------------------------------------------------
-dim = size(data);
-dIdx = dim==1;
-if sum(dIdx)>1 ||sum(dIdx)==0
-    error('Error: input must be vector')
+if isscalar(data)
+    dim = 1;
+else
+    dim = size(data);
+    dIdx = dim==1;
+    if sum(dIdx)>2 ||sum(dIdx)==0
+        error('Error: input must be vector')
+    end
+    dim = find(dIdx==0);
 end
-dim = find(dIdx==0);
 
 pIdx = data>=0;
 nIdx = data<0;
