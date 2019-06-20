@@ -22,16 +22,18 @@ load(fullfile(root.Fly,file.Fly),'t_p','data');
 %% EMD Simulation %%
 % Make eye
 delta_phi = 4.6*pi/180; % angle between adjacent ommatidia
-n_receptor = 16;        % # of receptors
+n_receptor = 64;        % # of receptors
 time_constant = 0.035;  % temproal low-pass filter time constant
 Eye = EYE(delta_phi,time_constant,n_receptor); % EYE object
 
 close all
 clear FIG
-Vel = flipud(30*(1:4)');
+
+Vel = flipud(30*[0.1:0.1:0.4,0.5:0.1:0.9,1:3]');
+SpatFreq = 3.75*[2]';
+
 maxVel = max(Vel);
 T = maxVel/100;
-SpatFreq = 3.75*[4,8,12]';
 allcomb = combvec(Vel',SpatFreq');
 allcomb(3,:) = allcomb(1,:)./allcomb(2,:);
 [TempFreq,idx] = sort(allcomb(3,:));
@@ -39,15 +41,19 @@ allcomb = round(allcomb(:,idx),3)';
 ncomb = size(allcomb,1);
 clmn = 3;
 hSize = ncomb/clmn;
-
 EMD_Response = nan(ncomb,1);
+A = 2;
+f = 16;
 
-FIG(1) = figure (1) ; clf
-FIG(1).Name = 'EMD';
-FIG(1).Position = [100 100 1400 hSize*400];
-movegui(FIG,'center')
-ax = axes;
 showplot = true;
+if showplot
+    FIG(1) = figure (1) ; clf
+    FIG(1).Name = 'EMD';
+    FIG(1).Position = [100 100 1400 hSize*200];
+    movegui(FIG,'center')
+    ax = axes;
+end
+
 pp = 1;
 for jj = 1:ncomb
     vel = allcomb(jj,1);
@@ -58,9 +64,10 @@ for jj = 1:ncomb
     [pattern] = MakePattern_SpatFreq(spatFreq);
 
     % Function
-    [func,~,ftime] = MakePosFunction_Vel(vel,T,100);
+    [func,~,ftime] = MakePosFunction_Vel(vel,T,500);
     func = wrap_func(func);
-
+    func = A + round(func + A*sin(2*pi*f*ftime));
+    
     % Simulate EMD
     [EMD_ALL, Pattern_ALL, Eye_ALL] = EMD(Eye,pattern,func,ftime,false);
 
@@ -68,7 +75,7 @@ for jj = 1:ncomb
 
     EMD_ALL_filt = EMD_ALL_filt(:,1:end-1); % resize array
     
-    EMD_Response(jj) = max(EMD_ALL,[],'all');
+    EMD_Response(jj) = max(EMD_ALL_filt,[],'all');
     
     if showplot
         % EMD
@@ -81,19 +88,17 @@ for jj = 1:ncomb
         colormap(jet(20))
         ax(pp).XLabel.String = 'Ommatidia';
         rotate3d on
-        
-%         title('EMD')
     end
 
     pp = pp + 1;
 end
-
 %%
 FIG(2) = figure (2) ; clf ; hold on
-FIG(2).Color = 'k';
+FIG(2).Color = 'w';
+FIG(2).Position = [100 100 700 500];
 ax = gca;
-set(ax,'YColor','w','XColor','w')
-ax.XLabel.String = 'Temporal; Frequency (cycle/s)';
+% set(ax,'YColor','w','XColor','w')
+ax.XLabel.String = 'Temporal Frequency (cycle/s)';
 ax.YLabel.String = 'EMD Response';
 
 plot(TempFreq,EMD_Response,'-or','LineWidth',2)
@@ -102,7 +107,7 @@ plot(TempFreq,EMD_Response,'-or','LineWidth',2)
 
 % Make eye
 delta_phi = 4.6*pi/180; % angle between adjacent ommatidia
-n_receptor = 48;        % # of receptors
+n_receptor = 16;        % # of receptors
 time_constant = 0.035;  % temproal low-pass filter time constant
 Eye = EYE(delta_phi,time_constant,n_receptor); % EYE object
 
@@ -122,6 +127,9 @@ hSize = 2*ncomb/clmn;
 
 EMD_Response = nan(ncomb,1);
 
+A = 2;
+f = 16;
+
 FIG(1) = figure (1) ; clf
 FIG(1).Name = 'EMD';
 FIG(1).Position = [100 100 1400 hSize*300];
@@ -138,7 +146,8 @@ for jj = 1:ncomb
     [pattern] = MakePattern_SpatFreq(spatFreq);
 
     % Function
-    [func,~,ftime] = MakePosFunction_Vel(vel,T,100);
+    [func,~,ftime] = MakePosFunction_Vel(vel,T,500);
+    func = A + round(func + A*sin(2*pi*f*ftime));
     func = wrap_func(func);
 
     % Simulate EMD
@@ -170,7 +179,6 @@ for jj = 1:ncomb
 
     pp = pp + 2;
 end
-
 
 %% EMD Simulation %%
 close all
