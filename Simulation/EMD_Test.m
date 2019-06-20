@@ -29,8 +29,8 @@ Eye = EYE(delta_phi,time_constant,n_receptor); % EYE object
 close all
 clear FIG
 
-Vel = flipud(30*[0.1:0.1:0.4,0.5:0.1:0.9,1:3]');
-SpatFreq = 3.75*[2]';
+Vel = flipud(30*[1:3]');
+SpatFreq = 3.75*[8]';
 
 maxVel = max(Vel);
 T = maxVel/100;
@@ -49,7 +49,7 @@ showplot = true;
 if showplot
     FIG(1) = figure (1) ; clf
     FIG(1).Name = 'EMD';
-    FIG(1).Position = [100 100 1400 hSize*200];
+    FIG(1).Position = [100 100 1400 hSize*300];
     movegui(FIG,'center')
     ax = axes;
 end
@@ -66,12 +66,12 @@ for jj = 1:ncomb
     % Function
     [func,~,ftime] = MakePosFunction_Vel(vel,T,500);
     func = wrap_func(func);
-    func = A + round(func + A*sin(2*pi*f*ftime));
+%     func = A + round(func + A*sin(2*pi*f*ftime));
     
     % Simulate EMD
     [EMD_ALL, Pattern_ALL, Eye_ALL] = EMD(Eye,pattern,func,ftime,false);
 
-    [EMD_ALL_filt] = HR_sim(Eye_ALL);
+    [EMD_ALL_filt] = HR_sim(Eye_ALL,ftime);
 
     EMD_ALL_filt = EMD_ALL_filt(:,1:end-1); % resize array
     

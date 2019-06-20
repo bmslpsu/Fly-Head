@@ -55,40 +55,60 @@ for kk = 1:n.file
 end
 
 % Compare whether data is string or number >> determine if category or value
-log = false(1,n.vars);
+valvar = false(1,n.vars);
 for ii = 1:n.vars
-    log(ii) = isnan(str2double(vardata{1,ii}));
+    valvar(ii) = isnan(str2double(vardata{1,ii}));
 end
 
-if ~log(1) % make sure naming convetion is consistent and file name starts with a category
+if ~valvar(1) % make sure naming convetion is consistent and file name starts with a category
     warning('file name should not start with a number')
 end
 
-for kk = 1:length(log)-1
-   if (log(kk)+log(kk+1))==0 % make sure there are not values without categories
+for kk = 1:length(valvar)-1
+   if (valvar(kk)+valvar(kk+1))==0 % make sure there are not values without categories
       warning('file naming convention is not correct')
-   end
-   
-   if log(kk+1)==1 % if we end on a category, use it as an index
-        catFlag = true;
-   else
-        catFlag = false;
    end
 end
 
-[~,loc.catg] = find(log==true); % find locations of categorical variable 
-[~,loc.val] = find(log==false); % find locations of value variables
+% If we end on categories, use them for indexing
+varIdx = (find(~valvar,1,'last')+1):n.vars; % trailing categories to sort: last value index + 1 is the start of category sorting
+if isempty(varIdx)
+    catFlag = false;
+else
+    catFlag = true;
+    n.varsort = length(varIdx); % # of trailing categories
+end
+
+[~,loc.catg] = find(valvar==true); % find locations of categorical variable 
+[~,loc.val] = find(valvar==false); % find locations of value variables
 loc.catg = loc.catg(1:length(loc.val)); % if there are more categories than values >>> get rid of trailing categories
 n.catg = length(loc.val); % # of categories
 n.val = length(loc.catg); % # of values
 if length(varargin)>n.catg
-   error('More variable names than variables')
+   error('Error: more variable names than variables')
 end
 
-catg = cell(1,length(loc.catg)); % cell to store category names
+% Get category names for all files
+catg_all = cell(n.file,n.val); % cell to store category names
 for ii = 1:n.val
-    catg{ii} = vardata{1,loc.catg(ii)}; % get names
+    catg_all(:,ii) = vardata(:,loc.catg(ii)); % get names
 end
+
+% Make sure all categories that have an associated value have consistent naming convention
+catg_test = nan(n.file,n.val);
+for ii = 1:n.val
+    catg_test(:,ii) = cellfun(@(x,y) ~strcmp(x,y),repmat(catg_all(1,ii),n.file,1),catg_all(:,ii));
+end
+catg_test = any(catg_test,1);
+
+for ii = 1:n.val
+   if catg_test(ii)
+       warning('category %i does not have consistent naming convention',ii)
+   end
+end
+
+% Get category names to use for all files
+catg = catg_all(1,:); % category names from first file
 
 % Store values, get unique values & # of unique values
 numdata = nan(n.file,n.val);
@@ -139,26 +159,29 @@ pp = 1;
 tt = 2; % trial index
 for jj = 1:nn(1)
     rng = pp:pp+reps{1}(jj)-1; % range of trials that main index spans
-    Ind(rng,tt) = 1:reps{1}(jj); % set idicies to start at 1 & increment by 1
+    Ind(rng,tt) = 1:reps{1}(jj); % set indicies to start at 1 & increment by 1
     pp = pp + reps{1}(jj); % new start of range
 end
 
 % If filenames ends on a category, use it as an index
 if catFlag
-  	catIdx  = nan(n.file,1);
-   	catData = vardata(:,end);
-    catUnq  = sort(unique(catData));
-    catN    = length(catUnq);
-    for kk = 1:catN
-        catLoc = strcmp(catData,catUnq{kk});
-      	catIdx(catLoc) = kk;
+  	catIdx  = nan(n.file,n.varsort);
+   	catData = vardata(:,varIdx);
+    catUnq  = cell(1,n.varsort);
+    catN    = nan(1,n.varsort);
+    for jj = 1:n.varsort
+        catUnq{jj} = sort(unique(catData(:,jj)));
+        catN(jj) = size(catUnq{jj},1);
+        for kk = 1:catN(jj)
+            catLoc = strcmp(catData(:,jj),catUnq{jj}{kk});
+            catIdx(catLoc,jj) = kk;
+        end
+        Ind(:,n.catg+jj)        = catIdx(:,jj);
+        nn(n.catg+jj)           = catN(jj);
+        idx{n.catg+jj}          = (1:catN(jj))';
+        unq{n.catg+jj}          = catUnq{jj};
+        catg{n.catg+jj}         = upper(char(96+jj)); % name categorires, index through alphabet
     end
-	numdata(:,end+1)	= catIdx;
-    Ind(:,end+1)        = catIdx;
-    nn(end+1)           = catN;
-	idx{end+1}          = (1:catN)';
-    unq{end+1}          = catUnq;
-    catg{end+1}         = 'class';
 end
 
 % Let user set variable names if specififed
@@ -230,7 +253,7 @@ mpass = logical(mpass);
 mapSum = sum(map,1); % # of trials per condition
 
 % Table from raw file data
-D = splitvars(table(numdata));
+D = splitvars([ table(numdata), cell2table(vardata(:,varIdx)) ]);
 D.Properties.VariableNames = varnames;
 % Table from index data
 I = splitvars(table(Ind));
@@ -238,8 +261,8 @@ I.Properties.VariableNames = varnames;
 % Table from # data
 N = splitvars(table([nn,n.file]));
 N.Properties.VariableNames = [varnames,'file'];
-% Ttable from unique data
-U = splitvars(table(unq));
+% Table from unique data
+U = cell2table(unq);
 U.Properties.VariableNames = varnames;
 % Table from map conditions
 M = splitvars(table(mapSum));

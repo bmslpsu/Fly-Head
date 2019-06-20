@@ -1,10 +1,10 @@
-function [EMD_ALL_filt] = HR_sim(Eye_ALL)
+function [EMD_ALL_filt] = HR_sim(Eye_ALL,tt)
 % TEMPORALLY FILTER SPACE-TIME EYE SIGNAL
-t  = 0:0.001:0.060;
+% tt  = 0:0.001:0.060;
 tp = 0.020; % 20 ms time to peak; from Dickson et al. 2008
 sigma = 0.355; % width
 % linear impulse response light energy -> neural signal
-Vt = exp(-((log(t./tp).^2) ./ (2*sigma^2)));
+Vt = exp(-((log(tt./tp).^2) ./ (2*sigma^2)));
 
 % convolve signal for each ommatidium
 [~, num_receptors] = size(Eye_ALL);
@@ -16,7 +16,7 @@ end
 
 % COMPUTE EMD RESPONSE
 % initializations for HR model
-samp_rate = 160;
+samp_rate = 1/mean(diff(tt));
 tau = 0.035;
 h = 1/samp_rate;
 % discrete low-pass filter parameters
