@@ -22,7 +22,7 @@ HeadFree = cell(nAmp,1);
 for ww = 1:nAmp
     HeadFree{ww} = load(fullfile(root,FILES{ww}),'TRIAL','FLY','GRAND','U','N');
 end
-
+%%
 figNum = 1;
 filename = 'Sine_HeadFree_pat2head_COHR';
 catIdx = 5;
@@ -61,7 +61,7 @@ end
 hold on
 ax = gca;
 ax.FontSize = 12;
-ax.Title.String = [num2str(Amp) , char(176)];
+% ax.Title.String = [num2str(Amp) , char(176)];
 ax.YLim = [0 1];
 ax.YLabel.String = 'Coherence';
 ax.YLabel.FontSize = 14;
@@ -69,13 +69,16 @@ ax.XLim = [0 13];
 ax.XLabel.String = 'Frequency (Hz)';
 ax.XLabel.FontSize = ax.YLabel.FontSize;
 
-CC = jet(HeadFree{ww}.N {1,3});
-for ww = 1:nAmp
+CC = prism(HeadFree{ww}.N {1,3});
+for ww = 1:4
     for jj = 1:HeadFree{ww}.N {1,3}
-        PlotPatch(HeadFree{ww}.GRAND{jj,catIdx}.Mean{1}{7}(:,xIdx), HeadFree{ww}.GRAND{jj,catIdx}.STD{1}{7}(:,xIdx),...
-            HeadFree{ww}.GRAND{jj,catIdx}.Mean{1}{8}, 3, HeadFree{ww}.N{1,1}, CC(jj,:), [0.4 0.4 0.6], 0.5, 2);
+%         PlotPatch(HeadFree{ww}.GRAND{jj,catIdx}.Mean{1}{7}(:,xIdx), HeadFree{ww}.GRAND{jj,catIdx}.STD{1}{7}(:,xIdx),...
+%             HeadFree{ww}.GRAND{jj,catIdx}.Mean{1}{8}, 2, HeadFree{ww}.N{1,1}, CC(jj,:), [0.4 0.4 0.6], 0.5, 1);
+        
+        plot(HeadFree{ww}.GRAND{jj,catIdx}.Mean{1}{8},HeadFree{ww}.GRAND{jj,catIdx}.Mean{1}{7}(:,xIdx),'Color',CC(jj,:),...
+            'LineWidth',1)
     end
-	errorbar(FREQ.GrandMean{ww},COHR.GrandMean{ww},1*COHR.GrandSTD{ww},'-or','LineWidth',3)
+% 	errorbar(FREQ.GrandMean{ww},COHR.GrandMean{ww},1*COHR.GrandSTD{ww},'-or','LineWidth',3)
 end
 
 end

@@ -42,6 +42,8 @@ classdef Fly
         fIdx            = [];       % indicies at IO frequencies
         FREQ            = [];       % complex frequency domain data
         IOFREQ        	= [];       % complex frequency domain data at IO frequencies
+        WBF             = [];       % 
+      	WBA             = [];       % 
     end
     
     methods
@@ -110,6 +112,7 @@ classdef Fly
             obj.SacdCount   = count;
             obj.SacdRate    = rate;
             obj.SACD        = mean(table2array(Sacd),1);
+            
         end
         
         function [SACD,THRESH,COUNT,RATE]  = GetSaccade(obj,SD,debug)
@@ -124,8 +127,6 @@ classdef Fly
             [SACD,THRESH,COUNT,RATE] = SacdDetect(obj.X(:,1),obj.Time,SD,debug);
         end
         
-        
-            
         function obj = IO_Freq(obj,IOFreq)
             % IO_Freq: extract frequency domain data at discrete frequencies
             obj.IOFreq = IOFreq(:);

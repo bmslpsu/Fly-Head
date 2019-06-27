@@ -50,7 +50,7 @@ vLabel_Norm = cellfun(@(x) strcat(num2str(x),[' ' char(176) '/s']), num2cell(vel
 legLabel = cellfun(@(x,y) [x ' ' y], repmat(fLabel,nAmp,1), vLabel,'UniformOutput',false);
 legLabel_Norm = cellfun(@(x,y) [x ' ' y], fLabel, vLabel_Norm,'UniformOutput',false);
 
-cList = jet(nFreq);
+cList = prism(nFreq);
 
 % Get real & imaginary parts
 maxTrial = nan(nAmp,nFreq);
@@ -169,7 +169,7 @@ for jj = 1:nFreq
        delete(h.std{kk}) 
     end
     
-    h.error = plot([1 REAL_NORM(jj)],[0 IMAG_NORM(jj)],'Color','r','LineWidth',1);
+    h.error = plot([1 REAL_NORM(jj)],[0 IMAG_NORM(jj)],'Color','k','LineWidth',1);
     
     h.grand = scatter(REAL_NORM(jj),IMAG_NORM(jj),1,'o','MarkerEdgeColor','k','MarkerFaceColor',cList(jj,:),...
         'MarkerFaceAlpha',1,'LineWidth',1.5);
@@ -202,7 +202,9 @@ end
 
 for ww = 1:nAmp
     ax = subplot(ceil(nAmp/2),2,ww);
-    [ax,~] = ComplexAxes(gains);
+    [ax,h] = ComplexAxes(gains);
+    h.circle(end).Color = 'r';
+    h.origin(1).Color = 'r';
     ax.Title.String = [num2str(Amp(ww)) char(176)];
 
   	for jj = 1:nFreq
@@ -211,7 +213,7 @@ for ww = 1:nAmp
     end
     
     for jj = 1:nFreq
-        h.r = plot([0 REAL(ww,jj)],[0 IMAG(ww,jj)],'Color',[0 0 0 1],'LineWidth',1);
+%         h.r = plot([0 REAL(ww,jj)],[0 IMAG(ww,jj)],'Color',[0 0 0 1],'LineWidth',1);
         
         rSTD = PolarSTD(Real{ww}(:,jj),Imag{ww}(:,jj),[REAL(ww,jj) IMAG(ww,jj)]);
         
@@ -232,8 +234,8 @@ for ww = 1:nAmp
         uistack(h.grand,'top')
     end
     
-    scatter(1,0,40,'o','MarkerEdgeColor','r','MarkerFaceColor','r',...
-        'MarkerFaceAlpha',1,'LineWidth',1.5);
+%     scatter(1,0,40,'o','MarkerEdgeColor','r','MarkerFaceColor','r',...
+%         'MarkerFaceAlpha',1,'LineWidth',1.5);
     
     leg = legend(hh,legLabel{ww,:});
     leg.Title.String = 'Frequency / Velocity';
@@ -246,7 +248,7 @@ end
 %---------------------------------------------------------------------------------------------------------------------------------
 FIG = figure (3); clf
 FIG.Color = 'w';
-FIG.Position = [100 100 800 800];
+FIG.Position = [100 100 800 700];
 FIG.Name = 'Normalized Bode';
 movegui(FIG,'center')
 hold on
@@ -353,13 +355,13 @@ end
 %---------------------------------------------------------------------------------------------------------------------------------
 FIG = figure (5); clf
 FIG.Color = 'w';
-FIG.Position = [100 100 800 800];
+FIG.Position = [100 100 700 700];
 FIG.Name = 'Gain vs Amplitude';
 movegui(FIG,'center')
 hold on
 
 cmap = jet(nFreq);
-
+clear h
 for jj = 1:nFreq
     ax = subplot(2,1,1); hold on
     ax.FontSize = 12;
@@ -369,8 +371,9 @@ for jj = 1:nFreq
     ax.XLabel.FontSize = ax.YLabel.FontSize;
     ax.XLim = [7 19];
     ax.YLim = [0 1];
+    ax.XTick = Amp;
     
-    h.freq(jj) = errorbar(Amp,GAIN(:,jj),GAIN_STD(:,jj),'Color',cmap(jj,:),'LineWidth',3);
+    h.freq(jj) = errorbar(Amp,GAIN(:,jj),2*GAIN_STD(:,jj),'-','Color',cmap(jj,:),'LineWidth',2);
     
 %     [~,h.freq(jj)] = PlotPatch(GAIN(:,jj),GAIN_STD(:,jj),Amp,1,1,cmap(jj,:),[0.5 0.5 0.6],0.1,3);
 
@@ -382,15 +385,66 @@ for jj = 1:nFreq
     ax.XLabel.FontSize = ax.YLabel.FontSize;
     ax.XLim = [7 19];
     ax.YLim = [-150 150];
-    
-    h.freq(jj) = errorbar(Amp,PHASE(:,jj),PHASE_STD(:,jj),'Color',cmap(jj,:),'LineWidth',3);
+    ax.XTick = Amp;
+    h.freq(jj) = errorbar(Amp,PHASE(:,jj),2*PHASE_STD(:,jj),'-','Color',cmap(jj,:),'LineWidth',2);
     
 %     [~,h.freq(jj)] = PlotPatch(GAIN(:,jj),GAIN_STD(:,jj),Amp,1,1,cmap(jj,:),[0.5 0.5 0.6],0.1,3);
     
 end
 
-leg = legend(h.freq,num2strcell(Freq));
+leg = legend(h.freq,num2strcell(Freq(1:jj)));
 leg.Title.String = 'Frequency (Hz)';
+legend boxoff
+
+%% Complex Gain: Amplitude Change
+%---------------------------------------------------------------------------------------------------------------------------------
+FIG = figure (6); clf
+FIG.Color = 'w';
+FIG.Position = [100 100 700 700];
+movegui(FIG,'center')
+FIG.Name = filename;
+for ww = 1:nAmp
+   FIG.Name = [FIG.Name '_' num2str(Amp(ww))];  
+end
+[ax,h] = ComplexAxes(gains,-30); hold on
+ax.XLim = [-0.2 0.8];
+ax.YLim = [-0.6 0.6];
+h.circle(end).Color = 'r';
+h.origin(1).Color = 'r';
+set(h.text,'Color','r')
+clear h
+
+for ww = 1:nAmp
+    for jj = 1:nFreq 
+        h.trial = scatter(Real{ww}(:,jj), Imag{ww}(:,jj), 40, 'o','MarkerEdgeColor','k',...
+            'MarkerFaceColor',cList(jj,:), 'MarkerFaceAlpha', 0.3, 'LineWidth', 0.5);
+    end
+end
+
+for jj = 1:nFreq 
+    h.grand(jj) = plot(REAL(:,jj),IMAG(:,jj),'-o','Color',cList(jj,:),'MarkerSize',8,'LineWidth',3.5,...
+        'MarkerFaceColor','k','MarkerEdgeColor','none');
+    uistack(h.grand(jj),'top')
+%     text(1.1*REAL(:,jj),1.1*IMAG(:,jj),num2strcell(Amp))
+    
+%     for ww = 1:nAmp
+%         rSTD = PolarSTD(Real{ww}(:,jj),Imag{ww}(:,jj),[REAL(ww,jj) IMAG(ww,jj)]);
+%         
+%      	[h.std] = draw_ellipse([REAL(ww,jj) IMAG(ww,jj)], 3*rSTD, 0.5, 0, 90, cList(jj,:)); hold on
+%         h.std{1}.FaceAlpha = 0.2;
+%         for kk = 2:length(h.std)
+%            delete(h.std{kk}) 
+%         end
+%         
+%         scatter(REAL(ww,jj),IMAG(ww,jj),15,'o','MarkerEdgeColor','k','MarkerFaceColor',cList(jj,:),...
+%             'MarkerFaceAlpha',1,'LineWidth',1.5);
+%     end
+end
+
+leg = legend(h.grand,num2strcell(Freq));
+leg.Title.String = 'Frequency (Hz)';
+leg.Location = 'northwest';
+leg.Position = leg.Position;
 legend boxoff
 
 end

@@ -12,6 +12,9 @@ root = 'H:\DATA\Rigid_Data\';
 FILE = cellstr(FILE)';
 
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','GRAND','U','N');
+%%
+
+clearvars -except HeadFree Amp nAmp
 
 figNum = 1;
 catIdx = 3;

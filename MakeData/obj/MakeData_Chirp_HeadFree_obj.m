@@ -5,7 +5,7 @@ function [] = MakeData_Chirp_HeadFree_obj(rootdir)
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-% rootdir = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFree';
+rootdir = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFree';
 filename = 'Chirp_HeadFree_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -31,22 +31,12 @@ ALL 	= cell([N{1,end},11]); % cell array to store all data objects
 TRIAL  	= cell(N{1,1},N{1,3});
 n.catg  = size(N,2) - 1;
 pp = 0;
-% span = 1:4000;
-for kk = 1:N{1,end}
+for kk = 1:N.file
     disp(kk)
     % Load HEAD & DAQ data
     data = [];
 	load(fullfile(PATH.daq, FILES{kk}),'data','t_p'); % load pattern x-position
     load(fullfile(PATH.ang, FILES{kk}),'hAngles','t_v'); % load head angles % time arrays
-    %-----------------------------------------------------------------------------------------------------------------------------
-    % Check WBF
-	wing.f = 100*(data(:,6)); % wing beat frequency
-    if min(wing.f)<150 || mean(wing.f)<180 % check WBF, if too low then don't use trial
-        fprintf('Low WBF: Fly %i Trial %i \n',D{kk,1},D{kk,2})
-        continue
-    else
-        pp = pp + 1; % set next index to store data
-    end
     %-----------------------------------------------------------------------------------------------------------------------------
     % Get head data
     head.Time = t_v;
@@ -54,6 +44,7 @@ for kk = 1:N{1,end}
     Head = Fly(head.Pos,head.Time,40,IOFreq); % head object
   	%-----------------------------------------------------------------------------------------------------------------------------
     % Get wing data from DAQ
+	wing.f          = medfilt1(100*data(:,6),3); % wing beat frequency [Hz]
     wing.Time       = t_p; % wing time [s]
     wing.Fs         = 1/mean(diff(wing.Time)); % sampling frequency [Hz]
     wing.Fc         = 20; % cutoff frequency [Hz]
@@ -62,11 +53,29 @@ for kk = 1:N{1,end}
     wing.Right      = filtfilt(b,a,(data(:,5))); % right wing [V]
     wing.Pos        = wing.Left - wing.Right; % dWBA (L-R) [V]
   	wing.Pos        = wing.Pos - mean(wing.Pos); % subtract mean [V]
-   	Wing = Fly(wing.Pos,t_p,40,IOFreq,Head.Time); % wing object
+   	Wing            = Fly(wing.Pos,t_p,40,IOFreq,Head.Time); % wing object
+    
+    wing.f          = interp1(wing.Time,wing.f,Head.Time);
+   	wing.Left     	= interp1(wing.Time,wing.Left,Head.Time);
+   	wing.Right     	= interp1(wing.Time,wing.Right,Head.Time);
+
+    Wing.WBF        = wing.f;
+    Wing.WBA        = [wing.Left,wing.Right,wing.Left + wing.Right];
 	%-----------------------------------------------------------------------------------------------------------------------------
+    % Check WBF & WBA
+    if min(wing.f)<150 || mean(wing.f)<180 % check WBF, if too low then don't use trial
+        fprintf('Low WBF: Fly %i Trial %i \n',D{kk,1},D{kk,2})
+        continue
+    elseif any(wing.Left>11) || any(wing.Right>11)
+        fprintf('WBA out of range: Fly %i Trial %i \n',D{kk,1},D{kk,2})
+        continue
+    else
+        pp = pp + 1; % set next index to store data
+    end
+	%-------------------------------------------------------------------------------------`----------------------------------------
 	% Get pattern data from DAQ
     pat.Time	= t_p;
-    pat.Pos 	= panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]  
+    pat.Pos 	= panel2deg(data(:,2)); % pattern x-pos: subtract mean and convert to deg [deg]  
     pat.Pos  	= FitPanel(pat.Pos,pat.Time,Head.Time); % fit panel data
  	Pat      	= Fly(pat.Pos,Head.Time,[],IOFreq); % pattern object
 	%-----------------------------------------------------------------------------------------------------------------------------

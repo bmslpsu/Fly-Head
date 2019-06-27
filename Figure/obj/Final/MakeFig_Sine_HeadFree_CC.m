@@ -22,7 +22,7 @@ HeadFree = cell(nAmp,1);
 for ww = 1:nAmp
     HeadFree{ww} = load(fullfile(root,FILES{ww}),'GRAND','U','N');
 end
-
+%%
 figNum = 1;
 filename = 'MakeFig_Sine_HeadFree_CC';
 catIdx = [5 8 7];
@@ -36,8 +36,8 @@ TD = nan(nAmp,nFreq);
 MC = nan(nAmp,nFreq);
 for ww = 1:nAmp
     for jj = 1:HeadFree{ww}.N{1,3}
-        TL{ww,jj} = HeadFree{ww}.GRAND{jj,catIdx(3)}.Mean{1}{11}(:,xIdx);
-        CC{ww,jj} = HeadFree{ww}.GRAND{jj,catIdx(3)}.Mean{1}{10}(:,xIdx);
+        TL{ww,jj} = HeadFree{ww}.GRAND{jj,catIdx(1)}.Mean{1}{11}(:,xIdx);
+        CC{ww,jj} = HeadFree{ww}.GRAND{jj,catIdx(1)}.Mean{1}{10}(:,xIdx);
         [~,idx] = max(abs(CC{ww,jj}));
         MC(ww,jj) = CC{ww,jj}(idx);
         TD(ww,jj) = TL{ww,jj}(idx);        
@@ -59,7 +59,7 @@ cList = jet(nFreq);
 Labels = {'Ref to Head','Ref to Wings','Head to Wings'};
 hold on
 
-for ww = 1:nAmp
+for ww = 1
     pp = 1;
     for jj = 1:HeadFree{ww}.N{1,3}
         ax = subplot(ceil(nFreq/3),3,pp); hold on
