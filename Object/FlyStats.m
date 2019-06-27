@@ -62,7 +62,8 @@ classdef FlyStats
             obj.Range       = cellfun(@(x) range(x,3),              obj.All,'UniformOutput',false);
         	obj.CircMean    = cellfun(@(x) circ_mean(x,[],3),       obj.All,'UniformOutput',false);
             obj.CircSTD     = cellfun(@(x) circ_std(x,[],[],3),     obj.All,'UniformOutput',false);
-
+            
+            obj.All = [];
         end
         
         function nTrial = get.nTrial(obj)

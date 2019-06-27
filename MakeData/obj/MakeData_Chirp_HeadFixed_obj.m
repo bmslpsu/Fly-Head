@@ -5,7 +5,7 @@ function [] = MakeData_Chirp_HeadFixed_obj(rootdir)
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-% rootdir = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFixed';
+rootdir = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFixed';
 filename = 'Chirp_HeadFixed_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -35,17 +35,9 @@ for kk = 1:N{1,end}
     % Load DAQ data
     data = [];
 	load(fullfile(PATH.daq, FILES{kk}),'data','t_p'); % load pattern x-position
-    %-----------------------------------------------------------------------------------------------------------------------------
-    % Check WBF
-	wing.f = 100*(data(:,6)); % wing beat frequency
-    if min(wing.f)<150 || mean(wing.f)<180 % check WBF, if too low then don't use trial
-        fprintf('Low WBF: Fly %i Trial %i \n',D{kk,1},D{kk,2})
-%         continue
-    else
-        pp = pp + 1; % set next index to store data
-    end
   	%-----------------------------------------------------------------------------------------------------------------------------
     % Get wing data from DAQ
+   	wing.f          = medfilt1(100*data(:,6),3); % wing beat frequency [Hz]
     wing.Time       = t_p; % wing time [s]
     wing.Fs         = 1/mean(diff(wing.Time)); % sampling frequency [Hz]
     wing.Fc         = 20; % cutoff frequency [Hz]
@@ -55,6 +47,24 @@ for kk = 1:N{1,end}
     wing.Pos        = wing.Left - wing.Right; % dWBA (L-R) [V]
   	wing.Pos        = wing.Pos - mean(wing.Pos); % subtract mean [V]
    	Wing = Fly(wing.Pos,t_p,40,IOFreq,Head.Time); % wing object
+    
+	wing.f          = interp1(wing.Time,wing.f,Head.Time);
+   	wing.Left     	= interp1(wing.Time,wing.Left,Head.Time);
+   	wing.Right     	= interp1(wing.Time,wing.Right,Head.Time);
+
+    Wing.WBF        = wing.f;
+    Wing.WBA        = [wing.Left,wing.Right,wing.Left + wing.Right];
+	%-----------------------------------------------------------------------------------------------------------------------------
+    % Check WBF & WBA
+    if min(wing.f)<150 || mean(wing.f)<180 % check WBF, if too low then don't use trial
+        fprintf('Low WBF: Fly %i Trial %i \n',D{kk,1},D{kk,2})
+        continue
+    elseif any(wing.Left>10.) || any(wing.Right>11)
+        fprintf('WBA out of range: Fly %i Trial %i \n',D{kk,1},D{kk,2})
+        continue
+    else
+        pp = pp + 1; % set next index to store data
+    end
 	%-----------------------------------------------------------------------------------------------------------------------------
 	% Get pattern data from DAQ
     pat.Time	= t_p;

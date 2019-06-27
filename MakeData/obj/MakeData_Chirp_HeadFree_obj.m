@@ -66,7 +66,7 @@ for kk = 1:N.file
     if min(wing.f)<150 || mean(wing.f)<180 % check WBF, if too low then don't use trial
         fprintf('Low WBF: Fly %i Trial %i \n',D{kk,1},D{kk,2})
         continue
-    elseif any(wing.Left>11) || any(wing.Right>11)
+    elseif any(wing.Left>10.6) || any(wing.Right>10.6)
         fprintf('WBA out of range: Fly %i Trial %i \n',D{kk,1},D{kk,2})
         continue
     else
