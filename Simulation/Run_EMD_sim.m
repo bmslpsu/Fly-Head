@@ -1,4 +1,4 @@
-[EMD_ALL, Pattern_ALL, Eye_ALL] = EMDsim_v5_7_5deg_Grnd_new(true, 0);
+[EMD_ALL, Pattern_ALL, Eye_ALL] = EMDsim_v5_7_5deg_Grnd_new(false, 0);
 
 [EMD_ALL_filt] = HR_sim(Eye_ALL);
 
