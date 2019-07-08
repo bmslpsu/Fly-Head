@@ -5,7 +5,7 @@ function [] = MakeData_Chirp_HeadFixed_Replay_obj(rootdir)
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-% rootdir = 'H:\EXPERIMENTS\';
+rootdir = 'H:\EXPERIMENTS\';
 filename = 'Chirp_HeadFixed_Replay';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
@@ -20,6 +20,7 @@ FILES = cellstr(FILES)';
 [D,I,N,U,T] = GetFileData(FILES);
 
 clear rootdir
+
 %% Get Data %%
 %---------------------------------------------------------------------------------------------------------------------------------
 IOFreq = [];
@@ -40,7 +41,7 @@ for kk = 1:N{1,end}
 	wing.f = 100*(data(:,6)); % wing beat frequency
     if min(wing.f)<150 || mean(wing.f)<180 % check WBF, if too low then don't use trial
         fprintf('Low WBF: Fly %i Trial %i \n',D{kk,1},D{kk,2})
-%         continue
+        continue
     else
         pp = pp + 1; % set next index to store data
     end

@@ -176,11 +176,11 @@ if catFlag
             catLoc = strcmp(catData(:,jj),catUnq{jj}{kk});
             catIdx(catLoc,jj) = kk;
         end
-        Ind(:,n.catg+jj)        = catIdx(:,jj);
-        nn(n.catg+jj)           = catN(jj);
-        idx{n.catg+jj}          = (1:catN(jj))';
-        unq{n.catg+jj}          = catUnq{jj};
-        catg{n.catg+jj}         = upper(char(96+jj)); % name categorires, index through alphabet
+        Ind(:,n.catg+jj)	= catIdx(:,jj);
+        nn(n.catg+jj)      	= catN(jj);
+        idx{n.catg+jj}     	= (1:catN(jj))';
+        unq{n.catg+jj}     	= catUnq{jj};
+        catg{n.catg+jj}    	= upper(char(96+jj)); % name categorires, index through alphabet
     end
 end
 

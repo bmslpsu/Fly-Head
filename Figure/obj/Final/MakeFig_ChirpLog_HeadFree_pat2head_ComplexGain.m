@@ -12,10 +12,10 @@ root = 'H:\DATA\Rigid_Data\';
 CHIRP = cellstr(CHIRP)';
 
 HeadFree = load(fullfile(root,CHIRP{1}),'TRIAL','U','N');
-
+%%
 clearvars -except HeadFree
 filename = 'ChirpLog_HeadFree_pat2head_ComplexGain';
-catIdx = 5;
+catIdx = 8;
 xIdx = 1;
 
 fIdx        = 7:200;
@@ -66,7 +66,7 @@ velIdx = fliplr([1 23 44 64 length(fIdx)]);
 
 cmap = jet(length(fIdx));
 
-gains = 0.2:0.2:1;
+gains = 0.1:0.1:0.2;
 
 %% Complex Gain: Normalized amplitudes
 %---------------------------------------------------------------------------------------------------------------------------------

@@ -28,7 +28,7 @@ clearvars -except nAmp Amp HeadFree
 
 filename = 'Sine_HeadFree_ComplexGain';
 
-catIdx = 5;
+catIdx = 8;
 xIdx = 1;
 
 Freq = HeadFree{1}.U{1,3}{1}';
@@ -138,7 +138,7 @@ PHASE_NORM          = nanmean(Phase_Norm,1);
 GAIN_NORM_STD       = nanstd(Gain_Norm,[],1);
 PHASE_NORM_STD      = nanstd(Phase_Norm,[],1);
 
-gains = 0.2:0.2:1;
+gains = 0.05:0.05:0.1;
 
 %% Complex Gain: Normalized Amplitude
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -351,12 +351,12 @@ for ww = 1:nAmp
         ax3.XLabel.FontSize = ax1.YLabel.FontSize;
 end
 
-%% Gain vs Amplitude
+%% Gain & Phase vs Amplitude
 %---------------------------------------------------------------------------------------------------------------------------------
 FIG = figure (5); clf
 FIG.Color = 'w';
 FIG.Position = [100 100 700 700];
-FIG.Name = 'Gain vs Amplitude';
+FIG.Name = 'Gain & Phase vs Amplitude';
 movegui(FIG,'center')
 hold on
 

@@ -12,8 +12,8 @@ root = 'H:\DATA\Rigid_Data\';
 FILE = cellstr(FILE)';
 
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','GRAND','U','N');
-
-catIdx = 5;
+%%
+catIdx = 8;
 xIdx = 1;
 
 filename = 'SOS_HeadFree_pat2head_ComplexGain';
@@ -59,13 +59,15 @@ cList = jet(nFreq);
 %---------------------------------------------------------------------------------------------------------------------------------
 FIG = figure (1); clf
 FIG.Color = 'w';
-FIG.Position = [100 100 800 800];
+FIG.Position = [100 100 700 700];
 FIG.Name = filename;
 movegui(FIG,'center')
 hold on
 
-gains = 0.2:0.2:1;
+gains = 0.2:0.2:0.4;
 [ax,~] = ComplexAxes(gains);
+% ax.XTick = '';
+% ax.YTick = '';
 
 for jj = 1:nFreq
     h.trial = scatter(Real(:,jj), Imag(:,jj), 40, 'o','MarkerEdgeColor','k',...
