@@ -33,10 +33,10 @@ axis square
 box on
 ax.Color = backColor;
 % ax.Colormap = cmap;
-ax.FontSize = 12;
+ax.FontSize = 8;
 % ax.Title.String = 'Complex Gain';
 ax.YLabel.String = 'Img';
-ax.YLabel.FontSize = 14;
+ax.YLabel.FontSize = 8;
 ax.XLabel.String = 'Real';
 ax.XLabel.FontSize = ax.YLabel.FontSize;
 ax.XColor = axColor;
@@ -57,7 +57,7 @@ for kk = 1:length(mag)
     h.circle(kk).Color = [0.5 0.5 0.5 1];
     h.circle(kk).LineStyle = '-';
     h.circle(kk).LineWidth = 1;
-    h.text(kk) = text(magX(kk),magY(kk),num2str(mag(kk)),'Color',axColor);
+    h.text(kk) = text(magX(kk),magY(kk),num2str(mag(kk)),'Color',axColor,'FontSize',8);
     h.text(kk).FontWeight = 'bold';
 %     if mag(kk)==1
 %         h.circle(kk).Color = [0.8 0 0 0.5];

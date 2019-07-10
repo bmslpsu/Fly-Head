@@ -13,7 +13,9 @@ FILE = cellstr(FILE)';
 
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','GRAND','U','N');
 %%
-catIdx = 8;
+clearvars -except HeadFree
+
+catIdx = 5;
 xIdx = 1;
 
 filename = 'SOS_HeadFree_pat2head_ComplexGain';
@@ -49,28 +51,46 @@ PHASE_STD   = std(Phase,[],1);
 REAL        = mean(Real,1);
 IMAG        = mean(Imag,1);
 
+% for jj = 1:nFreq
+%     for kk = 1:size(Real,1)
+%         if jj==5 && ( Real(kk,jj)>0 && Imag(kk,jj)>0 )
+%             Imag(kk,jj) = -Imag(kk,jj);
+%             Real(kk,jj) = -Real(kk,jj);
+%         end
+%     end
+% end
+
+
+
 % CMPLXGAIN   = REAL + 1i*IMAG;
 % GAIN        = abs(CMPLXGAIN);
 % PHASE       = rad2deg(angle((CMPLXGAIN)));
 
 cList = jet(nFreq);
 
+gains = 0.05:0.05:0.2;
+gains = 0.2:0.2:1;
+
 %% Complex Gain
 %---------------------------------------------------------------------------------------------------------------------------------
 FIG = figure (1); clf
 FIG.Color = 'w';
-FIG.Position = [100 100 700 700];
+FIG.Units = 'inches';
+FIG.Position = [1 1 4 4];
 FIG.Name = filename;
 movegui(FIG,'center')
 hold on
 
-gains = 0.2:0.2:0.4;
-[ax,~] = ComplexAxes(gains);
-% ax.XTick = '';
-% ax.YTick = '';
+[ax,h.label] = ComplexAxes(gains);
+ax.FontSize = 8;
+ax.XLabel.FontSize = 8;
+ax.YLabel.FontSize = 8;
+
+ax.XTick = '';
+ax.YTick = '';
 
 for jj = 1:nFreq
-    h.trial = scatter(Real(:,jj), Imag(:,jj), 40, 'o','MarkerEdgeColor','k',...
+    h.trial = scatter(Real(:,jj), Imag(:,jj), 15, 'o','MarkerEdgeColor','k',...
       'MarkerFaceColor',cList(jj,:), 'MarkerFaceAlpha', 0.65, 'LineWidth', 0.5);
 end
 
@@ -89,13 +109,13 @@ for jj = 1:nFreq
     h.leg = scatter(REAL(jj),IMAG(jj),1,'o','MarkerEdgeColor','k','MarkerFaceColor',cList(jj,:),...
         'MarkerFaceAlpha',1,'LineWidth',1.5);
     
-    h.grand = scatter(REAL(jj),IMAG(jj),40,'o','MarkerEdgeColor','k','MarkerFaceColor','k',...
+    h.grand = scatter(REAL(jj),IMAG(jj),15,'o','MarkerEdgeColor','k','MarkerFaceColor','k',...
         'MarkerFaceAlpha',1,'LineWidth',1.5);
 
     hh(jj) = h.leg;
 end
-leg = legend(hh,fLabel);
-leg.Title.String = 'Frequency';
+leg = legend(hh,num2strcell(Freq));
+leg.Title.String = 'Frequency (Hz)';
 leg.Location = 'northwest';
 legend boxoff
 

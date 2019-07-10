@@ -138,7 +138,59 @@ PHASE_NORM          = nanmean(Phase_Norm,1);
 GAIN_NORM_STD       = nanstd(Gain_Norm,[],1);
 PHASE_NORM_STD      = nanstd(Phase_Norm,[],1);
 
-gains = 0.05:0.05:0.1;
+gains = 0.05:0.05:0.2;
+% gains = 0.2:0.2:1;
+
+%% Complex Gain: one amplitude
+%---------------------------------------------------------------------------------------------------------------------------------
+FIG = figure (10); clf
+FIG.Color = 'w';
+FIG.Position = [100 100 700 700];
+movegui(FIG,'center')
+FIG.Name = filename;
+amp = 3;
+
+[ax,h] = ComplexAxes(gains);
+% h.circle(end).Color = 'r';
+% h.origin(1).Color = 'r';
+ax.Title.String = [num2str(Amp(amp)) char(176)];
+
+for jj = 1:nFreq
+    h.trial = scatter(Real{amp}(:,jj), Imag{amp}(:,jj), 40, 'o','MarkerEdgeColor','k',...
+        'MarkerFaceColor',cList(jj,:), 'MarkerFaceAlpha', 0.65, 'LineWidth', 0.5);
+end
+
+for jj = 1:nFreq
+%         h.r = plot([0 REAL(amp,jj)],[0 IMAG(amp,jj)],'Color',[0 0 0 1],'LineWidth',1);
+
+    rSTD = PolarSTD(Real{amp}(:,jj),Imag{amp}(:,jj),[REAL(amp,jj) IMAG(amp,jj)]);
+
+    [h.std] = draw_ellipse([REAL(amp,jj) IMAG(amp,jj)], 2*rSTD, 0.5, 0, 90, cList(jj,:)); hold on
+    h.std{1}.FaceAlpha = 0.2;
+    for kk = 2:length(h.std)
+       delete(h.std{kk}) 
+    end
+
+    h.grand = scatter(REAL(amp,jj),IMAG(amp,jj),1,'o','MarkerEdgeColor','k','MarkerFaceColor',cList(jj,:),...
+        'MarkerFaceAlpha',1,'LineWidth',1.5);
+
+    h.leg = scatter(REAL(amp,jj),IMAG(amp,jj),10,'o','MarkerEdgeColor','k','MarkerFaceColor','k',...
+        'MarkerFaceAlpha',1,'LineWidth',1.5);
+
+    hh(jj) = h.grand;
+
+    uistack(h.grand,'top')
+end
+
+%     scatter(1,0,40,'o','MarkerEdgeColor','r','MarkerFaceColor','r',...
+%         'MarkerFaceAlpha',1,'LineWidth',1.5);
+
+leg = legend(hh,legLabel{amp,:});
+leg.Title.String = 'Frequency / Velocity';
+leg.Location = 'northwest';
+leg.Position = leg.Position + [-0.2 0 0 0];
+legend boxoff
+
 
 %% Complex Gain: Normalized Amplitude
 %---------------------------------------------------------------------------------------------------------------------------------
