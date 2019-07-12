@@ -12,12 +12,38 @@ root.Func = 'C:\Users\boc5244\Documents\GitHub\Arena\Functions';
 % 
 % load(fullfile(path.Pat,file.Pat),'pattern');
 
-% Fly head angles (fly_2_trial_2_freq_2.mat)
-[file.Fly, path.Fly] = uigetfile({'*.mat', 'MAT-files'}, ...
-    'Select fly angles file', fullfile(root.Fly,'Vid','Angles'), 'MultiSelect','off');
+% % Fly head angles (fly_2_trial_2_freq_2.mat)
+% [file.Fly, path.Fly] = uigetfile({'*.mat', 'MAT-files'}, ...
+%     'Select fly angles file', fullfile(root.Fly,'Vid','Angles'), 'MultiSelect','off');
 
 load(fullfile(path.Fly,file.Fly),'t_v','hAngles');
 load(fullfile(root.Fly,file.Fly),'t_p','data');
+
+
+%%
+
+% Make eye
+delta_phi = 4.6*pi/180; % angle between adjacent ommatidia
+n_receptor = 48;        % # of receptors
+time_constant = 0.035;  % temproal low-pass filter time constant
+Eye = EYE(delta_phi,time_constant,n_receptor); % EYE object
+
+% Pattern
+[pattern] = MakePattern_SpatFreq(60);
+
+% Function
+[func,~,ftime] = MakePosFunction_Vel(30,2,500);
+func = wrap_func(func);
+
+% C = conv2(pattern.Pats(:,:,1),Eye.filt);
+
+[EMD_ALL, Pattern_ALL, Eye_ALL] = EMD(Eye,pattern,func,ftime,false);
+
+[EMD_ALL_filt] = HR_sim(Eye_ALL,ftime);
+
+figure (1) ; clf
+imagesc(EMD_ALL_filt)
+colormap(jet)
 
 %% EMD Simulation %%
 % Make eye
@@ -29,7 +55,7 @@ Eye = EYE(delta_phi,time_constant,n_receptor); % EYE object
 close all
 clear FIG
 
-Vel = flipud(30*[1:3]');
+Vel = flipud(30*[1:6]');
 SpatFreq = 3.75*[8]';
 
 maxVel = max(Vel);

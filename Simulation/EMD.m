@@ -10,7 +10,7 @@ function [EMD_ALL, Pattern_ALL, Eye_ALL] = EMD(Eye,Pattern,Pos,tt,showplot,expor
 %       export  	:   export figure boolean
 %   OUTPUTS:
 %       EMD_ALL    	:   
-%       Pattern_ALL	:   
+%       Pattern_ALL	:   spatiotemporal intensities
 %       Eye_ALL    	:   
 %---------------------------------------------------------------------------------------------------------------------------------
 if nargin<6
@@ -31,16 +31,15 @@ InMat       = 5*(rand(1,Eye.n_receptor) - 0.5);
 FiltMat_1   = zeros(size(InMat));
 
 % Preallocate arrays
-EMD_ALL = nan(length(Pos), Eye.n_receptor);
-Pattern_ALL = nan(length(Pos), 96); % 96-pixel column
-Eye_ALL = nan(length(Pos), Eye.n_receptor);
-HR_Motion = nan(length(Pos), Eye.n_receptor-1);
+EMD_ALL     = nan(length(Pos), Eye.n_receptor);
+Pattern_ALL = nan(length(Pos), size(Pattern.Pats,2));
+Eye_ALL     = nan(length(Pos), Eye.n_receptor);
+HR_Motion   = nan(length(Pos), Eye.n_receptor-1);
 for jj = 1:length(Pos)   
    	% CALCULATE OUTPUT FROM ELEMENTARY MOTION DETECTOR
     % (HASSENTSEIN-REICHARDT)
-    
  	current_frame = Pattern.Pats(:, :, Pos(jj),1);
-    % upsample by factor of 10
+    % Upsample by factor of 10
     for k = 1:10
         Up_frame(k:10:Eye.n_pts) = current_frame(1,1:96);
     end
@@ -52,6 +51,7 @@ for jj = 1:length(Pos)
     InMat       = eye_sample;
     FiltMat     = a*(InMat) + (1-a)*FiltMat_1; % discrete low-pass filter
     FiltMat_1   = FiltMat;
+    
     % HR_Motion = Va(t-tau) * Vb - Vb(t-tau) * Va
     HR_Motion(jj,:) = FiltMat(1:end-1).*InMat(2:end) - FiltMat(2:end).*InMat(1:end-1); % delay and correlate
   	
@@ -80,9 +80,7 @@ if showplot == 1
         xlim([-180 180])
         ylim([-30 30]);
         set(gcf, 'color', 'k');
-        set(gca, 'color', 'k')
-        set(gca,'xcolor','w','ycolor','w');
-        set(gca,'box','off');
+        set(gca,'xcolor','w','ycolor','w','color', 'k','box','off');
         freezeColors;
 
         subplot(4,1,3:4)
@@ -90,18 +88,16 @@ if showplot == 1
         xlim([1 Eye.n_receptor])
         ylim(max(abs(HR_Motion),[],'all')*[-1 1]);
         set(gcf, 'color', 'k');
-        set(gca, 'color', 'k')
-        set(gca,'xcolor','w','ycolor','w');
+        set(gca,'xcolor','w','ycolor','w', 'color', 'k','box','off');
         xlabel('ommatidia')
         ylabel('EMD output')
-        set(gca,'box','off');
 
         % Display time stamp
         text(30, -430, sprintf('%0.3f',tt(jj)),'fontsize',10,'color',[1 1 1])
-
+        
         % Export image
         if export
-            imgdirUnix = 'C:/JMM/Magno_data/7_5deg_Grnd/sim5/';
+            imgdirUnix = 'C:/';
             filename = sprintf([imgdirUnix 'image%04d.jpg'], mm);
             export_fig(gcf, filename, '-q95','-nocrop');
         end
