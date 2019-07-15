@@ -15,7 +15,7 @@ HeadFree = load(fullfile(root,FILE{1}),'TRIAL','GRAND','U','N');
 %%
 clearvars -except HeadFree
 
-catIdx = 5;
+catIdx = 8;
 xIdx = 1;
 
 filename = 'SOS_HeadFree_pat2head_ComplexGain';
@@ -36,9 +36,9 @@ Real        = real(CmplxGain);
 Imag        = imag(CmplxGain);
 CmplxGain   = Real + 1i*Imag;
 
-cnd         = (Real<0) & (Imag>0);
-Real(cnd)   = -Real(cnd);
-Imag(cnd)   = -Imag(cnd);
+% cnd         = (Real<0) & (Imag>0);
+% Real(cnd)   = -Real(cnd);
+% Imag(cnd)   = -Imag(cnd);
 
 Gain        = abs(CmplxGain);
 Phase       = rad2deg(angle((CmplxGain)));
@@ -51,25 +51,38 @@ PHASE_STD   = std(Phase,[],1);
 REAL        = mean(Real,1);
 IMAG        = mean(Imag,1);
 
-% for jj = 1:nFreq
-%     for kk = 1:size(Real,1)
-%         if jj==5 && ( Real(kk,jj)>0 && Imag(kk,jj)>0 )
-%             Imag(kk,jj) = -Imag(kk,jj);
-%             Real(kk,jj) = -Real(kk,jj);
-%         end
-%     end
-% end
-
-
+for jj = 1:nFreq
+    for kk = 1:size(Real,1)
+        if (jj==5 || jj==4 || jj==3 || jj==2) && ( Real(kk,jj)>0 && Imag(kk,jj)>0 )
+            Imag(kk,jj) = -Imag(kk,jj);
+            Real(kk,jj) = -Real(kk,jj);
+        end
+        
+        if jj==5 && ( Real(kk,jj)>0 && Imag(kk,jj)<0 )
+            Imag(kk,jj) = Imag(kk,jj);
+            Real(kk,jj) = -Real(kk,jj);
+        end
+        
+        if (jj==1 || jj ==2 || jj==3 || jj==4) && ( Real(kk,jj)<0 && Imag(kk,jj)>0 )
+            Imag(kk,jj) = -Imag(kk,jj);
+            Real(kk,jj) = -Real(kk,jj);
+        end
+        
+        if (jj==1 || jj ==2) && ( Real(kk,jj)<0 && Imag(kk,jj)<0 )
+            Imag(kk,jj) = -Imag(kk,jj);
+            Real(kk,jj) = -Real(kk,jj);
+        end
+    end
+end
 
 % CMPLXGAIN   = REAL + 1i*IMAG;
 % GAIN        = abs(CMPLXGAIN);
 % PHASE       = rad2deg(angle((CMPLXGAIN)));
 
-cList = jet(nFreq);
+cList = prism(nFreq);
 
 gains = 0.05:0.05:0.2;
-gains = 0.2:0.2:1;
+% gains = 0.2:0.2:1;
 
 %% Complex Gain
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -86,8 +99,8 @@ ax.FontSize = 8;
 ax.XLabel.FontSize = 8;
 ax.YLabel.FontSize = 8;
 
-ax.XTick = '';
-ax.YTick = '';
+% ax.XTick = '';
+% ax.YTick = '';
 
 for jj = 1:nFreq
     h.trial = scatter(Real(:,jj), Imag(:,jj), 15, 'o','MarkerEdgeColor','k',...

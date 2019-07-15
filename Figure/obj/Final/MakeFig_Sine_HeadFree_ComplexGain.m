@@ -138,14 +138,15 @@ PHASE_NORM          = nanmean(Phase_Norm,1);
 GAIN_NORM_STD       = nanstd(Gain_Norm,[],1);
 PHASE_NORM_STD      = nanstd(Phase_Norm,[],1);
 
-gains = 0.05:0.05:0.2;
+gains = 0.05:0.05:0.1;
 % gains = 0.2:0.2:1;
 
 %% Complex Gain: one amplitude
 %---------------------------------------------------------------------------------------------------------------------------------
 FIG = figure (10); clf
 FIG.Color = 'w';
-FIG.Position = [100 100 700 700];
+FIG.Units = 'inches';
+FIG.Position = [1 1 4 4];
 movegui(FIG,'center')
 FIG.Name = filename;
 amp = 3;
@@ -161,7 +162,7 @@ for jj = 1:nFreq
 end
 
 for jj = 1:nFreq
-%         h.r = plot([0 REAL(amp,jj)],[0 IMAG(amp,jj)],'Color',[0 0 0 1],'LineWidth',1);
+	h.r = plot([0 REAL(amp,jj)],[0 IMAG(amp,jj)],'Color',[0 0 0 1],'LineWidth',1);
 
     rSTD = PolarSTD(Real{amp}(:,jj),Imag{amp}(:,jj),[REAL(amp,jj) IMAG(amp,jj)]);
 

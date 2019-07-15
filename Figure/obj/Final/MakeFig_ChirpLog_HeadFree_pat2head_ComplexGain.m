@@ -15,7 +15,7 @@ HeadFree = load(fullfile(root,CHIRP{1}),'TRIAL','U','N');
 %%
 clearvars -except HeadFree
 filename = 'ChirpLog_HeadFree_pat2head_ComplexGain';
-catIdx = 5;
+catIdx = 8;
 xIdx = 1;
 
 fIdx        = 11:200;
@@ -64,10 +64,42 @@ PHASE_STD = cat(2,PHASE_STD{:});
 
 velIdx = fliplr([1 23 44 64 length(fIdx)]);
 
-cmap = jet(length(fIdx));
+cmap = prism(length(fIdx));
 
-gains = 0.1:0.1:0.2;
-gains = 0.2:0.2:1;
+gains = 0.05:0.05:0.2;
+% gains = 0.2:0.2:1;
+
+%% Complex Gain: one amplitude
+%---------------------------------------------------------------------------------------------------------------------------------
+FIG = figure (10); clf
+FIG.Color = 'w';
+FIG.Units = 'inches';
+FIG.Position = [1 1 4 4];
+FIG.Name = filename;
+movegui(FIG,'center')
+hold on
+
+amp = 3;
+
+[ax,~] = ComplexAxes(gains);
+ax.Colormap = cmap;
+ax.Title.String = [num2str(HeadFree.U{1,3}{1}(amp)) char(176)];
+
+for kk = 1:size(CmplxGain{amp},1)
+    h.grand = scatter(REAL(kk,amp), IMAG(kk,amp), 15, cmap(kk,:), 'o', 'MarkerEdgeColor', 'k',...
+        'MarkerFaceColor', cmap(kk,:), 'MarkerFaceAlpha', 1, 'LineWidth', 0.3);
+end
+
+cbar = colorbar;
+cbar.FontSize = 14;
+cLabel = [0.3, 2:2:10];
+cbar.Ticks = maptorange(cLabel,fRange,[0 1]);
+cbar.TickLabels = num2strcell(cLabel);
+cbar.Label.String = 'Frequency (Hz)';
+cbar.Label.FontSize = 8;
+cbar.FontSize = 8;
+% cbar.Location = 'westoutside';
+% cbar.Position = cbar.Position + [-0.1 -0.2 0 0];
 
 %% Complex Gain: Normalized amplitudes
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -81,14 +113,14 @@ hold on
 [ax,~] = ComplexAxes(gains);
 ax.Colormap = cmap;
 
-% for jj = 1
-%     for kk = 1:size(CmplxGain{jj},1)
-%         R = Real{jj}(kk,:);
-%         I = Imag{jj}(kk,:);
-%         h.trial = scatter(R, I, 10, cmap(kk,:),'o','MarkerEdgeColor', cmap(kk,:),...
-%             'MarkerFaceColor', cmap(kk,:), 'MarkerFaceAlpha', 0.5, 'LineWidth', 0.1);
-%     end
-% end
+for jj = 1
+    for kk = 1:size(CmplxGain{jj},1)
+        R = Real{jj}(kk,:);
+        I = Imag{jj}(kk,:);
+        h.trial = scatter(R, I, 10, cmap(kk,:),'o','MarkerEdgeColor', cmap(kk,:),...
+            'MarkerFaceColor', cmap(kk,:), 'MarkerFaceAlpha', 0.5, 'LineWidth', 0.1);
+    end
+end
 
 for jj = 1:nAmp
     for kk = 1:size(CmplxGain{jj},1)
@@ -137,35 +169,6 @@ for jj = 1:nAmp
         cbar.Position = cbar.Position + [-0.1 -0.2 0 0];       
     end
 end
-
-%% Complex Gain: one amplitude
-%---------------------------------------------------------------------------------------------------------------------------------
-FIG = figure (10); clf
-FIG.Color = 'w';
-FIG.Position = [100 100 700 700];
-FIG.Name = filename;
-movegui(FIG,'center')
-hold on
-
-amp = 3;
-
-[ax,~] = ComplexAxes(gains);
-ax.Colormap = cmap;
-ax.Title.String = [num2str(HeadFree.U{1,3}{1}(amp)) char(176)];
-
-for kk = 1:size(CmplxGain{amp},1)
-    h.grand = scatter(REAL(kk,amp), IMAG(kk,amp), 30, cmap(kk,:), 'o', 'MarkerEdgeColor', 'k',...
-        'MarkerFaceColor', cmap(kk,:), 'MarkerFaceAlpha', 1, 'LineWidth', 0.3);
-end
-
-cbar = colorbar;
-cbar.FontSize = 14;
-cLabel = [0.3, 2:2:10];
-cbar.Ticks = maptorange(cLabel,fRange,[0 1]);
-cbar.TickLabels = num2strcell(cLabel);
-cbar.Label.String = 'Frequency (Hz)';
-% cbar.Location = 'westoutside';
-% cbar.Position = cbar.Position + [-0.1 -0.2 0 0];
 
 %% BODE
 %---------------------------------------------------------------------------------------------------------------------------------
