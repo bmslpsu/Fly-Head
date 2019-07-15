@@ -12,10 +12,10 @@ root = 'H:\DATA\Rigid_Data\';
 CHIRP = cellstr(CHIRP)';
 
 HeadFree = load(fullfile(root,CHIRP{1}),'GRAND','U','N');
-
+%%
 figNum = 1;
 filename = 'ChirpLog_HeadFree_pat2head_COHR_all';
-catIdx = 3;
+catIdx = 5;
 xIdx = 1;
 CC = [0 0 0];
 offset = 0.2;

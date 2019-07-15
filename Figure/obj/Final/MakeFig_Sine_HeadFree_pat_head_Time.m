@@ -35,29 +35,31 @@ figNum = 1;
 
 FIG = figure (figNum); clf
 FIG.Color = 'w';
-FIG.Position = [100 100 600 700];
+FIG.Units = 'inches';
+FIG.Position = [1 1 4 5];
 movegui(FIG,'center')
 FIG.Name = filename;
 for ww = 1:nAmp
    FIG.Name = [FIG.Name '_' num2str(Amp(ww))];  
 end
 
-for ww = 4
+for ww = 1
     pp = 1;
     for jj = 1:HeadFree{ww}.N{1,3}
         freq = HeadFree{ww}.U{1,3}{1}(jj);
-     	subplot(HeadFree{ww}.N{1,3},1,pp)  ; hold on ; xlim([0 10]) ; ylim(20*[-1 1])
-     	title([num2str(freq) ' Hz'],'FontSize',14,'FontWeight','bold')
+     	subplot(HeadFree{ww}.N{1,3},1,pp)  ; hold on ; xlim([0 10]) ; ylim(15*[-1 1])
+     	title([num2str(freq) ' Hz'],'FontSize',8,'FontWeight','bold')
         
         ax.L = gca;
         ax.L.YColor = [0 0 0];
         ax.L.YLabel.String = ['(' char(176) ')'];
-        ax.L.YLabel.FontSize = 12;
-        ax.L.FontSize = 12;
+        ax.L.YLabel.FontSize = 8;
+        ax.L.FontSize = 8;
         ax.L.XLim = [0 5];
+        ax.L.YTick = 15*[-1 0 1];
         if pp==HeadFree{ww}.N{1,3}
             ax.L.XLabel.String = 'Time (s)';
-            ax.L.XLabel.FontSize = 14;
+            ax.L.XLabel.FontSize = 8;
         else
             ax.L.XTickLabels = [];
         end

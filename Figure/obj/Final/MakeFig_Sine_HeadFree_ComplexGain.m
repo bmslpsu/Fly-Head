@@ -167,7 +167,7 @@ for jj = 1:nFreq
     rSTD = PolarSTD(Real{amp}(:,jj),Imag{amp}(:,jj),[REAL(amp,jj) IMAG(amp,jj)]);
 
     [h.std] = draw_ellipse([REAL(amp,jj) IMAG(amp,jj)], 2*rSTD, 0.5, 0, 90, cList(jj,:)); hold on
-    h.std{1}.FaceAlpha = 0.2;
+    h.std{1}.FaceAlpha = 0.5;
     for kk = 2:length(h.std)
        delete(h.std{kk}) 
     end
@@ -191,7 +191,6 @@ leg.Title.String = 'Frequency / Velocity';
 leg.Location = 'northwest';
 leg.Position = leg.Position + [-0.2 0 0 0];
 legend boxoff
-
 
 %% Complex Gain: Normalized Amplitude
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -453,32 +452,37 @@ legend boxoff
 %---------------------------------------------------------------------------------------------------------------------------------
 FIG = figure (6); clf
 FIG.Color = 'w';
-FIG.Position = [100 100 700 700];
+FIG.Units = 'inches';
+FIG.Position = [1 1 4 4];
 movegui(FIG,'center')
 FIG.Name = filename;
 for ww = 1:nAmp
    FIG.Name = [FIG.Name '_' num2str(Amp(ww))];  
 end
-[ax,h] = ComplexAxes(gains,-30); hold on
-ax.XLim = [-0.2 0.8];
+[ax,h] = ComplexAxes(gains,-15); hold on
+ax.XLim = [-0.4 0.8];
 ax.YLim = [-0.6 0.6];
-h.circle(end).Color = 'r';
-h.origin(1).Color = 'r';
-set(h.text,'Color','r')
+ax.XLim = [-0.04 0.1];
+ax.YLim = [-0.08 0.08];
+% h.circle(end).Color = 'r';
+% h.origin(1).Color = 'r';
+set(h.text,'Color','k')
 clear h
 
-for ww = 1:nAmp
-    for jj = 1:nFreq 
-        h.trial = scatter(Real{ww}(:,jj), Imag{ww}(:,jj), 40, 'o','MarkerEdgeColor','k',...
-            'MarkerFaceColor',cList(jj,:), 'MarkerFaceAlpha', 0.3, 'LineWidth', 0.5);
-    end
-end
+% for ww = 1:nAmp
+%     for jj = 1:nFreq 
+%         h.trial = scatter(Real{ww}(:,jj), Imag{ww}(:,jj), 15, 'o','MarkerEdgeColor','k',...
+%             'MarkerFaceColor',cList(jj,:), 'MarkerFaceAlpha', 0.3, 'LineWidth', 0.5);
+%     end
+% end
 
 for jj = 1:nFreq 
-    h.grand(jj) = plot(REAL(:,jj),IMAG(:,jj),'-o','Color',cList(jj,:),'MarkerSize',8,'LineWidth',3.5,...
+    h.grand(jj) = plot(REAL(:,jj),IMAG(:,jj),'-o','Color',cList(jj,:),'MarkerSize',5,'LineWidth',3.5,...
         'MarkerFaceColor','k','MarkerEdgeColor','none');
     uistack(h.grand(jj),'top')
-%     text(1.1*REAL(:,jj),1.1*IMAG(:,jj),num2strcell(Amp))
+    
+%     h.text = text(1.1*REAL(:,jj),1.1*IMAG(:,jj),num2strcell(Amp));
+%     set(h.text,'FontSize',8)
     
 %     for ww = 1:nAmp
 %         rSTD = PolarSTD(Real{ww}(:,jj),Imag{ww}(:,jj),[REAL(ww,jj) IMAG(ww,jj)]);

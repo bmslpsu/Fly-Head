@@ -15,7 +15,7 @@ HeadFree = load(fullfile(root,FILE{1}),'TRIAL','GRAND','U','N');
 %%
 clearvars -except HeadFree
 
-catIdx = 8;
+catIdx = 3;
 xIdx = 1;
 
 filename = 'SOS_HeadFree_pat2head_ComplexGain';
@@ -34,22 +34,6 @@ end
 
 Real        = real(CmplxGain);
 Imag        = imag(CmplxGain);
-CmplxGain   = Real + 1i*Imag;
-
-% cnd         = (Real<0) & (Imag>0);
-% Real(cnd)   = -Real(cnd);
-% Imag(cnd)   = -Imag(cnd);
-
-Gain        = abs(CmplxGain);
-Phase       = rad2deg(angle((CmplxGain)));
-
-GAIN        = mean(Gain,1);
-PHASE       = rad2deg(circ_mean(deg2rad(Phase),[],1));
-GAIN_STD    = std(Gain,[],1);
-PHASE_STD   = std(Phase,[],1);
-
-REAL        = mean(Real,1);
-IMAG        = mean(Imag,1);
 
 for jj = 1:nFreq
     for kk = 1:size(Real,1)
@@ -74,6 +58,23 @@ for jj = 1:nFreq
         end
     end
 end
+
+CmplxGain   = Real + 1i*Imag;
+
+% cnd         = (Real<0) & (Imag>0);
+% Real(cnd)   = -Real(cnd);
+% Imag(cnd)   = -Imag(cnd);
+
+Gain        = abs(CmplxGain);
+Phase       = rad2deg(angle((CmplxGain)));
+
+GAIN        = mean(Gain,1);
+PHASE       = rad2deg(circ_mean(deg2rad(Phase),[],1));
+GAIN_STD    = std(Gain,[],1);
+PHASE_STD   = std(Phase,[],1);
+
+REAL        = mean(Real,1);
+IMAG        = mean(Imag,1);
 
 % CMPLXGAIN   = REAL + 1i*IMAG;
 % GAIN        = abs(CMPLXGAIN);
@@ -112,7 +113,7 @@ for jj = 1:nFreq
     
     rSTD = PolarSTD(Real(:,jj),Imag(:,jj),[REAL(jj) IMAG(jj)]);
     
-	[h.std] = draw_ellipse([REAL(jj) IMAG(jj)], 3*rSTD, 0.5, 0, 90 - PHASE(jj), cList(jj,:)); hold on
+	[h.std] = draw_ellipse([REAL(jj) IMAG(jj)], 2*rSTD, 0.5, 0, 90 - PHASE(jj), cList(jj,:)); hold on
     h.std{1}.FaceAlpha = 0.4;
     for kk = 3:length(h.std)
        delete(h.std{kk})

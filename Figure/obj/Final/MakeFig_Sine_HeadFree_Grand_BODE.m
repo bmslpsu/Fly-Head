@@ -35,7 +35,7 @@ figNum = 1;
 
 FIG = figure (figNum); clf
 FIG.Color = 'w';
-FIG.Position = [100 100 800 700];
+FIG.Position = [100 100 600 600];
 movegui(FIG,'center')
 FIG.Name = filename;
 for ww = 1:nAmp
@@ -65,9 +65,9 @@ for ww = 1:nAmp
         GAIN(ww,jj)     = pat2head{jj}.IOBodeGain(:,xIdx);
         PHASE(ww,jj)    = rad2deg(pat2head{jj}.IOBodePhaseDiff(:,xIdx));
         
-        if PHASE(ww,jj)>10 && jj>=4
-            PHASE(ww,jj) = PHASE(ww,jj) - 360;
-        end
+%         if PHASE(ww,jj)>10 && jj>=4
+%             PHASE(ww,jj) = PHASE(ww,jj) - 360;
+%         end
         
     end
     

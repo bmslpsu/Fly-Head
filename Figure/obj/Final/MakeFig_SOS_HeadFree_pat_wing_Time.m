@@ -12,7 +12,7 @@ root = 'H:\DATA\Rigid_Data\';
 FILE = cellstr(FILE)';
 
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','GRAND','U','N');
-
+%%
 figNum = 1;
 catIdx = 3;
 xIdx = 1;
@@ -21,35 +21,39 @@ filename = 'SOS_HeadFree_pat_wing_Time';
 
 FIG = figure (figNum); clf
 FIG.Color = 'w';
-FIG.Position = [100 100 1200 400];
+FIG.Units = 'inches';
+FIG.Position = [1 1 8 2];
 movegui(FIG,'center')
 FIG.Name = filename;
 
-yyaxis left
-ax.L = gca; hold on
+ax.R = gca; hold on
+ax.R.YColor = 'g';
+ax.R.YAxisLocation = 'right';
+ax.R.FontSize = 8;
+ax.R.YLabel.String = ['(' char(176) ')'];
+ax.R.YLabel.FontSize = 8;
+ax.R.YLim = 15*[-1 1];
+ax.R.YTick = 15*[-1 0 1];
+ax.R.XLabel.String = 'Time (s)';
+ax.R.XLabel.Color = 'k';
+ax.R.XLabel.FontSize = 8;
+ax.R.XLim = [0 20];
+
+plot(HeadFree.TRIAL{1}{2,1}.Time,HeadFree.TRIAL{1}{2,1}.X(:,xIdx),'g','LineWidth',2)
+
+ax.L = axes; hold on
 ax.L.YColor = 'k';
-ax.L.FontSize = 12;
-ax.L.YLabel.String = ['Head (' char(176) ')'];
-ax.L.YLabel.FontSize = 14;
+ax.L.FontSize = 8;
+ax.L.YLabel.String = '\Delta WBA (V)';
+ax.L.YLabel.FontSize = 8;
 ax.L.YLim = 2*[-1 1];
-ax.L.XLabel.String = 'Time (s)';
-ax.L.XLabel.Color = 'k';
-ax.L.XLabel.FontSize = ax.L.YLabel.FontSize;
-ax.L.XLim = [0 20];
+ax.L.XLabel.FontSize = 8;
+ax.L.XLim = ax.R.XLim;
+ax.L.Color = 'none';
+ax.L.Position = ax.R.Position;
+ax.L.XColor = 'none';
 
 PlotPatch(HeadFree.GRAND{1,catIdx}.Mean{2}{6}(:,xIdx),HeadFree.GRAND{1,catIdx}.STD{2}{6}(:,xIdx),...
     HeadFree.GRAND{1,catIdx}.Mean{2}{5},3, HeadFree.N{1,1}, 'r', [0.4 0.4 0.6], 0.5, 2);
-
-yyaxis right
-ax.R = gca; hold on
-ax.R.YColor = 'g';
-ax.R.FontSize = ax.L.FontSize;
-ax.R.YLabel.String = ['Stimulus (' char(176) ')'];
-ax.R.YLabel.FontSize = ax.L.YLabel.FontSize;
-ax.R.YLim = 20*[-1 1];
-ax.R.XLabel.FontSize = ax.R.YLabel.FontSize;
-ax.R.XLim = ax.L.XLim;
-
-plot(HeadFree.TRIAL{1}{2,1}.Time,HeadFree.TRIAL{1}{2,1}.X(:,xIdx),'g','LineWidth',2)
 
 end

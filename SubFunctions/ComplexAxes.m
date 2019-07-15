@@ -32,9 +32,7 @@ hold on
 axis square
 box on
 ax.Color = backColor;
-% ax.Colormap = cmap;
 ax.FontSize = 8;
-% ax.Title.String = 'Complex Gain';
 ax.YLabel.String = 'Img';
 ax.YLabel.FontSize = 8;
 ax.XLabel.String = 'Real';
