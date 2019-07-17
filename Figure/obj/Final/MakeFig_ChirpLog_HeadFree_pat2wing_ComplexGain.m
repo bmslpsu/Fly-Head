@@ -1,5 +1,5 @@
-function [FIG] = MakeFig_ChirpLog_HeadFree_pat2head_ComplexGain()
-%% MakeFig_ChirpLog_HeadFree_pat2head_ComplexGain:
+function [FIG] = MakeFig_ChirpLog_HeadFree_pat2wing_ComplexGain()
+%% MakeFig_ChirpLog_HeadFree_pat2wing_ComplexGain:
 %   INPUTS:
 %       -
 %   OUTPUTS:
@@ -12,10 +12,10 @@ root = 'H:\DATA\Rigid_Data\';
 CHIRP = cellstr(CHIRP)';
 
 HeadFree = load(fullfile(root,CHIRP{1}),'TRIAL','U','N');
-
+%%
 clearvars -except HeadFree
 filename = 'ChirpLog_HeadFree_pat2head_ComplexGain';
-catIdx = 5;
+catIdx = 8;
 xIdx = 1;
 
 fIdx        = 11:200;
@@ -75,7 +75,6 @@ velIdx = fliplr([1 23 44 64 length(fIdx)]);
 cmap = flipud(jet(length(fIdx)));
 
 gains = 0.05:0.05:0.2;
-gains = 0.2:0.2:1;
 
 %% Complex Gain: one amplitude
 %---------------------------------------------------------------------------------------------------------------------------------

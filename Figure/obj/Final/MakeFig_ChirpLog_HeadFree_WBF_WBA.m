@@ -7,19 +7,81 @@ function [FIG] = MakeFig_ChirpLog_HeadFree_WBF_WBA()
 %---------------------------------------------------------------------------------------------------------------------------------
 root = 'H:\DATA\Rigid_Data\';
 
-[FILE,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
+[Free,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
     'Select head angle trials', root, 'MultiSelect','off');
-FILE = cellstr(FILE)';
+Free = cellstr(Free)';
 
-HeadFree = load(fullfile(root,FILE{1}),'TRIAL','GRAND','U','N');
+[Fixed,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
+    'Select head angle trials', root, 'MultiSelect','off');
+Fixed = cellstr(Fixed)';
 
-clearvars -except HeadFree Amp nAmp
+HeadFree = load(fullfile(root,Free{1}),'TRIAL','GRAND','U','N');
+HeadFixed = load(fullfile(root,Fixed{1}),'TRIAL','GRAND','U','N');
 
-catIdx = 3;
+%%
+clearvars -except HeadFree HeadFixed
+xIdx = 1;
+head_free = 3;
+head_fixed = 2;
 
 filename = 'MakeFig_ChirpLog_HeadFree_WBF_WBA';
 
-%% WBF
+nAmp = HeadFree.N{1,3};
+
+WBF = cell(nAmp,2);
+
+for jj = 1:nAmp
+    pp = 1;
+    for kk = 1:HeadFree.N.fly
+        for ii = 1:size(HeadFree.TRIAL{kk,jj},1)
+            WBF{jj,1}(pp,1) = median(HeadFree.TRIAL{kk,jj}{ii,head_free}.WBF(:,xIdx));
+            WBF{jj,1}(pp,2) = jj;
+            pp = pp + 1;
+        end
+    end
+end
+
+for jj = 1:nAmp
+    pp = 1;
+    for kk = 1:HeadFixed.N.fly
+        for ii = 1:size(HeadFixed.TRIAL{kk,jj},1)
+            WBF{jj,2}(pp,1) = median(HeadFixed.TRIAL{kk,jj}{ii,head_fixed}.WBF(:,xIdx));
+            WBF{jj,2}(pp,2) = jj + 10;
+            pp = pp + 1;
+        end
+    end
+end
+
+
+%% WBF Box Plot
+FIG = figure (1); clf
+FIG.Color = 'w';
+FIG.Units = 'inches';
+FIG.Position = [2 2 3 2];
+FIG.Name = filename;
+FIG.PaperPositionMode = 'auto';
+movegui(FIG,'center')
+
+amp = 1;
+
+DATA = [WBF{amp,1};WBF{amp,2}];
+
+bx = boxplot(DATA(:,1),DATA(:,2),'Labels',{'Free', 'Fixed'},'Width',0.5,'Symbol','','Whisker',2);
+
+ax = gca;
+ax.FontSize = 8;
+ax.YLim = [210 270];
+ylabel('WBF (Hz)','FontSize',8)
+h = get(bx(5,:),{'XData','YData'});
+for kk = 1:size(h,1)
+   patch(h{kk,1},h{kk,2},[0 0 0.5]);
+end
+set(findobj(gcf,'tag','Median'), 'Color', 'w');
+set(findobj(gcf,'tag','Box'), 'Color', 'k');
+set(findobj(gcf,'tag','Upper Whisker'), 'Color', 'k');
+ax.Children = ax.Children([end 1:end-1]);
+
+%% WBF Raw
 FIG = figure (1); clf
 FIG.Color = 'w';
 FIG.Position = [100 100 800 400];
@@ -50,7 +112,7 @@ for jj = 1:HeadFree.N.Amp
 end
 uistack(h.grand,'top')
 
-%% WBA
+%% WBA Raw
 FIG = figure (2); clf
 FIG.Color = 'w';
 FIG.Position = [100 100 800 400];

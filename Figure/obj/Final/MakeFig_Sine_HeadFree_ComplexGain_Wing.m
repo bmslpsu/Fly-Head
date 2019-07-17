@@ -1,4 +1,4 @@
-function [FIG] = MakeFig_Sine_HeadFree_ComplexGain()
+function [FIG] = MakeFig_Sine_HeadFree_ComplexGain_Wing()
 %% MakeFig_Sine_HeadFree_ComplexGain:
 %   INPUTS:
 %       -
@@ -22,13 +22,14 @@ HeadFree = cell(nAmp,1);
 for ww = 1:nAmp
     HeadFree{ww} = load(fullfile(root,FILES{ww}),'TRIAL','GRAND','U','N');
 end
+
 %% Complex Gain Calculations
 %---------------------------------------------------------------------------------------------------------------------------------
 clearvars -except nAmp Amp HeadFree
 
 filename = 'Sine_HeadFree_ComplexGain';
 
-catIdx = 5;
+catIdx = 8;
 xIdx = 1;
 
 Freq = HeadFree{1}.U{1,3}{1}';
@@ -66,14 +67,21 @@ for ww = 1:nAmp
                 R = real(HeadFree{ww}.TRIAL{kk,jj}{ii,catIdx}.IOCmplxGain(:,xIdx));
                 I = imag(HeadFree{ww}.TRIAL{kk,jj}{ii,catIdx}.IOCmplxGain(:,xIdx));
                 
-                if jj==1 && I<-0.05
-                    I = -I;
-                    R = -R;
+                if jj==1 && I<0
+                    I = -(I);
+                    R = -(R);
                 elseif jj==5 && (R<0)
-                 	I = -I;
-                    R = -R;
+                 	I = -(I);
+                    R = -(R);
+                elseif jj==2 && (I<-0.02)
+                 	I = -(I);
+                    R = -(R);
                 end
                 
+                if jj==2 && (I<0 && R<0)
+                 	I = -(I);
+                    R = -(R);
+                end
                 
                 Real{ww}(pp,jj) = R;
                 Imag{ww}(pp,jj) = I;
@@ -140,7 +148,6 @@ GAIN_NORM_STD       = nanstd(Gain_Norm,[],1);
 PHASE_NORM_STD      = nanstd(Phase_Norm,[],1);
 
 gains = 0.05:0.05:0.1;
-gains = 0.2:0.2:1;
 
 %% Complex Gain: one amplitude
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -169,8 +176,7 @@ for jj = 1:nFreq
 
     [h.std] = draw_ellipse([REAL(amp,jj) IMAG(amp,jj)], 2*rSTD, 0.5, 0, 90, cList(jj,:)); hold on
     h.std{1}.FaceAlpha = 0.5;
-    h.std{2}.LineWidth = 1;
-    for kk = 3:length(h.std)
+    for kk = 2:length(h.std)
        delete(h.std{kk}) 
     end
 
@@ -405,7 +411,7 @@ for ww = 1:nAmp
         ax3.XLabel.FontSize = ax1.YLabel.FontSize;
 end
 
-%% Complex Gain: BODE - one amplitude
+%% Complex Gain: Head - one amplitude
 %---------------------------------------------------------------------------------------------------------------------------------
 FIG = figure (11); clf
 FIG.Color = 'w';
@@ -429,7 +435,7 @@ ax1 = subplot(2,1,1) ; hold on
 
 %     errorbar(Freq,GAIN(amp,:),2*GAIN_STD(amp,:),'-b','LineWidth',2)
     
-	[~,h.gain] = PlotPatch(GAIN(amp,:), GAIN_STD(amp,:), Freq, 3, HeadFree{amp}.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
+	[~,h.gain] = PlotPatch(GAIN(amp,:), GAIN_STD(amp,:), Freq, 3, HeadFree{amp}.N{1,1}, 'r', [0.4 0.4 0.6], 0.5, 2);
     h.gain.Marker = '.';
     h.gain.MarkerSize = 20;
     
@@ -447,7 +453,7 @@ ax2 = subplot(2,1,2) ; hold on
 
 %     errorbar(Freq,PHASE(amp,:),2*PHASE_STD(amp,:),'-b','LineWidth',2)
     
-	[~,h.gain] = PlotPatch(PHASE(amp,:), PHASE_STD(amp,:), Freq, 3, HeadFree{amp}.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
+	[~,h.gain] = PlotPatch(PHASE(amp,:), PHASE_STD(amp,:), Freq, 3, HeadFree{amp}.N{1,1}, 'r', [0.4 0.4 0.6], 0.5, 2);
     h.gain.Marker = '.';
     h.gain.MarkerSize = 20;
     

@@ -23,7 +23,7 @@ HeadFree = cell(nAmp,1);
 for ww = 1:nAmp
     HeadFree{ww} = load(fullfile(root,FILES{ww}),'GRAND','U','N');
 end
-%%
+
 figNum = 1;
 filename = 'Sine_HeadFree_head2wing_TimeDiff'; % name of figure to save
 catIdx = 7; % pat2head

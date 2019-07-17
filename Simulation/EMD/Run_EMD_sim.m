@@ -50,7 +50,7 @@ for jj = 1:nVel
     [mm(jj),idx] = max(EMD(:,jj));
     tmp(jj) = tempFreq(idx,jj);
 end
-plot([0,tmp],[0,mm],'o-k','LineWidth',2)
+% plot([0,tmp],[0,mm],'o-k','LineWidth',2)
 xlim([0 15])
 
 

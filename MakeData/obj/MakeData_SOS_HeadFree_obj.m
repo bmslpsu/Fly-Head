@@ -33,7 +33,7 @@ ALL 	= cell([N{1,end},10]); % cell array to store all data objects
 TRIAL  	= cell(N{1,1},1);
 n.catg  = size(N,2) - 1;
 pp = 0;
-span = 1:2100;
+span = 1:2000;
 tt = linspace(0,20,2000)';
 for kk = 1:N{1,end}
     disp(kk)
@@ -41,22 +41,14 @@ for kk = 1:N{1,end}
     data = [];
 	load(fullfile(PATH.daq, FILES{kk}),'data','t_p'); % load pattern x-position
     load(fullfile(PATH.ang, FILES{kk}),'hAngles','t_v'); % load head angles % time arrays
-    %-----------------------------------------------------------------------------------------------------------------------------
-    % Check WBF
-	wing.f = 100*(data(:,6)); % wing beat frequency
-    if min(wing.f)<150 || mean(wing.f)<180 % check WBF, if too low then don't use trial
-        fprintf('Low WBF: Fly %i Trial %i \n',D{kk,1},D{kk,2})
-        continue
-    else
-        pp = pp + 1; % set next index to store data
-    end
-    %-----------------------------------------------------------------------------------------------------------------------------
+	%-----------------------------------------------------------------------------------------------------------------------------
     % Get head data
     head.Time = t_v(span);
-    head.Pos = hAngles - mean(hAngles);
-    Head = Fly(head.Pos(span),head.Time,20,IOFreq,tt); % head object
-  	%-----------------------------------------------------------------------------------------------------------------------------
+    head.Pos = hAngles(span) - mean(hAngles(span));
+    Head = Fly(head.Pos,head.Time,40,IOFreq); % head object
+	%-----------------------------------------------------------------------------------------------------------------------------
     % Get wing data from DAQ
+	wing.f          = medfilt1(100*data(:,6),3); % wing beat frequency [Hz]
     wing.Time       = t_p; % wing time [s]
     wing.Fs         = 1/mean(diff(wing.Time)); % sampling frequency [Hz]
     wing.Fc         = 20; % cutoff frequency [Hz]
@@ -65,7 +57,25 @@ for kk = 1:N{1,end}
     wing.Right      = filtfilt(b,a,(data(:,5))); % right wing [V]
     wing.Pos        = wing.Left - wing.Right; % dWBA (L-R) [V]
   	wing.Pos        = wing.Pos - mean(wing.Pos); % subtract mean [V]
-   	Wing = Fly(wing.Pos,t_p,20,IOFreq,tt); % wing object
+   	Wing            = Fly(wing.Pos,t_p,40,IOFreq,Head.Time); % wing object
+    
+    wing.f          = interp1(wing.Time,wing.f,Head.Time);
+   	wing.Left     	= interp1(wing.Time,wing.Left,Head.Time);
+   	wing.Right     	= interp1(wing.Time,wing.Right,Head.Time);
+
+    Wing.WBF        = wing.f;
+    Wing.WBA        = [wing.Left,wing.Right,wing.Left + wing.Right];
+    %-----------------------------------------------------------------------------------------------------------------------------
+    % Check WBF & WBA
+    if min(wing.f)<150 || mean(wing.f)<180 % check WBF, if too low then don't use trial
+        fprintf('Low WBF: Fly %i Trial %i \n',D{kk,1},D{kk,2})
+        continue
+    elseif any(wing.Left>10.6) || any(wing.Right>10.6)
+        fprintf('WBA out of range: Fly %i Trial %i \n',D{kk,1},D{kk,2})
+        continue
+    else
+        pp = pp + 1; % set next index to store data
+    end
 	%-----------------------------------------------------------------------------------------------------------------------------
 	% Get pattern data from DAQ
     pat.Time	= t_p;
@@ -125,6 +135,6 @@ clear ii
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
 save(['H:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
-    'ALL','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
+    'TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
 disp('SAVING DONE')
 end

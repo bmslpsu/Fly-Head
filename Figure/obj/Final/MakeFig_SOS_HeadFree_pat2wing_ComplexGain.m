@@ -1,4 +1,4 @@
-function [FIG] = MakeFig_SOS_HeadFree_pat2head_ComplexGain()
+function [FIG] = MakeFig_SOS_HeadFree_pat2w_ComplexGain()
 %% MakeFig_SOS_HeadFree_pat2head_ComplexGain:
 %   INPUTS:
 %       -
@@ -12,10 +12,10 @@ root = 'H:\DATA\Rigid_Data\';
 FILE = cellstr(FILE)';
 
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','GRAND','U','N');
-%%
+
 clearvars -except HeadFree
 
-catIdx = 5;
+catIdx = 8;
 xIdx = 1;
 
 filename = 'SOS_HeadFree_pat2head_ComplexGain';
@@ -37,7 +37,22 @@ Imag        = imag(CmplxGain);
 
 for jj = 1:nFreq
     for kk = 1:size(Real,1)
-        if (jj==5) && ( Real(kk,jj)<0 && Imag(kk,jj)>0 )
+        if (jj==5 || jj==4 || jj==3 || jj==2) && ( Real(kk,jj)>0 && Imag(kk,jj)>0 )
+            Imag(kk,jj) = -Imag(kk,jj);
+            Real(kk,jj) = -Real(kk,jj);
+        end
+        
+        if jj==5 && ( Real(kk,jj)>0 && Imag(kk,jj)<0 )
+            Imag(kk,jj) = Imag(kk,jj);
+            Real(kk,jj) = -Real(kk,jj);
+        end
+        
+        if (jj==1 || jj ==2 || jj==3 || jj==4) && ( Real(kk,jj)<0 && Imag(kk,jj)>0 )
+            Imag(kk,jj) = -Imag(kk,jj);
+            Real(kk,jj) = -Real(kk,jj);
+        end
+        
+        if (jj==1 || jj ==2) && ( Real(kk,jj)<0 && Imag(kk,jj)<0 )
             Imag(kk,jj) = -Imag(kk,jj);
             Real(kk,jj) = -Real(kk,jj);
         end
@@ -67,7 +82,8 @@ IMAG        = mean(Imag,1);
 
 cList = prism(nFreq);
 
-gains = 0.2:0.2:1;
+gains = 0.05:0.05:0.2;
+% gains = 0.2:0.2:1;
 
 %% Complex Gain
 %---------------------------------------------------------------------------------------------------------------------------------

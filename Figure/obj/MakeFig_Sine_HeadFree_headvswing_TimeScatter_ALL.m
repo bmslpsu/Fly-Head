@@ -5,7 +5,7 @@ function [FIG] = MakeFig_Sine_HeadFree_headvswing_TimeScatter_ALL()
 %   OUTPUTS:
 %       FIG     :   figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'F:\DATA\Rigid_Data\';
+root = 'H:\DATA\Rigid_Data\';
 
 % Select files
 [FILES,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -92,7 +92,4 @@ for ww = 1:nAmp
     end
 end
 
-figdir = 'F:\DATA\Rigid_Data\FIGURE\';
-saveas(FIG,[figdir FIG.Name '.fig']); % save .fig file
-% print (FIG,[figdir FIG.Name],'-dpdf','-r600','-bestfit') % save as publication quality .pdf
 end

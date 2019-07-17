@@ -18,7 +18,7 @@ end
 % COMPUTE EMD RESPONSE
 
 % initializations for HR model
-samp_rate = 160;
+samp_rate = 1000;
 tau = 0.035;
 h = 1/samp_rate;
 % discrete low-pass filter parameters
@@ -36,8 +36,8 @@ for kk = 1:length(eye_filt) % for each time point
     InMat = eye_filt(kk, :);
     FiltMat = a*(InMat) + (1-a)*FiltMat_1; % discrete low-pass filter
     FiltMat_1 = FiltMat;
-    % HR_Motion = Va(t-tau) * Vb - Vb(t-tau) * Va
-    HR_Motion = (FiltMat(1:end-1).*InMat(2:end) - FiltMat(2:end).*InMat(1:end-1)); % delay and correlate
+    HR_Motion = Va(t-tau) * Vb - Vb(t-tau) * Va;
+%     HR_Motion = (FiltMat(1:end-1).*InMat(2:end) - FiltMat(2:end).*InMat(1:end-1)); % delay and correlate
     
     EMD_ALL_filt(kk,1:end-1) = HR_Motion; 
     

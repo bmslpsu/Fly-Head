@@ -1,5 +1,5 @@
-function [FIG] = MakeFig_Sine_HeadFree_ComplexGain()
-%% MakeFig_Sine_HeadFree_ComplexGain:
+function [FIG] = MakeFig_Sine_pat2wing_ComplexGain()
+%% MakeFig_Sine_pat2wing_ComplexGain:
 %   INPUTS:
 %       -
 %   OUTPUTS:
@@ -22,13 +22,14 @@ HeadFree = cell(nAmp,1);
 for ww = 1:nAmp
     HeadFree{ww} = load(fullfile(root,FILES{ww}),'TRIAL','GRAND','U','N');
 end
+
 %% Complex Gain Calculations
 %---------------------------------------------------------------------------------------------------------------------------------
 clearvars -except nAmp Amp HeadFree
 
 filename = 'Sine_HeadFree_ComplexGain';
 
-catIdx = 5;
+catIdx = 6;
 xIdx = 1;
 
 Freq = HeadFree{1}.U{1,3}{1}';
@@ -66,14 +67,28 @@ for ww = 1:nAmp
                 R = real(HeadFree{ww}.TRIAL{kk,jj}{ii,catIdx}.IOCmplxGain(:,xIdx));
                 I = imag(HeadFree{ww}.TRIAL{kk,jj}{ii,catIdx}.IOCmplxGain(:,xIdx));
                 
-                if jj==1 && I<-0.05
+                if (jj==1 || jj==2) && I<-0.01
                     I = -I;
                     R = -R;
-                elseif jj==5 && (R<0)
+                elseif (jj==5) && (I>0)
                  	I = -I;
                     R = -R;
                 end
                 
+              	if (jj==2) && (R<0 && I>0)
+                    I = -I;
+                    R = -R;
+                end
+                
+                if (jj==2) && (R<0.06 && I<-0.04)
+                    I = -I;
+                    R = -R;
+                end
+                
+                if (jj==3) && (R<0 && I<0)
+                    I = -I;
+                    R = -R;
+                end
                 
                 Real{ww}(pp,jj) = R;
                 Imag{ww}(pp,jj) = I;
@@ -140,7 +155,6 @@ GAIN_NORM_STD       = nanstd(Gain_Norm,[],1);
 PHASE_NORM_STD      = nanstd(Phase_Norm,[],1);
 
 gains = 0.05:0.05:0.1;
-gains = 0.2:0.2:1;
 
 %% Complex Gain: one amplitude
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -150,6 +164,7 @@ FIG.Units = 'inches';
 FIG.Position = [1 1 4 4];
 movegui(FIG,'center')
 FIG.Name = filename;
+
 amp = 3;
 
 [ax,h] = ComplexAxes(gains);
@@ -407,7 +422,7 @@ end
 
 %% Complex Gain: BODE - one amplitude
 %---------------------------------------------------------------------------------------------------------------------------------
-FIG = figure (11); clf
+FIG = figure (12); clf
 FIG.Color = 'w';
 FIG.Units = 'inches';
 FIG.Position = [1 1 4 4];
@@ -419,7 +434,7 @@ amp = 3;
 ax1 = subplot(2,1,1) ; hold on
     ax1.FontSize = 8;
     ax1.XLim = [0 12.5];
-    ax1.YLim = [0 1.0];
+    ax1.YLim = [0 0.3];
     ax1.XLabel.FontSize = 8;
     ax1.XLabel.Color = 'w';
     ax1.YLabel.String = ['Gain (' char(176) '/' char(176) ')'];
@@ -429,7 +444,7 @@ ax1 = subplot(2,1,1) ; hold on
 
 %     errorbar(Freq,GAIN(amp,:),2*GAIN_STD(amp,:),'-b','LineWidth',2)
     
-	[~,h.gain] = PlotPatch(GAIN(amp,:), GAIN_STD(amp,:), Freq, 3, HeadFree{amp}.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
+	[~,h.gain] = PlotPatch(GAIN(amp,:), GAIN_STD(amp,:), Freq, 3, HeadFree{amp}.N{1,1}, 'c', [0.4 0.4 0.6], 0.5, 2);
     h.gain.Marker = '.';
     h.gain.MarkerSize = 20;
     
@@ -447,7 +462,7 @@ ax2 = subplot(2,1,2) ; hold on
 
 %     errorbar(Freq,PHASE(amp,:),2*PHASE_STD(amp,:),'-b','LineWidth',2)
     
-	[~,h.gain] = PlotPatch(PHASE(amp,:), PHASE_STD(amp,:), Freq, 3, HeadFree{amp}.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
+	[~,h.gain] = PlotPatch(PHASE(amp,:), PHASE_STD(amp,:), Freq, 3, HeadFree{amp}.N{1,1}, 'c', [0.4 0.4 0.6], 0.5, 2);
     h.gain.Marker = '.';
     h.gain.MarkerSize = 20;
     
@@ -489,7 +504,7 @@ for jj = 1:nFreq
     ax.XLabel.String = ['Amplitude (' char(176) ')'];
     ax.XLabel.FontSize = ax.YLabel.FontSize;
     ax.XLim = [7 19];
-    ax.YLim = [0 1];
+    ax.YLim = [0 0.2];
     ax.XTick = Amp;
     
     h.freq(jj) = errorbar(Amp,GAIN(:,jj),2*GAIN_STD(:,jj),'-','Color',cmap(jj,:),'LineWidth',2);
@@ -527,12 +542,8 @@ for ww = 1:nAmp
    FIG.Name = [FIG.Name '_' num2str(Amp(ww))];  
 end
 [ax,h] = ComplexAxes(gains,-15); hold on
-ax.XLim = [-0.4 0.8];
-ax.YLim = [-0.6 0.6];
-% ax.XLim = [-0.04 0.1];
-% ax.YLim = [-0.08 0.08];
-% h.circle(end).Color = 'r';
-% h.origin(1).Color = 'r';
+ax.XLim = [-0.04 0.1];
+ax.YLim = [-0.08 0.08];
 set(h.text,'Color','k')
 clear h
 

@@ -68,7 +68,7 @@ for kk = 1:N.file
         continue
     elseif any(wing.Left>10.6) || any(wing.Right>10.6)
         fprintf('WBA out of range: Fly %i Trial %i \n',D{kk,1},D{kk,2})
-        continue
+%         continue
     else
         pp = pp + 1; % set next index to store data
     end

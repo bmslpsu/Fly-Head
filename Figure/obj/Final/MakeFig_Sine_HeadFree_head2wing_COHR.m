@@ -1,5 +1,5 @@
-function [FIG] = MakeFig_Sine_HeadFree_pat2head_COHR()
-%% MakeFig_Sine_HeadFree_pat2head_COHR:
+function [FIG] = MakeFig_Sine_HeadFree_head2wing_COHR()
+%% MakeFig_Sine_HeadFree_head2wing_COHR:
 %   INPUTS:
 %       -
 %   OUTPUTS:
@@ -25,8 +25,9 @@ end
 %%
 figNum = 1;
 filename = 'Sine_HeadFree_pat2head_COHR';
-catIdx = 5;
+head2wing = 7;
 xIdx = 1;
+CC = prism(HeadFree{1}.N{1,3});
 
 % Fly Stats
 FREQ.FlyMean    = cell(nAmp,1);
@@ -38,13 +39,13 @@ COHR.GrandSTD	= cell(nAmp,1);
 for ww = 1:nAmp
     for jj = 1:HeadFree{ww}.N{1,3}
         for kk = 1:HeadFree{ww}.N{1,1}
-            FREQ.FlyMean{ww}(jj,kk)     = HeadFree{ww}.FLY{jj}{kk,catIdx}.Mean{4};
-            COHR.FlyMean{ww}(jj,kk)     = HeadFree{ww}.FLY{jj}{kk,catIdx}.Mean{9}(:,xIdx);
-            COHR.FlySTD{ww}(jj,kk)      = HeadFree{ww}.FLY{jj}{kk,catIdx}.STD{9}(:,xIdx);
+            FREQ.FlyMean{ww}(jj,kk)     = HeadFree{ww}.FLY{jj}{kk,head2wing}.Mean{4};
+            COHR.FlyMean{ww}(jj,kk)     = HeadFree{ww}.FLY{jj}{kk,head2wing}.Mean{9}(:,xIdx);
+            COHR.FlySTD{ww}(jj,kk)      = HeadFree{ww}.FLY{jj}{kk,head2wing}.STD{9}(:,xIdx);
         end
-        FREQ.GrandMean{ww}(jj,1) 	= HeadFree{ww}.GRAND{jj,catIdx}.Mean{2}{4};
-        COHR.GrandMean{ww}(jj,1)   	= HeadFree{ww}.GRAND{jj,catIdx}.Mean{2}{9}(:,xIdx);
-        COHR.GrandSTD{ww}(jj,1)   	= HeadFree{ww}.GRAND{jj,catIdx}.STD{2}{9}(:,xIdx);
+        FREQ.GrandMean{ww}(jj,1) 	= HeadFree{ww}.GRAND{jj,head2wing}.Mean{2}{4};
+        COHR.GrandMean{ww}(jj,1)   	= HeadFree{ww}.GRAND{jj,head2wing}.Mean{2}{9}(:,xIdx);
+        COHR.GrandSTD{ww}(jj,1)   	= HeadFree{ww}.GRAND{jj,head2wing}.STD{2}{9}(:,xIdx);
     end
 end
 
@@ -69,19 +70,12 @@ ax.YLabel.FontSize = 8;
 ax.XLim = [0 13];
 ax.XLabel.String = 'Frequency (Hz)';
 ax.XLabel.FontSize = ax.YLabel.FontSize;
-
-CC = prism(HeadFree{ww}.N {1,3});
+clear h
 for ww = 1
     for jj = 1:HeadFree{ww}.N {1,3}
-        PlotPatch(HeadFree{ww}.GRAND{jj,5}.Mean{1}{7}(:,xIdx), HeadFree{ww}.GRAND{jj,5}.STD{1}{7}(:,xIdx),...
-            HeadFree{ww}.GRAND{jj,5}.Mean{1}{8}, 2, HeadFree{ww}.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 1);
-        
-        PlotPatch(HeadFree{ww}.GRAND{jj,8}.Mean{1}{7}(:,xIdx), HeadFree{ww}.GRAND{jj,8}.STD{1}{7}(:,xIdx),...
-            HeadFree{ww}.GRAND{jj,8}.Mean{1}{8}, 2, HeadFree{ww}.N{1,1}, 'r', [0.4 0.4 0.6], 0.5, 1);
-%         plot(HeadFree{ww}.GRAND{jj,catIdx}.Mean{1}{8},HeadFree{ww}.GRAND{jj,catIdx}.Mean{1}{7}(:,xIdx),'Color',CC(jj,:),...
-%             'LineWidth',1)
+        [~,h(jj)] = PlotPatch(HeadFree{ww}.GRAND{jj,head2wing}.Mean{1}{7}(:,xIdx), HeadFree{ww}.GRAND{jj,head2wing}.STD{1}{7}(:,xIdx),...
+            HeadFree{ww}.GRAND{jj,head2wing}.Mean{1}{8}, 2, HeadFree{ww}.N{1,1}, CC(jj,:), [0.4 0.4 0.6], 0.5, 2);
     end
-% 	errorbar(FREQ.GrandMean{ww},COHR.GrandMean{ww},1*COHR.GrandSTD{ww},'-or','LineWidth',3)
 end
-
+uistack(h,'top')
 end
