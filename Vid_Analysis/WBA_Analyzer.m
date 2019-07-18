@@ -2,32 +2,41 @@
 %---------------------------------------------------------------------------------------------------------------------------------
 clear;close all;clc
 
-root = 'H:\EXPERIMENTS\Experiment_SOS_v2\';
-[FILES, PATH] = uigetfile({'*.mat', 'DAQ-files'},'Select files', root, 'MultiSelect','on');
-FILES = cellstr(FILES)';
-
-nTrial = length(FILES); % total # of trials
+root = 'Q:\Box Sync\Research\';
+[D,I,N,U,T,FILES,PATH] = GetFileData(root);
 
 %% Load video data & run tracking software %%
 %---------------------------------------------------------------------------------------------------------------------------------
+prev = 0;
+WBA = nan(N.file,3);
+for kk = 1:N.file
+    load([PATH FILES{kk}],'vidData')
+    vid = squeeze(vidData);
+    dim = size(vid);
+    med = median(vid,3);
+    
+    if (I.fly(kk) - prev)~=0
+        disp('Making Mask...')
+        [Mask] = MakeWingMask(med);
+        close all
+    end
+    prev = I.fly(kk);
 
-load([PATH FILES{1}],'vidData')
+    [Wing] = WingTracker_Edge(med, Mask, 0.35, true);
+    
+    beep on
+    for jj = 1:5
+        beep; pause (0.5)
+    end
+    pause
 
-vid = squeeze(vidData);
-dim = size(vid);
-med = median(vid,3);
-%%
-FIG = figure (1) ; clf
-FIG.Color = [0.2 0.2 0.2];
-FIG.Units = 'inches';
-ax = gca;
-imshow(med)
-axis([0 dim(2) 0 dim(1)])
-axis equal
-FIG.Position = [3 3 6 4];
+    WBA(kk,1) = Wing.L;
+    WBA(kk,2) = Wing.R;
+    
+end
+close all
+WBA(:,3) = WBA(:,1) + WBA(:,2);
 
-[Mask] = MakeWingMask(med);
 
-%%
-clc
-[Wing] = WingTracker_Edge(med,Mask);
+
+
