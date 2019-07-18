@@ -27,10 +27,10 @@ end
 EMD_ALL = nan(length(Pos), num_receptors);
 Pattern_ALL = nan(length(Pos), 96); % 96-pixel column
 % Eye_ALL = nan(length(Pos), num_receptors);
-Eye_ALL = nan(280, num_receptors);
+Eye_ALL = nan(length(Pos), num_receptors);
 
 mm = 1;
-for jj = 1:280
+for jj = 1:length(Pos)
     
 	if showplot == 1
         H = figure(50); cla; clf;
