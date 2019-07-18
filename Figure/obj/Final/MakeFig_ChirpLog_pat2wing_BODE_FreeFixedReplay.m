@@ -24,7 +24,6 @@ HeadFixed   = load(fullfile(root,Fixed{1}),'GRAND','U','N');
 HeadReplay  = load(fullfile(root,Replay{1}),'GRAND','U','N');
 
 %%
-
 clearvars -except HeadFree HeadFixed HeadReplay
 
 filename = 'ChirpLog_HeadFree_pat2head_BODE_ALL_new';
@@ -119,8 +118,8 @@ ax1 = subplot(2,1,1);
     [~,h.fixed] = PlotPatch(HeadFixed.GAIN, HeadFixed.GSTD, HeadFree.FREQ,...
                         2,HeadFixed.N{1,1},[0.4 0 0.8],[0.4 0.4 0.6],0.5,2);
 	
-%     [~,h.replay] = PlotPatch(HeadReplay.GAIN, HeadReplay.GSTD, HeadFree.FREQ,...
-%                         2,HeadReplay.N{1,1},'y',[0.4 0.4 0.6],0.5,2);
+    [~,h.replay] = PlotPatch(HeadReplay.GAIN, HeadReplay.GSTD, HeadFree.FREQ,...
+                        2,HeadReplay.N{1,1},'y',[0.4 0.4 0.6],0.5,2);
 	
   	uistack([h.stim2wing h.err2wing],'top')
 
@@ -152,8 +151,8 @@ ax2 = subplot(2,1,2);
     [~,h.fixed] = PlotPatch(HeadFixed.PHASE, HeadFixed.PSTD,HeadFree.FREQ,...
                         2, HeadFixed.N{1,1}, [0.4 0 0.8], [0.4 0.4 0.6], 0.5, 2);
     
-%     [~,h.replay] = PlotPatch(HeadReplay.PHASE, HeadReplay.PSTD,HeadFree.FREQ,...
-%                         2, HeadReplay.N{1,1}, 'y', [0.4 0.4 0.6], 0.5, 2);
+    [~,h.replay] = PlotPatch(HeadReplay.PHASE, HeadReplay.PSTD,HeadFree.FREQ,...
+                        2, HeadReplay.N{1,1}, 'y', [0.4 0.4 0.6], 0.5, 2);
                     
     uistack([h.stim2wing h.err2wing],'top')
     
