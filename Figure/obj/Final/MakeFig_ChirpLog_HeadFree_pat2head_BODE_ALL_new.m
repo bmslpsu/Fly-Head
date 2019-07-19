@@ -14,7 +14,7 @@ CHIRP = cellstr(CHIRP)';
 HeadFree = load(fullfile(root,CHIRP{1}),'GRAND','U','N');
 
 filename = 'ChirpLog_HeadFree_pat2head_BODE_ALL_new';
-catIdx = 5;
+catIdx = 4;
 xIdx = 1;
 CC = [0 0 0.7];
 

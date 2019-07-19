@@ -52,7 +52,6 @@ for jj = 1:nAmp
     end
 end
 
-
 %% WBF Box Plot
 FIG = figure (1); clf
 FIG.Color = 'w';
@@ -70,11 +69,12 @@ bx = boxplot(DATA(:,1),DATA(:,2),'Labels',{'Free', 'Fixed'},'Width',0.5,'Symbol'
 
 ax = gca;
 ax.FontSize = 8;
-ax.YLim = [210 270];
+ax.YLim = [0 300];
 ylabel('WBF (Hz)','FontSize',8)
 h = get(bx(5,:),{'XData','YData'});
+CC = [0.7 0 0 ; 0.35 0 0.65];
 for kk = 1:size(h,1)
-   patch(h{kk,1},h{kk,2},[0 0 0.5]);
+   patch(h{kk,1},h{kk,2},CC(kk,:));
 end
 set(findobj(gcf,'tag','Median'), 'Color', 'w');
 set(findobj(gcf,'tag','Box'), 'Color', 'k');
