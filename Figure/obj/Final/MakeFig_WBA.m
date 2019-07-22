@@ -15,7 +15,7 @@ vid.Free = cell(N.Free.fly,1);
 pp = 1;
 prev = 0;
 for kk = 1:N.Free.file
-    load([PATH FILES{kk}],'WBA_image','Wing','med')
+    load(fullfile(root, FILES{kk}),'WBA_image','Wing','med')
     VID.Free(:,:,:,kk) = WBA_image.cdata;
     WBA.Free(kk,1) = 90 + Wing.L;
     WBA.Free(kk,2) = 90 + Wing.R;
@@ -47,7 +47,7 @@ vid.Fixed = cell(N.Fixed.fly,1);
 pp = 1;
 prev = 0;
 for kk = 1:N.Fixed.file
-    load([PATH FILES{kk}],'WBA_image','Wing','med')
+    load(fullfile(root, FILES{kk}),'WBA_image','Wing','med')
     VID.Fixed(:,:,:,kk) = WBA_image.cdata;
     WBA.Fixed(kk,1) = 90 + Wing.L;
     WBA.Fixed(kk,2) = 90 + Wing.R;
@@ -70,6 +70,15 @@ vid.Fixed_med = cellfun(@(x) median(x,3), vid.Fixed, 'Uniformoutput', false);
 vid.Fixed_all = median(cat(3,vid.Fixed_med{:}),3);
 
 WBA_ALL = cat(1,WBA_Free_med,WBA_Fixed_med);
+
+
+SOS_WBA = cat(1, cat(2,I.Free{:,1:2},0*WBA.Free(:,3),WBA.Free(:,3)),...
+                cat(2,I.Fixed{:,1:2},0*WBA.Fixed(:,3) + 1,WBA.Fixed(:,3)) );
+SOS_WBA = splitvars(array2table(SOS_WBA));
+SOS_WBA.Properties.VariableNames = {'Fly','Trial','Free_Fixed','WBA'};
+guide = 'Fixed is "true", Free is "False"'; %#ok<NASGU>
+
+% save(['SOS_WBA_DATA.m'], 'SOS_WBA', 'guide')
 
 %% WBA Median Boxplot
 FIG = figure (1) ; clf

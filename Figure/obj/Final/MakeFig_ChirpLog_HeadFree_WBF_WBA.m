@@ -34,8 +34,10 @@ for jj = 1:nAmp
     pp = 1;
     for kk = 1:HeadFree.N.fly
         for ii = 1:size(HeadFree.TRIAL{kk,jj},1)
-            WBF{jj,1}(pp,1) = median(HeadFree.TRIAL{kk,jj}{ii,head_free}.WBF(:,xIdx));
-            WBF{jj,1}(pp,2) = jj;
+           	WBF{jj,1}(pp,1) = kk;
+            WBF{jj,1}(pp,2) = ii;
+            WBF{jj,1}(pp,3) = false;
+            WBF{jj,1}(pp,4) = median(HeadFree.TRIAL{kk,jj}{ii,head_free}.WBF(:,xIdx));
             pp = pp + 1;
         end
     end
@@ -45,8 +47,10 @@ for jj = 1:nAmp
     pp = 1;
     for kk = 1:HeadFixed.N.fly
         for ii = 1:size(HeadFixed.TRIAL{kk,jj},1)
-            WBF{jj,2}(pp,1) = median(HeadFixed.TRIAL{kk,jj}{ii,head_fixed}.WBF(:,xIdx));
-            WBF{jj,2}(pp,2) = jj + 10;
+            WBF{jj,2}(pp,1) = kk;
+            WBF{jj,2}(pp,2) = ii;
+            WBF{jj,2}(pp,3) = true;
+            WBF{jj,2}(pp,4) = median(HeadFixed.TRIAL{kk,jj}{ii,head_fixed}.WBF(:,xIdx));
             pp = pp + 1;
         end
     end
@@ -65,7 +69,11 @@ amp = 1;
 
 DATA = [WBF{amp,1};WBF{amp,2}];
 
-bx = boxplot(DATA(:,1),DATA(:,2),'Labels',{'Free', 'Fixed'},'Width',0.5,'Symbol','','Whisker',2);
+SOS_WBF = splitvars(array2table(DATA));
+SOS_WBF.Properties.VariableNames = {'Fly','Trial','Free_Fixed','WBF'};
+guide = 'Fixed is "true", Free is "False"';
+
+bx = boxplot(DATA(:,4),DATA(:,3),'Labels',{'Free', 'Fixed'},'Width',0.5,'Symbol','','Whisker',2);
 
 ax = gca;
 ax.FontSize = 8;
