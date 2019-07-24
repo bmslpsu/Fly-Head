@@ -1,5 +1,5 @@
-function [FIG] = MakeFig_SOS_HeadFree_pat2w_ComplexGain()
-%% MakeFig_SOS_HeadFree_pat2head_ComplexGain:
+function [FIG] = MakeFig_SOS_HeadFixed_pat2wing_ComplexGain()
+%% MakeFig_SOS_HeadFixed_pat2wing_ComplexGain:
 %   INPUTS:
 %       -
 %   OUTPUTS:
@@ -11,23 +11,23 @@ root = 'H:\DATA\Rigid_Data\';
     'Select head angle trials', root, 'MultiSelect','off');
 FILE = cellstr(FILE)';
 
-HeadFree = load(fullfile(root,FILE{1}),'TRIAL','GRAND','U','N');
+HeadFixed = load(fullfile(root,FILE{1}),'TRIAL','GRAND','U','N');
 %%
-clearvars -except HeadFree
+clearvars -except HeadFixed
 
-catIdx = 8;
+catIdx = 3;
 xIdx = 1;
 
 filename = 'SOS_HeadFree_pat2head_ComplexGain';
 
-Freq = HeadFree.TRIAL{1}{1,catIdx}.IOFreq;
+Freq = HeadFixed.TRIAL{1}{1,catIdx}.IOFreq;
 nFreq = length(Freq);
 fLabel = cellfun(@(x) [num2str(x) ' Hz'], num2cell(Freq),'UniformOutput',false);
 
 pp = 1;
-for kk = 1:HeadFree.N{1,1}
-    for ii = 1:size(HeadFree.TRIAL{kk},1)
-        CmplxGain(pp,:) = HeadFree.TRIAL{kk}{ii,catIdx}.IOCmplxGain(:,xIdx);
+for kk = 1:HeadFixed.N{1,1}
+    for ii = 1:size(HeadFixed.TRIAL{kk},1)
+        CmplxGain(pp,:) = HeadFixed.TRIAL{kk}{ii,catIdx}.IOCmplxGain(:,xIdx);
         pp = pp +1;
     end
 end
