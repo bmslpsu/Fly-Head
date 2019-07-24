@@ -1,5 +1,5 @@
-function [FIG] = MakeFig_Sine_HeadFree_ComplexGain()
-%% MakeFig_Sine_HeadFree_ComplexGain:
+function [FIG] = MakeFig_Sine_pat2head_ComplexGain()
+%% MakeFig_Sine_pat2head_ComplexGain:
 %   INPUTS:
 %       -
 %   OUTPUTS:
@@ -26,7 +26,7 @@ end
 %---------------------------------------------------------------------------------------------------------------------------------
 clearvars -except nAmp Amp HeadFree
 
-filename = 'Sine_HeadFree_ComplexGain';
+filename = 'MakeFig_Sine_pat2head_ComplexGain';
 
 catIdx = 5;
 xIdx = 1;
@@ -49,6 +49,10 @@ vLabel_Norm = cellfun(@(x) strcat(num2str(x),[' ' char(176) '/s']), num2cell(vel
 
 legLabel = cellfun(@(x,y) [x ' ' y], repmat(fLabel,nAmp,1), vLabel,'UniformOutput',false);
 legLabel_Norm = cellfun(@(x,y) [x ' ' y], fLabel, vLabel_Norm,'UniformOutput',false);
+
+Amp_All = repmat(Amp,1,nFreq);
+SpatPeriod = repmat(1/30,nAmp,nFreq);
+MCF = 4*Amp_All.*SpatPeriod.*Freq;
 
 cList = prism(nFreq);
 
@@ -114,10 +118,17 @@ for ww = 1:nAmp
     end
 end
 
+PerfectTrack = complex(1,0);
+
 REAL = cellfun(@(x) nanmean(x,1), Real, 'UniformOutput', false);
 IMAG = cellfun(@(x) nanmean(x,1), Imag, 'UniformOutput', false);
 REAL = cat(1,REAL{:});
 IMAG = cat(1,IMAG{:});
+
+CMPLX = complex(REAL,IMAG);
+
+ERROR = PerfectTrack - CMPLX;
+ERROR = sqrt(real(ERROR).^(2) + imag(ERROR).^(2));
 
 % REAL_STD = cellfun(@(x) nanstd(x,[],1), Real, 'UniformOutput', false);
 % IMAG_STD = cellfun(@(x) nanstd(x,[],1), Imag, 'UniformOutput', false);
@@ -179,6 +190,8 @@ for jj = 1:nFreq
 
     h.leg = scatter(REAL(amp,jj),IMAG(amp,jj),10,'o','MarkerEdgeColor','k','MarkerFaceColor','k',...
         'MarkerFaceAlpha',1,'LineWidth',1.5);
+    
+%     h.error = plot([1 REAL(amp,jj)],[0 IMAG(amp,jj)],'Color','r','LineWidth',1);
 
     hh(jj) = h.grand;
 
@@ -570,5 +583,40 @@ leg.Title.String = 'Frequency (Hz)';
 leg.Location = 'northwest';
 leg.Position = leg.Position;
 legend boxoff
+
+%% Complex Gain: Error vs MCF
+%---------------------------------------------------------------------------------------------------------------------------------
+
+FIG = figure (22); clf
+FIG.Color = 'w';
+FIG.Units = 'inches';
+FIG.Position = [1 1 4 3];
+movegui(FIG,'center')
+FIG.Name = filename;
+
+ax = gca; hold on
+ax.FontSize = 8;
+ax.XLabel.String = 'Mean Contrast Frequency (cycles/s)';
+ax.XLabel.FontSize = 8;
+ax.YLabel.String = 'Error';
+ax.YLabel.FontSize = 8;
+ax.YLim = [0 1.1];
+
+cList = parula(nAmp);
+for ww = 1:nAmp
+    plot(MCF(ww,:),ERROR(ww,:),'Color',cList(ww,:),'LineWidth',1.0)
+    h.legdata(ww) = scatter(MCF(ww,:),ERROR(ww,:),'o','MarkerEdgeColor','k','MarkerFaceColor',cList(ww,:),...
+            'MarkerFaceAlpha',1,'LineWidth',1.0);
+end
+
+leg = legend(h.legdata,num2strcell(Amp));
+leg.Title.String = ['Amplitude (' char(176) ')'];
+leg.Location = 'southeast';
+leg.Position = leg.Position;
+legend boxoff
+
+
+
+
 
 end
