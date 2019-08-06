@@ -54,7 +54,7 @@ for kk = 1:n.file
     end
 end
 
-% Compare whether data is string or number >> determine if category or value
+% Test whether data is string or number >> determine if category or value
 valvar = false(1,n.vars);
 for ii = 1:n.vars
     valvar(ii) = isnan(str2double(vardata{1,ii}));
