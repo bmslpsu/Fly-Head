@@ -79,15 +79,15 @@ ax1 = subplot(1,1,1);
 FIG = figure (2); clf
 FIG.Color = 'w';
 FIG.Units = 'inches';
-FIG.Position = [1 1 8 2];
+FIG.Position = [1 1 8 2.5];
 FIG.Name = filename;
 movegui(FIG,'center')
 hold on
 
 errIdx = 4;
 magIdx = 1;
-
 amp = 3;
+
 AMP  = HeadFree.U{1,3}{1}(amp);
 TIME = HeadFree.GRAND{amp,errIdx}.Mean{1}{5}(:,xIdx);
 ERROR = HeadFree.GRAND{amp,errIdx}.Mean{1}{6}(:,xIdx);
@@ -97,6 +97,8 @@ MSTD = 0*MAG;
 
 ax1 = subplot(1,1,1);
     hold on
+    ax1.Position(4) = ax1.Position(4)*0.8;
+    ax1.Position = ax1.Position + [0 0.05 0 0];
     ax1.Title.String = [num2str(AMP) , char(176)];
     ax1.Title.Color = 'w';
     ax1.Title.FontSize = 8;
@@ -111,9 +113,23 @@ ax1 = subplot(1,1,1);
     ax1.XLim = [0 20];
     ax1.XTick = [ax1.XLim(1),2:2:ax1.XLim(2)];
     
-    h.patch = PlotPatch(MAG,   MSTD, TIME, 3, HeadFree.N{1,1}, 'g', [0.4 0.4 0.6], 0.5, 2);
+    h.patch = PlotPatch(MAG,   MSTD, TIME, 0, HeadFree.N{1,1}, 'k', [0.4 0.4 0.6], 0.5, 2);
 
- 	h.patch = PlotPatch(ERROR, ESTD, TIME, 3, HeadFree.N{1,1}, 'y', [0.4 0.4 0.6], 0.5, 2);
+ 	h.patch = PlotPatch(ERROR, ESTD, TIME, 3, HeadFree.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
+    
+ax2 = axes;
+    hold on
+    ax2.FontSize = 8;
+    ax2.Position = ax1.Position + [0 -0.0 0 0];
+    ax2.Color = 'none';
+    ax2.YColor = 'none';
+    ax2.XLabel.String = 'Frequency (Hz)';
+    ax2.XLabel.FontSize = 8;
+    ax2.XAxisLocation = 'top';
+    
+    ax2.XLim = [0.1 12];
+    ax2.XTick = [0.1 0.5 1 2 4 6 8 10 12];
+    ax2.XScale = 'log';
     
 %% Frequency Domain Log
 FIG = figure (3); clf

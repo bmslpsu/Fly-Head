@@ -150,7 +150,6 @@ PHASE_NORM          = nanmean(Phase_Norm,1);
 GAIN_NORM_STD       = nanstd(Gain_Norm,[],1);
 PHASE_NORM_STD      = nanstd(Phase_Norm,[],1);
 
-gains = 0.05:0.05:0.1;
 gains = 0.2:0.2:1;
 
 %% Complex Gain: one amplitude
@@ -211,7 +210,8 @@ legend boxoff
 %---------------------------------------------------------------------------------------------------------------------------------
 FIG = figure (1); clf
 FIG.Color = 'w';
-FIG.Position = [100 100 700 700];
+FIG.Units = 'inches';
+FIG.Position = [1 1 4 4];
 movegui(FIG,'center')
 FIG.Name = filename;
 for ww = 1:nAmp
@@ -219,37 +219,43 @@ for ww = 1:nAmp
 end
 
 [~,h.ax] = ComplexAxes(gains);
-h.ax.origin(1).Color = 'r';
-h.ax.circle(end).Color = 'r';
+% h.ax.origin(1).Color = 'r';
+% h.ax.circle(end).Color = 'r';
 
 for jj = 1:nFreq
     h.trial = scatter(Real_Norm(:,jj), Imag_Norm(:,jj), 40, 'o','MarkerEdgeColor','k',...
         'MarkerFaceColor',cList(jj,:), 'MarkerFaceAlpha', 0.65, 'LineWidth', 0.5);
-    
-% 	h.rr = plot([0 REAL_NORM(jj)],[0 IMAG_NORM(jj)],'Color',[0 0 0 1],'LineWidth',1);
+        
+	h.rr = plot([0 REAL_NORM(jj)],[0 IMAG_NORM(jj)],'Color',[0 0 0 1],'LineWidth',1);
     
     rSTD = PolarSTD(Real_Norm(:,jj),Imag_Norm(:,jj),[REAL_NORM(jj) IMAG_NORM(jj)]);
     
 	[h.std] = draw_ellipse([REAL_NORM(jj) IMAG_NORM(jj)], 3*rSTD, 0.5, 0, 90, cList(jj,:)); hold on
-    h.std{1}.FaceAlpha = 0.2;
-    for kk = 2:length(h.std)
+    h.std{1}.FaceAlpha = 0.5;
+    h.std{2}.LineWidth = 1;
+    for kk = 3:length(h.std)
        delete(h.std{kk}) 
     end
+    h.STD{jj} = h.std{2};
     
-    h.error = plot([1 REAL_NORM(jj)],[0 IMAG_NORM(jj)],'Color','k','LineWidth',1);
+%     h.error = plot([1 REAL_NORM(jj)],[0 IMAG_NORM(jj)],'Color','k','LineWidth',1);
     
-    h.grand = scatter(REAL_NORM(jj),IMAG_NORM(jj),1,'o','MarkerEdgeColor','k','MarkerFaceColor',cList(jj,:),...
+    h.leg = scatter(REAL_NORM(jj),IMAG_NORM(jj),1,'o','MarkerEdgeColor','k','MarkerFaceColor',cList(jj,:),...
         'MarkerFaceAlpha',1,'LineWidth',1.5);
     
-    h.leg = scatter(REAL_NORM(jj),IMAG_NORM(jj),40,'o','MarkerEdgeColor','k','MarkerFaceColor','k',...
+    h.grand = scatter(REAL_NORM(jj),IMAG_NORM(jj),10,'o','MarkerEdgeColor','k','MarkerFaceColor','k',...
         'MarkerFaceAlpha',1,'LineWidth',1.5);
 
-    hh(jj) = h.grand;
+    hh(jj) = h.leg;
+    h.GRAND(jj) = h.grand;
 end
 
-scatter(1,0,100,'o','MarkerEdgeColor','r','MarkerFaceColor','r',...
-        'MarkerFaceAlpha',1,'LineWidth',1.5);
-text(1.04,0.05,'1 + 0i')
+% scatter(1,0,100,'o','MarkerEdgeColor','r','MarkerFaceColor','r',...
+%         'MarkerFaceAlpha',1,'LineWidth',1.5);
+% text(1.04,0.05,'1 + 0i')
+
+cellfun(@(x) uistack(x),h.STD)
+uistack(h.GRAND,'top')
 
 leg = legend(hh,legLabel_Norm);
 leg.Title.String = 'Frequency / Velocity';
@@ -315,37 +321,47 @@ end
 %---------------------------------------------------------------------------------------------------------------------------------
 FIG = figure (3); clf
 FIG.Color = 'w';
-FIG.Position = [100 100 800 700];
+FIG.Units = 'inches';
+FIG.Position = [1 1 4 4];
 FIG.Name = 'Normalized Bode';
 movegui(FIG,'center')
 hold on
 
 ax1 = subplot(2,1,1) ; hold on
-    ax1.FontSize = 12;
+    ax1.FontSize = 8;
     ax1.XLim = [0 12.5]; 
     ax1.YLim = [0 1.0];
-    ax1.XLabel.FontSize = 14;
+    ax1.XLabel.FontSize = 8;
     ax1.XLabel.Color = 'w';
  	ax1.YLabel.String = ['Gain (' char(176) '/' char(176) ')'];
     ax1.YLabel.FontSize = ax1.XLabel.FontSize;
   	ax1.XTick = Freq;
     ax1.XTickLabel = '';
 
-    errorbar(Freq,GAIN_NORM,2*GAIN_NORM_STD,'-b','LineWidth',4)
+%     errorbar(Freq,GAIN_NORM,2*GAIN_NORM_STD,'-b','LineWidth',2)
+    
+    [~,h2] = PlotPatch(GAIN_NORM,GAIN_NORM_STD,Freq,2,1,'b',[0.4 0.4 0.6],0.5,2);
+    h2.Marker = '.';
+    h2.MarkerSize = 20;
     
 ax2 = subplot(2,1,2) ; hold on
     ax2.FontSize = ax1.FontSize;
     ax2.XLim = ax1.XLim;
     ax2.YLim = [-180 180];
    	ax2.XLabel.String = 'Frequency (Hz)';
-    ax2.XLabel.FontSize = 14;
+    ax2.XLabel.FontSize = 8;
     ax2.XLabel.Color = 'k';
  	ax2.YLabel.String = ['Phase (' char(176) ')'];
     ax2.YLabel.FontSize = ax1.XLabel.FontSize;
     ax2.XTick = ax1.XTick;
     ax2.YTick = -180:60:180;
     
-    errorbar(Freq,PHASE_NORM,2*PHASE_NORM_STD,'-b','LineWidth',4)
+%     errorbar(Freq,PHASE_NORM,2*PHASE_NORM_STD,'-b','LineWidth',2)
+    
+    [~,h2] = PlotPatch(PHASE_NORM,PHASE_NORM_STD,Freq,2,1,'b',[0.4 0.4 0.6],0.5,2);
+    h2.Marker = '.';
+    h2.MarkerSize = 20;
+    
     plot([0 12.5],[0 0],'--g','LineWidth',1)
     
 ax3 = axes;
@@ -428,7 +444,7 @@ FIG.Name = 'BODE';
 movegui(FIG,'center')
 hold on
 
-amp = 3;
+amp = 1;
 ax1 = subplot(2,1,1) ; hold on
     ax1.FontSize = 8;
     ax1.XLim = [0 12.5];
@@ -533,7 +549,7 @@ legend boxoff
 FIG = figure (6); clf
 FIG.Color = 'w';
 FIG.Units = 'inches';
-FIG.Position = [1 1 4 4];
+FIG.Position = [1 1 3 3];
 movegui(FIG,'center')
 FIG.Name = filename;
 for ww = 1:nAmp
@@ -567,7 +583,7 @@ for jj = 1:nFreq
 %     for ww = 1:nAmp
 %         rSTD = PolarSTD(Real{ww}(:,jj),Imag{ww}(:,jj),[REAL(ww,jj) IMAG(ww,jj)]);
 %         
-%      	[h.std] = draw_ellipse([REAL(ww,jj) IMAG(ww,jj)], 3*rSTD, 0.5, 0, 90, cList(jj,:)); hold on
+%      	[h.std] = draw_ellipse([REAL(ww,jj) IMAG(ww,jj)], 2*rSTD, 0.5, 0, 90, cList(jj,:)); hold on
 %         h.std{1}.FaceAlpha = 0.2;
 %         for kk = 2:length(h.std)
 %            delete(h.std{kk}) 

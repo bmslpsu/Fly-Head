@@ -46,10 +46,6 @@ end
 
 CmplxGain   = Real + 1i*Imag;
 
-% cnd         = (Real<0) & (Imag>0);
-% Real(cnd)   = -Real(cnd);
-% Imag(cnd)   = -Imag(cnd);
-
 Gain        = abs(CmplxGain);
 Phase       = rad2deg(angle((CmplxGain)));
 
@@ -97,7 +93,7 @@ for jj = 1:nFreq
     
     rSTD = PolarSTD(Real(:,jj),Imag(:,jj),[REAL(jj) IMAG(jj)]);
     
-	[h.std] = draw_ellipse([REAL(jj) IMAG(jj)], 2*rSTD, 0.5, 0, 90 - PHASE(jj), cList(jj,:)); hold on
+	[h.std] = draw_ellipse([REAL(jj) IMAG(jj)], 3*rSTD, 0.5, 0, 90 - PHASE(jj), cList(jj,:)); hold on
     h.std{1}.FaceAlpha = 0.4;
     for kk = 3:length(h.std)
        delete(h.std{kk})
@@ -107,7 +103,7 @@ for jj = 1:nFreq
     h.leg = scatter(REAL(jj),IMAG(jj),1,'o','MarkerEdgeColor','k','MarkerFaceColor',cList(jj,:),...
         'MarkerFaceAlpha',1,'LineWidth',1.5);
     
-    h.grand = scatter(REAL(jj),IMAG(jj),15,'o','MarkerEdgeColor','k','MarkerFaceColor','k',...
+    h.grand = scatter(REAL(jj),IMAG(jj),10,'o','MarkerEdgeColor','k','MarkerFaceColor','k',...
         'MarkerFaceAlpha',1,'LineWidth',1.5);
 
     hh(jj) = h.leg;

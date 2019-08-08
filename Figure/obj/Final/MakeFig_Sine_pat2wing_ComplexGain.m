@@ -221,14 +221,14 @@ for ww = 1:nAmp
 end
 
 [~,h.ax] = ComplexAxes(gains);
-h.ax.origin(1).Color = 'r';
-h.ax.circle(end).Color = 'r';
+% h.ax.origin(1).Color = 'r';
+% h.ax.circle(end).Color = 'r';
 
 for jj = 1:nFreq
     h.trial = scatter(Real_Norm(:,jj), Imag_Norm(:,jj), 40, 'o','MarkerEdgeColor','k',...
         'MarkerFaceColor',cList(jj,:), 'MarkerFaceAlpha', 0.65, 'LineWidth', 0.5);
     
-% 	h.rr = plot([0 REAL_NORM(jj)],[0 IMAG_NORM(jj)],'Color',[0 0 0 1],'LineWidth',1);
+	h.rr = plot([0 REAL_NORM(jj)],[0 IMAG_NORM(jj)],'Color',[0 0 0 1],'LineWidth',1);
     
     rSTD = PolarSTD(Real_Norm(:,jj),Imag_Norm(:,jj),[REAL_NORM(jj) IMAG_NORM(jj)]);
     
@@ -238,7 +238,7 @@ for jj = 1:nFreq
        delete(h.std{kk}) 
     end
     
-    h.error = plot([1 REAL_NORM(jj)],[0 IMAG_NORM(jj)],'Color','k','LineWidth',1);
+%     h.error = plot([1 REAL_NORM(jj)],[0 IMAG_NORM(jj)],'Color','k','LineWidth',1);
     
     h.grand = scatter(REAL_NORM(jj),IMAG_NORM(jj),1,'o','MarkerEdgeColor','k','MarkerFaceColor',cList(jj,:),...
         'MarkerFaceAlpha',1,'LineWidth',1.5);
@@ -249,9 +249,9 @@ for jj = 1:nFreq
     hh(jj) = h.grand;
 end
 
-scatter(1,0,100,'o','MarkerEdgeColor','r','MarkerFaceColor','r',...
-        'MarkerFaceAlpha',1,'LineWidth',1.5);
-text(1.04,0.05,'1 + 0i')
+% scatter(1,0,100,'o','MarkerEdgeColor','r','MarkerFaceColor','r',...
+%         'MarkerFaceAlpha',1,'LineWidth',1.5);
+% text(1.04,0.05,'1 + 0i')
 
 leg = legend(hh,legLabel_Norm);
 leg.Title.String = 'Frequency / Velocity';
