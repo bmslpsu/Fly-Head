@@ -24,6 +24,7 @@ for ww = 1:nAmp
     HeadFree{ww} = load(fullfile(root,FILES{ww}),'TRIAL','GRAND','U','N');
 end
 
+%%
 clearvars -except HeadFree Amp nAmp
 
 filename = 'Sine_HeadFree_head2wing_CrossCorr';
