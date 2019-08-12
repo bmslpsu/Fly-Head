@@ -131,6 +131,80 @@ for ii = 1:size(FLY,2)
     GRAND{ii} = GrandStats(FLY(:,ii));
 end
 clear ii
+
+%% Replay Stimulus %%
+%---------------------------------------------------------------------------------------------------------------------------------
+errIdx = 4;
+xIdx = 1;
+
+Time  	= GRAND{1}.Mean{1}{5}(:,1);
+RefMean	= GRAND{1}.Mean{1}{6}(:,xIdx);
+ErrMean = GRAND{errIdx}.Mean{1}{6}(:,xIdx);
+ErrSTD	= GRAND{errIdx}.STD{1}{6}(:,xIdx);
+
+Error = [];
+dev = [];
+pp = 1;
+for kk = 1:N.fly
+    for ii = 1:size(TRIAL{kk},1)
+        Error(:,pp) = TRIAL{kk}{ii,errIdx}.X(:,xIdx);
+              
+        pp = pp + 1;
+    end
+end
+
+dev = abs(ErrMean - Error);
+devMean = mean(dev,1);
+[~,minIdx] = min(devMean);
+
+TEST = Fly(Error(:,minIdx),Time,[],IOFreq);
+
+FIG = figure (1) ; clf
+FIG.Color = 'w';
+FIG.Units = 'inches';
+FIG.Position = [2 2 8 4];
+movegui(FIG, 'center')
+
+subplot(2,1,1) ; hold on
+xlabel('Time')
+ylabel('Angle (deg)')
+% plot(Time,RefMean,'b')
+[~,h.ErrMean] = PlotPatch(ErrMean, ErrSTD, Time, 3, 1, 'k' ,[0.4 0.4 0.6], 0.4 , 2);
+h.ErrTrial = plot(Time,Error(:,minIdx),'r');
+
+subplot(2,1,2) ; hold on
+xlim([0 10])
+xlabel('Frequency (Hz)')
+ylabel('Mag (deg)')
+plot(TRIAL{1}{1,1}.Fv, TRIAL{1}{1,1}.Mag(:,xIdx), 'b', 'LineWidth', 1)
+plot(TEST.Fv, TEST.Mag(:,1), 'r', 'LineWidth', 1)
+
+plot(TRIAL{1}{1,1}.IOFreq, TRIAL{1}{1,1}.IOMag(:,xIdx), '-b*', 'LineWidth', 1)
+plot(TEST.IOFreq, TEST.IOMag(:,1), '-r*', 'LineWidth', 1)
+
+legend('Reference','Error')
+
+func = 3.75*deg2panel(Error(:,minIdx));
+Fs = 200;
+TT = round(Time(end));
+tt = 0:(1/Fs):TT;
+func = interp1(Time, func , tt, 'linear','extrap'); % interpolate to match new time
+
+subplot(2,1,1) ; hold on
+h.func = plot(tt, func, 'g', 'LineWidth', 1);
+legend([h.ErrMean,h.ErrTrial,h.func], 'Mean Error','Selected Trial Error','Function')
+
+% Name file
+strFreq = '';
+for kk = 1:length(IOFreq)
+   strFreq = [strFreq  num2str(IOFreq(kk)) '_'];
+end
+strFreq(end) = [];
+
+fname = sprintf(['position_function_SOS_REPLAY_fs_%1.1f_T_%1.1f_freq_' strFreq '.mat'],Fs,TT);
+targetDir = 'C:\Users\boc5244\Documents\GitHub\Arena\Functions';
+save(fullfile(targetDir,fname), 'func');
+
 %% SAVE %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
