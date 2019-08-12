@@ -124,6 +124,7 @@ for kk = 1:N{1,1}
     end
 end
 clear kk ii
+
 %% Grand Statistics %%
 %---------------------------------------------------------------------------------------------------------------------------------
 GRAND = cell(1,size(FLY,2));
@@ -184,14 +185,15 @@ plot(TEST.IOFreq, TEST.IOMag(:,1), '-r*', 'LineWidth', 1)
 
 legend('Reference','Error')
 
-func = 3.75*deg2panel(Error(:,minIdx));
+centPos = 15;
+func = deg2panel(Error(:,minIdx)) + centPos;
 Fs = 200;
 TT = round(Time(end));
 tt = 0:(1/Fs):TT;
-func = interp1(Time, func , tt, 'linear','extrap'); % interpolate to match new time
+func = round(interp1(Time, func , tt, 'linear','extrap')); % interpolate to match new time
 
 subplot(2,1,1) ; hold on
-h.func = plot(tt, func, 'g', 'LineWidth', 1);
+h.func = plot(tt, 3.75*(func - centPos), 'g', 'LineWidth', 1);
 legend([h.ErrMean,h.ErrTrial,h.func], 'Mean Error','Selected Trial Error','Function')
 
 % Name file
