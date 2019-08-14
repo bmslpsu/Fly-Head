@@ -202,6 +202,8 @@ end
 if debug
     FIG = figure ; clf % data with saccade & inter-saccde intervals highlighted
     FIG.Color = 'k';
+    FIG.Units = 'inches';
+    FIG.Position = [2 2 6 4];
         clear ax
         ax(1) = subplot(2,1,1) ; hold on
         ax(1).XLabel.String = 'Time';
@@ -228,17 +230,19 @@ if debug
     
 	FIG = figure ; clf % normalized saccade & inter-saccde intervals
     FIG.Color = 'k';
+    FIG.Units = 'inches';
+    FIG.Position = [2+6.5 2 6 4];
         clear ax
         ax(1) = subplot(2,2,1) ; hold on
         ax(1).YLabel.String = 'Saccade';
      	h.sacd  = plot(Sacd_Time_Mean,Saccade.Pos,'-','LineWidth',1);
-        plot(Sacd_Time_Mean,Sacd_Pos_Mean,'-w','LineWidth',3);
+        plot(Sacd_Time_Mean,Sacd_Pos_Mean,'-w','LineWidth',2);
         plot([0 0],ax(1).YLim,'--w','LineWidth',1.5);
                 
         ax(2) = subplot(2,2,2) ; hold on
         ax(2).YLabel.String = 'Interval-Sacadde Interval';
        	h.inter = plot(Interval.Time,Interval.Pos,'-','LineWidth',1);
-        plot(Inter_Time_Mean,Inter_Pos_Mean,'-w','LineWidth',3);
+        plot(Inter_Time_Mean,Inter_Pos_Mean,'-w','LineWidth',2);
         
         if ~isempty(STIM)
             plot(Interval.Time,Stimulus.Interval.Pos,'--r','LineWidth',2)
@@ -248,14 +252,14 @@ if debug
         ax(3).XLabel.String = 'Normalized Time';
         ax(3).YLabel.String = 'Saccade Diff';
        	h.sacd  = plot(Saccade.Time,Saccade.Vel,'-','LineWidth',1);
-        plot(Sacd_Time_Mean,Sacd_Vel_Mean,'w','LineWidth',3);
+        plot(Sacd_Time_Mean,Sacd_Vel_Mean,'w','LineWidth',2);
         plot([0 0],ax(3).YLim,'--w','LineWidth',1.5);
 
         ax(4) = subplot(2,2,4) ; hold on
         ax(4).XLabel.String = 'Normalized Time';
         ax(4).YLabel.String = 'Interval-Sacadde Interval Diff';
        	h.inter = plot(Interval.Time,Interval.Vel,'-','LineWidth',1);
-       	plot(Inter_Time_Mean,Inter_Vel_Mean,'-w','LineWidth',3);
+       	plot(Inter_Time_Mean,Inter_Vel_Mean,'-w','LineWidth',2);
         
         if ~isempty(STIM)
             plot(Interval.Time,Stimulus.Interval.Vel,'--r','LineWidth',2)

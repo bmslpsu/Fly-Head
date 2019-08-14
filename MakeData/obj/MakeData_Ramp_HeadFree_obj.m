@@ -102,7 +102,7 @@ for kk = 1:N{1,end}
     I_table.Properties.VariableNames{3} = 'speed';
     
     [Saccade,Interval,Stimulus,Error,IntError,matchFlag] = SaccdInter(Head.X(:,1),Head.Time(:,1),head.SACCD, ...
-                                                                    -1 ,Stim(:,I{kk,3}),false);
+                                                                    -1 ,Stim(:,I{kk,3}), false);
     
     var1 = {Saccade.Time, Saccade.Pos,Saccade.Vel, Error.Saccade.Pos, Error.Saccade.Vel,...
                 IntError.Saccade.Pos, IntError.Saccade.Vel, Stimulus.Saccade.Pos , Stimulus.Saccade.Vel};
@@ -171,6 +171,7 @@ for kk = 1:N{1,end}
         SACD.Interval.Head{I{kk,3},1} = [SACD.Interval.Head{I{kk,3},1} ; var2];
     end
     
+%     pause(1)
     close all
 end
 

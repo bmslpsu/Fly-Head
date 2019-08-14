@@ -21,11 +21,10 @@ if nargin<3
     if nargin<2
         tt = IDX; % use index if no time data
     end
-end  
+end
 
 time.data       = tt;                               % time vector
 Ts              = mean(diff(time.data));        	% sampling time
-% time.new        = (min(time.data):Ts:max(time.data))'; % new time vector for interpolation
 pos.data        = xx;                               % position
 vel.data        = [0 ; diff(pos.data)/Ts];          % velocity
 avel.data       = abs(vel.data);                    % absolute velocity
@@ -121,12 +120,7 @@ if ~isempty(I)
     pos.rmv(loc.idx)  = nan;
     vel.rmv(loc.idx)  = nan;
     
-    time.nan        = time.rmv;
-    
-%     time.rmv(loc.idx) = time.data(loc.all);
-%     pos.rmv(loc.idx)  = pos.data(loc.all);
-%     vel.rmv(loc.idx)  = vel.data(loc.all);
-    
+    time.nan = time.rmv;
     pos.rmv_n = pos.rmv;
     
     for ww = 1:count
