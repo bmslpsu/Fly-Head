@@ -83,7 +83,7 @@ classdef GrandStats
                 
                 PlotPatch(obj.Median{2}{6}(:,kk),obj.STD{2}{6}(:,kk),time,2,obj.nFly,'k',[0.4 0.4 0.6],0.5,2);
                 
-                ylim(max(ax.YLim)*[-1 1])
+                ylim(max(abs(ax.YLim))*[-1 1])
                 
                 pp = pp + 1;
             end            

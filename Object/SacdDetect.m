@@ -41,7 +41,7 @@ svel(avel.data<thresh) = 0; % velocity data above threshold
 
 % Variable names
 varnames = {'Duration','Amplitude','Direction','StartIdx','PeakIdx','EndIdx','StartTime','PeakTime','EndTime','StartPos',...
-                'PeakPos','EndPos','StartVel','PeakVel','EndVel','StartAbsVel','PeakAbsVel','EndAbsVel','Threshold'};
+                'PeakPos','EndPos','StartVel','PeakVel','EndVel','Threshold'};
 
 % Find velocity spikes
 [avel.pks, loc.pks] = findpeaks(svel,'MINPEAKDISTANCE',40); % find local maxima
@@ -85,7 +85,7 @@ if ~isempty(I)
     
     % All data
     DATA = [time.dur , pos.amp , dir, loc.start , loc.pks , loc.end , time.start , time.pks , time.end , pos.start , pos.pks, ...
-                pos.end ,vel.start , vel.pks , vel.end , avel.start , avel.pks , avel.end, THRESH];
+                pos.end ,vel.start , vel.pks , vel.end , THRESH];
 else % no saccades
     DATA    = nan(1,length(varnames));
     count   = nan;
@@ -171,7 +171,7 @@ if debug
         
     ax3 = subplot(3,1,3) ; hold on
         plot(time.data,pos.rmv_intrp,'c','LineWidth',1)
-        plot(time.nan ,pos.nan,'k','LineWidth',2)
+        plot(time.nan ,pos.nan,'k','LineWidth',1.5)
         ylabel('Position (Removed Saccades)')
         xlabel('Time')
 end

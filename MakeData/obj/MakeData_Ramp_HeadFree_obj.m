@@ -5,7 +5,7 @@ function [] = MakeData_Ramp_HeadFree_obj()
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-% rootdir = 'F:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast';
+% rootdir = 'H:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast\30';
 % Amp = 60;
 % filename = ['Ramp_HeadFree_' num2str(Amp) '_DATA'];
 filename = 'Ramp_HeadFree_SACCD_Anti';
@@ -41,7 +41,8 @@ SACD.Stimulus.Saccade.Head = cell(N{1,3},1);
 SACD.Stimulus.Interval.Head = cell(N{1,3},1);
 
 Vel = 3.75*U{1,3}{1};
-tt = (0:(1/200):9.8)';
+% tt = (0:(1/200):9.8)';
+tt = linspace(0,10,2000)';
 Stim = (Vel*tt')';
 for kk = 1:N{1,end}
     disp(kk)
@@ -78,23 +79,26 @@ for kk = 1:N{1,end}
     pat.Pos  	= FitPanel(pat.Pos,pat.Time,tt); % fit panel data
  	Pat      	= Fly(pat.Pos,Head.Time,[],[]); % pattern object
     %-----------------------------------------------------------------------------------------------------------------------------
-    % Store objects in cells
-    vars = {Pat,Head,Wing};
-	qq = size(TRIAL{I{kk,1},I{kk,3}},1);
-    for ww = 1:length(vars)
-        TRIAL{I{kk,1},I{kk,3}}{qq+1,ww} = vars{ww};
-    end
-    %-----------------------------------------------------------------------------------------------------------------------------
     % Get Saccade Stats
-    [head.SACCD,head.thresh,head.count,head.rate] = GetSaccade(Head,300,false);
-    [wing.SACCD,wing.thresh,wing.count,wing.rate] = GetSaccade(Wing,1.75,false);
+    [head.SACCD,head.thresh,head.count,head.rate,head.SaccdRmv] = GetSaccade(Head,375,true);
+    [wing.SACCD,wing.thresh,wing.count,wing.rate] = GetSaccade(Wing,2,true);
+    
+    HeadRmv = Fly(head.SaccdRmv,Head.Time,[],[],tt);
     
     head.match = table(head.SACCD.Direction*sign(D{kk,end}));
     head.match.Properties.VariableNames = {'Match'};
   	wing.match = table(wing.SACCD.Direction*sign(D{kk,end}));
     wing.match.Properties.VariableNames = {'Match'};
     
-    head.SACCD = [head.SACCD , head.match];
+    if isnan(head.count)
+        head.Rate = table(0);
+    else
+        head.Rate = table(nan(head.count,1));
+        head.Rate{1,1} = head.rate;
+    end
+    head.Rate.Properties.VariableNames = {'Rate'};
+    
+    head.SACCD = [head.SACCD , head.match, head.Rate];
     wing.SACCD = [wing.SACCD , wing.match];
     
    	Dir = table(sign(D{kk,3}),'VariableNames',{'Dir'});
@@ -123,7 +127,6 @@ for kk = 1:N{1,end}
             emptyFlag = false;
         end
     end
-    
     
     for jj = 2:loop
         pos_err = Error.Interval.Pos(:,jj);
@@ -171,13 +174,20 @@ for kk = 1:N{1,end}
         SACD.Interval.Head{I{kk,3},1} = [SACD.Interval.Head{I{kk,3},1} ; var2];
     end
     
-%     pause(1)
+        %-----------------------------------------------------------------------------------------------------------------------------
+    % Store objects in cells
+    vars = {Pat,Head,Wing,HeadRmv};
+	qq = size(TRIAL{I{kk,1},I{kk,3}},1);
+    for ww = 1:length(vars)
+        TRIAL{I{kk,1},I{kk,3}}{qq+1,ww} = vars{ww};
+    end
+
+    pause()
     close all
 end
 
-% clear jj ii kk pp qq ww n a b  t_v hAngles data head wing pat tt I_table Dir loop Saccade Interval Stimulus Error IntError...
-%     Head Pat Wing  vars root t_p var1 var2 Err_table pos_err vel_err pos_int_err vel_int_err stim_pos
-% disp('LOADING DONE')
+clear jj ii kk pp qq ww n a b  t_v hAngles data head wing pat tt I_table Dir loop Saccade Interval Stimulus Error IntError...
+    Head Pat Wing  vars root t_p var1 var2 Err_table pos_err vel_err pos_int_err vel_int_err stim_pos matchFlag emptyFlag
 
 %% Transfrom data to arrays
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -225,7 +235,6 @@ INTERVAL.Head = cell2table(INTERVAL.Head,'VariableNames',varnames);
 INTERVAL.HeadStats = cell2table(cellfun(@(x) MatStats(x,2), table2cell(INTERVAL.Head),...
                             'UniformOutput',false),'VariableNames',varnames);
 
-%%
 TIME = cell(N{1,3},1);
 POS  = cell(N{1,3},1);
 dR   = cell(N{1,3},1);
@@ -239,21 +248,7 @@ for jj = 1:N{1,3}
 	POS{jj} = cat(2,POS{jj}{:});
 end
 
-figure (1) ; clf
-for jj = 1:N{1,3}
-    subplot(2,3,jj) ; hold on
-    plot(TIME{jj},POS{jj})
-%     if jj<=3
-%         ylim([-100 1000])
-%     else
-%         ylim([-1000 100])
-%     end
-%     xlim(0.06*[-1 1])
-
-    xlim([0 2])
-end
-
-CC = repmat({'r','g','b'},1,2);
+CC = repmat(prism(ceil(N.speed)),2,1);
 FIG = figure (2) ; clf
 FIG.Color = 'k';
 ax = gca;
@@ -261,7 +256,7 @@ ax.Color = 'k';
 set(ax,'YColor','w','XColor','w')
 for jj = [1 4 2 5 3 6]
 	hold on
-    plot(TIME{jj},POS{jj},'Color',CC{jj})
+    plot(TIME{jj}, POS{jj}, 'Color', CC(jj,:))
     xlim([0 2])
 end
 

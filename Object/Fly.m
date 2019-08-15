@@ -115,7 +115,7 @@ classdef Fly
             
         end
         
-        function [SACD,THRESH,COUNT,RATE]  = GetSaccade(obj,SD,debug)
+        function [SACD,THRESH,COUNT,RATE,SaccdRmv_X]  = GetSaccade(obj,SD,debug)
             % GetSaccade: get saccade table
             if nargin<3
                 debug = false;
@@ -124,7 +124,7 @@ classdef Fly
                 end
             end
             
-            [SACD,THRESH,COUNT,RATE] = SacdDetect(obj.X(:,1),obj.Time,SD,debug);
+            [SACD,THRESH,COUNT,RATE,SaccdRmv_X] = SacdDetect(obj.X(:,1),obj.Time,SD,debug);
         end
         
         function obj = IO_Freq(obj,IOFreq)
