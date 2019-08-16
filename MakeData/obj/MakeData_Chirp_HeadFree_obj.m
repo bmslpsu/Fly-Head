@@ -107,9 +107,9 @@ end
 
 ALL( all(cellfun(@isempty, ALL),2), : ) = []; % get rid of emtpty rows becuase of low WBF
 
-clear jj ii kk pp qq ww n a b spant_p t_v hAngles data head wing pat bode tt ...
-    Head Pat Wing Err pat2head err2wing head2wing vars root t_p span
-disp('LOADING DONE')
+% clear jj ii kk pp qq ww n a b spant_p t_v hAngles data head wing pat bode tt ...
+%     Head Pat Wing Err pat2head err2wing head2wing vars root t_p span
+% disp('LOADING DONE')
 
 %% Fly Statistics %%
 %---------------------------------------------------------------------------------------------------------------------------------

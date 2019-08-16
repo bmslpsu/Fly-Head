@@ -9,7 +9,7 @@ imaqreset
 %% Set directories & experimental paramters %%
 %---------------------------------------------------------------------------------------------------------------------------------
 %rootdir = uigetdir({}, 'Select folder to save data'); % define directory to save file
-root = 'D:\EXPERIMENTS\Experiment_ChirpLog_LargeAmp\';
+root = 'D:\EXPERIMENTS\Experiment_SOS_v2_Replay\';
 
 % EXPERIMENTAL PARAMETERS
 n_tracktime = 20 + 1;       % length(func)/fps; seconds for each EXPERIMENT
@@ -21,10 +21,10 @@ yPos  = 4;                  % 30 deg spatial frequency
 funcX = 1;                  % SOS replay (20s)
 xUpdate = 200;              % function update rate
 FPS = 100;                  % camera frame rate
-nFrame = FPS * n_tracktime; % # of frames to log
+nFrame = FPS*n_tracktime;   % # of frames to log
 Fs = 5000;                  % DAQ sampling rate [Hz]
 AI = 1:6;                	% Analog input channels
-AO = 0;                	% Analog output channels
+AO = 0;                     % Analog output channels
 
 %% Set up data acquisition & camera %%
 %---------------------------------------------------------------------------------------------------------------------------------

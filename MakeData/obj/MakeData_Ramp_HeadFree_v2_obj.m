@@ -18,14 +18,10 @@ root.daq = rootdir;
 root.ang = fullfile(root.daq,'\Vid\Angles\');
 
 % Select files
-[FILES, PATH.ang] = uigetfile({'*.mat', 'DAQ-files'}, ...
-    'Select head angle trials', root.ang, 'MultiSelect','on');
-FILES = cellstr(FILES)';
+[D,I,N,U,T,FILES,PATH.ang]  = GetFileData(root.ang,false,'fly','trial','vel');
 
 PATH.daq = root.daq;
 
-[D,I,N,U,T] = GetFileData(FILES,false);
-% [D,I,N,U,~] = GetFileData(FILES,false);
 clear rootdir
 %% Get Data %%
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -49,20 +45,14 @@ for kk = 1:N{1,end}
     % Load HEAD & DAQ data
 	load(fullfile(PATH.daq, FILES{kk}),'data','t_p'); % load pattern x-position
     load(fullfile(PATH.ang, FILES{kk}),'hAngles','t_v'); % load head angles % time arrays
-    %-----------------------------------------------------------------------------------------------------------------------------
-    % Check WBF
-	wing.f = 100*(data(:,6)); % wing beat frequency
-    if min(wing.f)<150 || mean(wing.f)<180 % check WBF, if too low then don't use trial
-        warning('Low WBF: Fly %i Trial %i \n',D{kk,1},D{kk,2})
-        continue
-    end
-    %-----------------------------------------------------------------------------------------------------------------------------
+   	%-----------------------------------------------------------------------------------------------------------------------------
     % Get head data
     head.Time = t_v;
     head.Pos = hAngles;
-    Head = Fly(head.Pos,head.Time,40,[],tt); % head object
+    Head = Fly(head.Pos,head.Time,40,[]); % head object
   	%-----------------------------------------------------------------------------------------------------------------------------
     % Get wing data from DAQ
+	wing.f          = medfilt1(100*data(:,6),3); % wing beat frequency [Hz]
     wing.Time       = t_p; % wing time [s]
     wing.Fs         = 1/mean(diff(wing.Time)); % sampling frequency [Hz]
     wing.Fc         = 20; % cutoff frequency [Hz]
@@ -71,23 +61,40 @@ for kk = 1:N{1,end}
     wing.Right      = filtfilt(b,a,(data(:,5))); % right wing [V]
     wing.Pos        = wing.Left - wing.Right; % dWBA (L-R) [V]
   	wing.Pos        = wing.Pos - mean(wing.Pos); % subtract mean [V]
-   	Wing = Fly(wing.Pos,t_p,40,[],tt); % wing object
+   	Wing            = Fly(wing.Pos,t_p,40,[],Head.Time); % wing object
+    
+    wing.f          = interp1(wing.Time,wing.f,Head.Time);
+   	wing.Left     	= interp1(wing.Time,wing.Left,Head.Time);
+   	wing.Right     	= interp1(wing.Time,wing.Right,Head.Time);
+
+    Wing.WBF        = wing.f;
+    Wing.WBA        = [wing.Left,wing.Right,wing.Left + wing.Right];
+    %-----------------------------------------------------------------------------------------------------------------------------
+  	% Check WBF & WBA
+    if min(wing.f)<150 || mean(wing.f)<200 % check WBF, if too low then don't use trial
+        fprintf('Low WBF: Fly %i Trial %i \n',D{kk,1},D{kk,2})
+        continue
+    elseif any(wing.Left>10.6) || any(wing.Right>10.6)
+        fprintf('WBA out of range: Fly %i Trial %i \n',D{kk,1},D{kk,2})
+%         continue
+    end
 	%-----------------------------------------------------------------------------------------------------------------------------
 	% Get pattern data from DAQ
     pat.Time	= t_p;
-    pat.Pos 	= panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]  
+    pat.Pos 	= panel2deg(data(:,2)); % pattern x-pos: subtract mean and convert to deg [deg]  
     pat.Pos  	= FitPanel(pat.Pos,pat.Time,tt); % fit panel data
  	Pat      	= Fly(pat.Pos,Head.Time,[],[]); % pattern object
     %-----------------------------------------------------------------------------------------------------------------------------
-    % Get Saccade Stats
-    [head.SACCD,head.thresh,head.count,head.rate,head.SaccdRmv] = GetSaccade(Head,375,false);
-    [wing.SACCD,wing.thresh,wing.count,wing.rate] = GetSaccade(Wing,2,false);
+    % Get Saccade Stats   
+    [head.SACD,head.thresh,head.count,head.rate,head.SACDRmv] = SacdDetect(Head.X(:,1),Head.Time,2.5,false);
+    [wing.SACD,wing.thresh,wing.count,wing.rate,wing.SACDRmv] = SacdDetect(Wing.X(:,1),Wing.Time,1.75,false);
     
-    HeadRmv = Fly(head.SaccdRmv,Head.Time,[],[],tt);
+    HeadRmv = Fly(head.SACDRmv,Head.Time,[],[],tt);
+    WingRmv = Fly(wing.SACDRmv,Wing.Time,[],[],tt);
     
-    head.match = table(head.SACCD.Direction*sign(D{kk,end}));
+    head.match = table(head.SACD.Direction*sign(D{kk,end}));
     head.match.Properties.VariableNames = {'Match'};
-  	wing.match = table(wing.SACCD.Direction*sign(D{kk,end}));
+  	wing.match = table(wing.SACD.Direction*sign(D{kk,end}));
     wing.match.Properties.VariableNames = {'Match'};
     
     if isnan(head.count)
@@ -102,14 +109,15 @@ for kk = 1:N{1,end}
     head.Rate.Properties.VariableNames = {'Rate'};
   	wing.Rate.Properties.VariableNames = {'Rate'};
      
-    head.SACCD = [head.SACCD , head.match, head.Rate];
-    wing.SACCD = [wing.SACCD , wing.match];
+    head.SACD = [head.SACD , head.match, head.Rate];
+    wing.SACD = [wing.SACD , wing.match];
     
    	Dir = table(sign(D{kk,3}),'VariableNames',{'Dir'});
-    I_table = [I(kk,1:2) , rowfun(@(x) abs(x), D(kk,3)), Dir];
-    I_table.Properties.VariableNames{3} = 'speed';
+    I_table = [I(kk,1:3) , rowfun(@(x) abs(x), D(kk,3)), Dir];
+    I_table.Properties.VariableNames{3} = 'velIdx';
+    I_table.Properties.VariableNames{4} = 'speed';
     
-    [Saccade,Interval,Stimulus,Error,IntError,matchFlag] = SaccdInter(Head.X(:,1),Head.Time(:,1),head.SACCD, ...
+    [Saccade,Interval,Stimulus,Error,IntError,matchFlag] = SaccdInter(Head.X(:,1),Head.Time(:,1),head.SACD, ...
                                                                     -1 ,Stim(:,I{kk,3}), false);
     
     var1 = {Saccade.Time, Saccade.Pos,Saccade.Vel, Error.Saccade.Pos, Error.Saccade.Vel,...
@@ -167,11 +175,11 @@ for kk = 1:N{1,end}
         wing.I_table = repmat(I_table,wing.count,1);
     end
     
-	head.SACCD = [head.I_table , [head.SACCD , Err_table]];
-  	wing.SACCD = [wing.I_table , wing.SACCD];
+	head.SACD = [head.I_table , [head.SACD , Err_table]];
+  	wing.SACD = [wing.I_table , wing.SACD];
     
-    SACD.Head = [SACD.Head ; head.SACCD];
-    SACD.Wing = [SACD.Wing ; wing.SACCD];
+    SACD.Head = [SACD.Head ; head.SACD];
+    SACD.Wing = [SACD.Wing ; wing.SACD];
     
     if ~emptyFlag
         SACD.Saccade.Head{I{kk,3},1}  = [SACD.Saccade.Head{I{kk,3},1}  ; var1];
@@ -180,7 +188,7 @@ for kk = 1:N{1,end}
     
  	%-----------------------------------------------------------------------------------------------------------------------------
     % Store objects in cells
-    vars = {Pat,Head,Wing,HeadRmv};
+    vars = {Pat,Head,Wing,HeadRmv,WingRmv};
 	qq = size(TRIAL{I{kk,1},I{kk,3}},1);
     for ww = 1:length(vars)
         TRIAL{I{kk,1},I{kk,3}}{qq+1,ww} = vars{ww};
@@ -190,8 +198,8 @@ for kk = 1:N{1,end}
     close all
 end
 
-clear jj ii kk pp qq ww n a b  t_v hAngles data head wing pat tt I_table Dir loop Saccade Interval Stimulus Error IntError...
-    Head Pat Wing  vars root t_p var1 var2 Err_table pos_err vel_err pos_int_err vel_int_err stim_pos matchFlag emptyFlag
+% clear jj ii kk pp qq ww n a b  t_v hAngles data head wing pat tt I_table Dir loop Saccade Interval Stimulus Error IntError...
+%     Head Pat Wing  vars root t_p var1 var2 Err_table pos_err vel_err pos_int_err vel_int_err stim_pos matchFlag emptyFlag
 
 %% Normalize Head Saccades
 %---------------------------------------------------------------------------------------------------------------------------------

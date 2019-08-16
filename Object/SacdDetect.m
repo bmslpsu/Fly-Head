@@ -1,4 +1,4 @@
-function [SACD,thresh,count,rate,SaccdRmv_X] = SacdDetect(xx,tt,N,debug)
+function [SACD,thresh,count,rate,SaccdRmv_X,vel,svel] = SacdDetect(xx,tt,N,debug)
 %% SacdDetect: detetcs saccades and calculates stats
 %   INPUTS:
 %       xx          :   position
@@ -26,7 +26,7 @@ end
 time.data       = tt;                               % time vector
 Ts              = mean(diff(time.data));        	% sampling time
 pos.data        = xx;                               % position
-vel.data        = [0 ; diff(pos.data)/Ts];          % velocity
+vel.data        = [diff(pos.data)/Ts ; 0];          % velocity
 avel.data       = abs(vel.data);                    % absolute velocity
 vel.mean      	= mean(avel.data);                  % mean absolute velocity
 vel.std       	= std(vel.data);                    % std absolute velocity
