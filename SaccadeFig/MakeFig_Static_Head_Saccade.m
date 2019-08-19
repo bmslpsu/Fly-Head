@@ -1,4 +1,4 @@
-function [FIG] = MakeFig_Ramp_Head_Saccade()
+function [FIG] = MakeFig_Static_Head_Saccade()
 %% MakeFig_Ramp_Head_Saccade:
 %   INPUTS:
 %       -
@@ -13,9 +13,9 @@ FILE = cellstr(FILE)';
 
 load(fullfile(root,FILE{1}),'SACCADE','INTERVAL','SACD','Stim','U','N','I','TRIAL','FLY','GRAND');
 
-CC = repmat({[1 0 0],[0 1 0],[0 0 1]},1,2);
+SpatFreq = U{1,3}{1};
 
-Vel = 3.75*U{1,3}{1};
+CC = jet(N.SpatFreq);
 
 %% Saccade Position %%
 FIG = figure (1) ; clf
@@ -28,17 +28,17 @@ FIG.Color = 'w';
 ax = axes;
 for jj = 1:N{1,3}
     ax(jj) = subplot(ceil(N{1,3}/3),3,jj) ; hold on
-    ax(jj).Title.String = [num2str(Vel(jj)) ' (' char(176) '/s)'];
+    ax(jj).Title.String = [num2str(SpatFreq(jj)) ' (' char(176) '/s)'];
     ax(jj).Title.Color = 'k';
     
     cent = max(SACCADE.cIdx{jj},[],'all');
     span = (cent-5):(cent+5);
     
-    plot(1000*SACCADE.Head.Time{jj}, SACCADE.Head.Position{jj}, 'Color', 0.7*CC{jj})
+    plot(1000*SACCADE.Head.Time{jj}, SACCADE.Head.Position{jj}, 'Color', 0.7*CC(jj,:))
 %     plot(1000*SACCADE.HeadStats.Time(jj).Median(span),SACCADE.HeadStats.Position(jj).Median(span),'w','LineWidth',3)
     
-    PlotPatch(SACCADE.HeadStats.Position(jj).Median(span), SACCADE.HeadStats.Position(1,1).STD(span), ...
-        1000*SACCADE.HeadStats.Time(jj).Median(span), 3, N.fly, CC{jj}, [0.7 0.7 0.7], 0.4, 3);
+%     PlotPatch(SACCADE.HeadStats.Position(jj).Median(span), SACCADE.HeadStats.Position(1,1).STD(span), ...
+%         1000*SACCADE.HeadStats.Time(jj).Median(span), 3, N.Fly, CC(jj,:), [0.7 0.7 0.7], 0.4, 3);
     
     if jj<=N{1,3}/2
         ax(jj).XTickLabels = '';
@@ -67,26 +67,19 @@ FIG.Color = 'w';
 ax = gobjects(N{1,3},1);
 for jj = 1:N{1,3}
     ax(jj) = subplot(ceil(N{1,3}/3),3,jj) ; hold on
-    ax(jj).Title.String = [num2str(Vel(jj)) ' (' char(176) '/s)'];
+    ax(jj).Title.String = [num2str(SpatFreq(jj)) ' (' char(176) '/s)'];
     ax(jj).Title.Color = 'k';
     
     cent = max(SACCADE.cIdx{jj},[],'all');
     span = (cent-5):(cent+5);
     
-    plot(1000*SACCADE.Head.Time{jj},SACCADE.Head.Velocity{jj}, 'Color', 0.7*CC{jj})
+    plot(1000*SACCADE.Head.Time{jj},SACCADE.Head.Velocity{jj}, 'Color', 0.7*CC(jj,:))
 %     plot(1000*SACCADE.HeadStats.Time(jj).Median(span),SACCADE.HeadStats.Velocity(jj).Median(span),'w','LineWidth',3)
     
-	PlotPatch(SACCADE.HeadStats.Velocity(jj).Median(span), SACCADE.HeadStats.Velocity(1,1).STD(span), ...
-        1000*SACCADE.HeadStats.Time(jj).Median(span), 3, N.fly, CC{jj}, [0.7 0.7 0.7], 0.4, 3);
-    
-    plot([-100 100],-sign(Vel(jj))*300*[1 1],'--','Color',[0.5 0.5 0.5],'LineWidth',1)
-%     plot([-100 100],0*[1 1],'-','Color','k','LineWidth',0.5)
-    
-    if sign(Vel(jj))==1
-        ax(jj).YLim = -1100*[1 -0.2];
-    else
-        ax(jj).YLim =  1100*[-0.2 1];
-    end
+% 	PlotPatch(SACCADE.HeadStats.Velocity(jj).Median(span), SACCADE.HeadStats.Velocity(1,1).STD(span), ...
+%         1000*SACCADE.HeadStats.Time(jj).Median(span), 3, N.Fly, CC(jj,:), [0.7 0.7 0.7], 0.4, 3);
+        
+	ax(jj).YLim = 1100*[-1 1];
     
     if jj~=5
         ax(jj).XTickLabels = '';
@@ -129,64 +122,18 @@ for jj = 1:N{1,3}
     tLim = sum(isnan(INT),2)./(size(INT,2)-1);
     span = 1:length(tLim(tLim<pLim));
     
-    plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Position{jj},'Color', 0.7*CC{jj})
+    plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Position{jj},'Color', 0.7*CC(jj,:))
     hh(jj) = plot(INTERVAL.HeadStats.Time(jj).Median(span),INTERVAL.HeadStats.Position(jj).Median(span),...
-        'Color', CC{jj}, 'LineWidth', 3);
-    
-	hp(jj) = plot(INTERVAL.HeadStats.Time(jj).Median(span), Stim(span,jj), '--', 'Color', SS{jj}, 'LineWidth', 2);
-    
+        'Color', CC(jj,:), 'LineWidth', 3);
+        
 end
-set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',[0 1.5])
+set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',[0 3])
 % ax.YLim = max(abs(ax.YLim))*[-1 1];
 ax.YLim = 30*[-1 1];
 ax.XLabel.String = 'Time (s)';
 ax.YLabel.String = ['Head Angle (' char(176) ')'];
 
 uistack(hh,'top')
-uistack(hp,'top')
-
-%% Inter-Saccade Position Error %%
-FIG = figure (4) ; clf
-FIG.Units = 'inches';
-FIG.Position = [2 2 6 4];
-FIG.Name = 'Inter-Saccade Head Position Error';
-FIG.PaperPositionMode = 'auto';
-movegui(FIG,'center')
-FIG.Color = 'w';
-ax = gca;
-hh = gobjects(N{1,3},1);
-hp = gobjects(N{1,3},1);
-hold on
-
-SS = repmat({'m','y','c'},1,2);
-pLim = 0.7;
-for jj = 1:N{1,3}
-    % Only plot until a percentage of intervals are still active
-    remv = isnan(INTERVAL.Head.Position{jj}(1,:));
-    INT = INTERVAL.Head.Position{jj}(:,~remv);
-    tLim = sum(isnan(INT),2)./(size(INT,2)-1);
-    span = 1:length(tLim(tLim<pLim));
-    
-    plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Position_Error{jj},'Color', 0.5*CC{jj})
-    hh(jj) = plot(INTERVAL.HeadStats.Time(jj).Median(span),INTERVAL.HeadStats.Position_Error(jj).Median(span),...
-        'Color', CC{jj}, 'LineWidth', 3);
-    
-    hp(jj) = plot(INTERVAL.HeadStats.Time(jj).Median(span), Stim(span,jj), '--', 'Color', SS{jj}, 'LineWidth', 2);
-    
-    plot([0 10],[0 0], '-', 'Color', [0.5 0.5 0.5], 'LineWidth', 1)
-    plot([0 ; repmat(INTERVAL.HeadStats.Time(jj).Median(span(end)),2,1)],...
-        [0 , INTERVAL.HeadStats.Position_Error(jj).Median(span(end)) , 0],...
-        '-', 'Color', [0.5 0.5 0.5], 'LineWidth', 2);
-    
-end
-set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',[0 1.5])
-% ax.YLim = max(abs(ax.YLim))*[-1 1];
-ax.YLim = 100*[-1 1];
-ax.XLabel.String = 'Time (s)';
-ax.YLabel.String = ['Head Position Error (' char(176) ')'];
-
-uistack(hh,'top')
-uistack(hp,'top')
 
 %% Inter-Saccade Velocity %%
 FIG = figure (5) ; clf
@@ -203,7 +150,7 @@ hold on
 pLim = 0.90;
 for jj = 1:N{1,3}
 	ax(jj) = subplot(ceil(N{1,3}/3),3,jj) ; hold on
-    ax(jj).Title.String = [num2str(Vel(jj)) ' (' char(176) '/s)'];
+    ax(jj).Title.String = [num2str(SpatFreq(jj)) ' (' char(176) '/s)'];
     ax(jj).Title.Color = 'k';
     
     % Only plot until a percentage of intervals are still active
@@ -212,12 +159,10 @@ for jj = 1:N{1,3}
     tLim = sum(isnan(INT),2)./(size(INT,2)-1);
     span = 1:length(tLim(tLim<pLim));
     
-%     plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Velocity{jj},'Color', 0.5*CC{jj})
+%     plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Velocity{jj},'Color', 0.5*CC(jj,:))
     hh(jj) = plot(INTERVAL.HeadStats.Time(jj).Median(span),INTERVAL.HeadStats.Velocity(jj).Median(span),...
-        'Color', CC{jj}, 'LineWidth', 2);
-    
-    hp(jj) = plot([0 10], repmat(Vel(jj),1,2), '-', 'Color', [0.5 0.5 0.5], 'LineWidth', 2);
-    
+        'Color', CC(jj,:), 'LineWidth', 2);
+       
     ax(jj).XLabel.String = 'Time (s)';
     ax(jj).YLabel.String = ['Head Velocity (' char(176) '/s)'];
     
@@ -225,48 +170,6 @@ for jj = 1:N{1,3}
     
 end
 set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',[0 0.5])
-
-%% Inter-Saccade Velocity Error %%
-FIG = figure (6) ; clf
-FIG.Units = 'inches';
-FIG.Position = [2 2 6 4];
-FIG.Name = 'Inter-Saccade Head Velocity Error';
-FIG.PaperPositionMode = 'auto';
-movegui(FIG,'center')
-FIG.Color = 'w';
-ax = gca;
-hh = gobjects(N{1,3},1);
-hp = gobjects(N{1,3},1);
-hold on
-pLim = 0.90;
-for jj = 1:N{1,3}
-	ax(jj) = subplot(ceil(N{1,3}/3),3,jj) ; hold on
-    ax(jj).Title.String = [num2str(Vel(jj)) ' (' char(176) '/s)'];
-    ax(jj).Title.Color = 'k';
-    
-    % Only plot until a percentage of intervals are still active
-    remv = isnan(INTERVAL.Head.Position{jj}(1,:));
-    INT = INTERVAL.Head.Position{jj}(:,~remv);
-    tLim = sum(isnan(INT),2)./(size(INT,2)-1);
-    span = 1:length(tLim(tLim<pLim));
-    
-%     plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Velocity_Error{jj},'Color', 0.5*CC{jj})
-    hh(jj) = plot(INTERVAL.HeadStats.Time(jj).Median(span),INTERVAL.HeadStats.Velocity_Error(jj).Median(span),...
-        'Color', CC{jj}, 'LineWidth', 2);
-    
-    hp(jj) = plot([0 10], repmat(Vel(jj),1,2), '-', 'Color', [0.5 0.5 0.5], 'LineWidth', 2);
-    
-    ax(jj).XLabel.String = 'Time (s)';
-    ax(jj).YLabel.String = ['Head Velocity Error (' char(176) '/s)'];
-    
-	if sign(Vel(jj))==1
-        ax(jj).YLim = -100*[0.2 -1];
-    else
-        ax(jj).YLim =  100*[-1 0.2];
-    end
-    
-end
-set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',[0 1.5])
 
 %% Saccade Trigger Polar Plot %%
 FIG = figure (7) ; clf
@@ -277,8 +180,8 @@ FIG.PaperPositionMode = 'auto';
 movegui(FIG,'center')
 FIG.Color = 'w';
 
-polarhistogram(deg2rad(SACD.Head.StartPos(SACD.Head.Dir==-1)),100,'FaceColor','g','FaceAlpha',.9); hold on
-polarhistogram(deg2rad(SACD.Head.EndPos(SACD.Head.Dir==-1)),100,'FaceColor','r','FaceAlpha',.9) ; hold on
+polarhistogram(deg2rad(SACD.Head.StartPos),100,'FaceColor','g','FaceAlpha',.9); hold on
+polarhistogram(deg2rad(SACD.Head.EndPos),100,'FaceColor','r','FaceAlpha',.9) ; hold on
 ax = gca;
 ax.FontSize = 8;
 grid off
@@ -296,25 +199,21 @@ leg.Location = 'northwest';
 
 %% Saccade Statistics %%
 G = [];
-pp = 1:3;
-for jj = 1:3
-    [rr,~] = find( SACD.Head.speed == U{1,3}{1}(jj) );
+pp = 1:N.SpatFreq;
+for jj = 1:N.SpatFreq
+    [rr,~] = find( SACD.Head.SpatFreq == U{1,3}{1}(jj) );
     G(rr,1) = jj;
 end
 
-SS = [5,6,14,16,18,23,25,24,26,22];
+SS = [5,6,14,16,18,22];
 YY = {  ['Duration (ms)'],...
         ['Amplitude (' char(176) ')'],...
         ['Trigger Position (' char(176) ')'],...
         ['End Position (' char(176) ')'],...
         ['Peak Velocity (' char(176) '/s)'],...
-        ['Error (' char(176) ')'],...
-        ['Integrated Error (' char(176) ' \ast s)'],...
-      	['Velocity Err (' char(176) '/s)'],...
-        ['Integrated Velocity Err (' char(176) ')'],...
         ['Rate (#/s)'] };
     
-CC = {[0 0 0.5],[0 0 0],[0 0.7 0 ],[0.7 0 0],[0.5 0.5 0.5],[0.1 0.5 0.5],[0.5 0.1 0.5],[0.9 0.7 0.7],[0.3 0.3 0.9],...
+CC = {[0 0 0.5],[0 0 0],[0 0.7 0 ],[0.7 0 0],[0.5 0.5 0.5],[0.6 0.1 0.4],[0.5 0.1 0.5],[0.9 0.7 0.7],[0.3 0.3 0.9],...
     [0.6 0.1 0.4],[0 0.8 0.8],[0.9 0.7 0.3]};
 FF = gobjects(length(SS),1);
 AX = gobjects(length(SS),1);
@@ -329,8 +228,8 @@ for ww = 1:length(SS)
         if any(SS(ww)==[5,6,14,16,18,23,25,24,26,22])
             data = abs(data);
         end
-        bx = boxplot(data,G,'Labels',{Vel(pp)},'Width',0.5,'Symbol','','Whisker',2);
-        xlabel(['Stimulus Velocity (' char(176) '/s)'])
+        bx = boxplot(data,G,'Labels',{SpatFreq(pp)},'Width',0.5,'Symbol','','Whisker',2);
+        xlabel(['Spatial Period (' char(176) ')'])
         ylabel(YY{ww})
         
         h = get(bx(5,:),{'XData','YData'});
@@ -362,25 +261,25 @@ movegui(FIG,'center')
 FIG.Color = 'w';
 hold on
 ax = gobjects(N{1,3},1);
-rmvIdx = 4;
-for jj = 1:N.vel
+rmvIdx = 3;
+CC = jet(N.SpatFreq);
+clear h
+for jj = 1:N.SpatFreq
     ax(jj) = subplot(2,3,jj) ; hold on
-    ax(jj).Title.String = ['Velocity (' char(176) '/s)'];
+    ax(jj).Title.String = [num2str(SpatFreq(jj)) ' (' char(176) '/s)'];
     ax(jj).XLabel.String = 'Time(s)';
     ax(jj).YLabel.String = ['Head Angle (' char(176) ')'];
-    for kk = 1:N.fly
+    for kk = 1:N.Fly-2
         for ii = 1:size(TRIAL{kk,jj},1)
-            h.trial = plot(TRIAL{kk,jj}{ii,rmvIdx}.Time, TRIAL{kk,jj}{ii,rmvIdx}.X(:,1), 'Color', 0.5*CC{jj});
+            h.trial = plot(TRIAL{kk,jj}{ii,rmvIdx}.Time, TRIAL{kk,jj}{ii,rmvIdx}.X(:,1), 'Color', 0.5*CC(jj,:));
             h.trial.Color(4) = 0.2;
         end
-        plot(FLY{jj}{kk,rmvIdx}.Mean{5}, FLY{jj}{kk,rmvIdx}.Mean{6}(:,1), 'Color', 0.7*CC{jj},'LineWidth',1)
+        plot(FLY{jj}{kk,rmvIdx}.Mean{5}, FLY{jj}{kk,rmvIdx}.Mean{6}(:,1), 'Color', 0.7*CC(jj,:),'LineWidth',1)
     end
-    plot(GRAND{jj,rmvIdx}.Mean{1}{5}, GRAND{jj,rmvIdx}.Mean{1}{6}(:,1), 'Color', CC{jj},'LineWidth',3)
-    plot(GRAND{jj,rmvIdx}.Mean{1}{5},Stim(:,jj), '--', 'Color', 'k', 'LineWidth',2)
+    plot(GRAND{jj,rmvIdx}.Mean{1}{5}, GRAND{jj,rmvIdx}.Mean{1}{6}(:,1), 'Color', CC(jj,:),'LineWidth',3)
 end
 set(ax,'XLim',[0 10])
-set(ax(1:3),'YLim',200*[-0.1 1])
-set(ax(4:6),'YLim',200*[-1 0.1])
+set(ax,'YLim',50*[-1 1])
 set(ax([1:4,6]),'XColor','none')
 set(ax([2:3,5:6]),'YColor','none')
 set(ax,'FontSize',8)
@@ -394,27 +293,23 @@ FIG.PaperPositionMode = 'auto';
 movegui(FIG,'center')
 FIG.Color = 'w';
 ax = gobjects(N{1,3},1);
-for jj = 1:N.speed
+rmvIdx = 3;
+for jj = 1:N.SpatFreq
     ax(jj) = subplot(2,3,jj); hold on
-    for kk = 1:N.fly
+	ax(jj).Title.String = [num2str(SpatFreq(jj)) ' (' char(176) '/s)'];
+    ax(jj).XLabel.String = 'Frequency (Hz)';
+    ax(jj).YLabel.String = ['Head Angle (' char(176) ')'];
+    for kk = 1:N.Fly-2
         for ii = 1:size(TRIAL{kk,jj},1)
-            plot(TRIAL{kk,jj}{ii,2}.Fv, TRIAL{kk,jj}{ii,2}.Mag(:,1), 'Color', 0.5*CC{jj})
+            plot(TRIAL{kk,jj}{ii,rmvIdx}.Fv, TRIAL{kk,jj}{ii,rmvIdx}.Mag(:,1), 'Color', 0.5*CC(jj,:))
         end
-        plot(FLY{jj}{kk,2}.Mean{7}, FLY{jj}{kk,2}.Mean{8}(:,1), 'Color', CC{jj},'LineWidth',1)
+        plot(FLY{jj}{kk,2}.Mean{7}, FLY{jj}{kk,2}.Mean{8}(:,1), 'Color', 0.7*CC(jj,:),'LineWidth',1)
     end
-    plot(GRAND{jj,2}.Mean{1}{7}, GRAND{jj,2}.Mean{1}{8}(:,1), 'Color', 'k','LineWidth',2)
+    plot(GRAND{jj,2}.Mean{1}{7}, GRAND{jj,2}.Mean{1}{8}(:,1), 'Color', CC(jj,:),'LineWidth',3)
 end
 set(ax,'XLim',[0 40])
-set(ax,'YLim',[0 2])
-
-
-
-%% Hypothesis Testing
-test1 = abs(SACD.Head.PeakVel(SACD.Head.speed==8));
-test2 = abs(SACD.Head.PeakVel(SACD.Head.speed==16));
-
-clc
-[h,p] = ttest2(test1,test2)
-
-
+set(ax,'YLim',[0 1])
+set(ax([1:4,6]),'XColor','none')
+set(ax([2:3,5:6]),'YColor','none')
+set(ax,'FontSize',8)
 end

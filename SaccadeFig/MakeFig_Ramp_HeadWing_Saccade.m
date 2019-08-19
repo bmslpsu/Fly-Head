@@ -5,21 +5,16 @@ function [FIG] = MakeFig_Ramp_HeadWing_Saccade()
 %   OUTPUTS:
 %       FIG     :   figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
-% root = 'H:\DATA\Rigid_Data\';
-root = 'Q:\Box Sync\';
+root = 'H:\DATA\Rigid_Data\';
+% root = 'Q:\Box Sync\';
 [FILE,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
     'Select head angle trials', root, 'MultiSelect','off');
 FILE = cellstr(FILE)';
 
 % load(fullfile(root,FILE{1}),'SACCADE','INTERVAL','SACD','Stim','U','N','I','TRIAL','FLY','GRAND');
 load(fullfile(root,FILE{1}),'SACD','U','N','TRIAL');
-%%
-clc
+
 clearvars -except SACCADE INTERVAL SACD Stim U N I TRIAL FLY GRAND
-
-CC = repmat({[1 0 0],[0 1 0],[0 0 1]},1,2);
-
-Vel = 3.75*U{1,3}{1};
 
 headIdx = 2;
 wingIdx = 3;
@@ -75,13 +70,14 @@ for jj = 1:N.vel
             Wing.svel( (Wing.svel<Wing.thresh)  & (Wing.svel>0) )  = 0;
             Wing.svel( (Wing.svel>-Wing.thresh) & (Wing.svel<0) )  = 0;
             
-            axes(ax.L) ; cla ; hold on
-            plot(HEAD.Time, Head.svel,'Color', ax.L.YColor)
-            plot(Head.SACD.PeakTime, Head.SACD.PeakVel, '*', 'Color', 'b', 'MarkerSize', 15)
-
-            axes(ax.R) ; cla ; hold on
-            plot(WING.Time, Wing.svel,'Color', ax.R.YColor)
-            plot(Wing.SACD.PeakTime, Wing.SACD.PeakVel, '*', 'Color', 'r', 'MarkerSize', 15)
+%             FIG.Visible = 'off';
+%             axes(ax.L) ; cla ; hold on
+%             plot(HEAD.Time, Head.svel,'Color', ax.L.YColor)
+%             plot(Head.SACD.PeakTime, Head.SACD.PeakVel, '*', 'Color', 'b', 'MarkerSize', 15)
+% 
+%             axes(ax.R) ; cla ; hold on
+%             plot(WING.Time, Wing.svel,'Color', ax.R.YColor)
+%             plot(Wing.SACD.PeakTime, Wing.SACD.PeakVel, '*', 'Color', 'r', 'MarkerSize', 15)
             
             window = 0.1; % search wiondow [s]
             for ww = 1:Head.count
@@ -127,16 +123,15 @@ clear FIG ax
 FIG = figure (2) ; clf ; hold on
 FIG.Color = 'w';
 FIG.Units = 'inches';
-FIG.Position = [1 1 8 4];
+FIG.Position = [1 1 5 3];
 movegui(FIG,'center')
 FIG.Name = 'Head vs Wing Time Difference';
 FIG.Visible = 'on';
 
-histogram(1000*PP(:,2), 1000*(-0.15:0.005:0.15))
+h = histogram(1000*PP(:,2), 1000*(-0.15:0.005:0.15),'FaceColor',[0.1 0 0.7],'FaceAlpha',0.6);
 ax = gca;
-xlabel('Time Difference (ms)','FontSize',12)
-
-
-
+ax.FontSize = 8;
+xlabel('Time Difference (ms)','FontSize',8)
+ylabel('Count','FontSize',8)
 
 end

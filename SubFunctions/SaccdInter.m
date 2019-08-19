@@ -219,10 +219,15 @@ if debug
         ax(2) = subplot(2,1,2) ; hold on
         ax(2).XLabel.String = 'Time';
         ax(2).YLabel.String = 'Diff Data';
-        plot(tt,vel,'--w','LineWidth',0.5)
+        plot(tt,vel(:,1),'--w','LineWidth',0.5)
+       
         for kk = 1:n
             h.sacd  = plot(Time{kk,1},Inter{kk,1}(:,2),'-','LineWidth',2);
             h.inter = plot(Time{kk,2},Inter{kk,2}(:,2),'-w','LineWidth',0.5);
+        end
+        
+        if ~isempty(STIM)
+            plot(tt,vel(:,2),'--','Color','c','LineWidth',2)
         end
         
         cc = 'w';
