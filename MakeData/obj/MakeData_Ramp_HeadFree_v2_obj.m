@@ -5,17 +5,18 @@ function [] = MakeData_Ramp_HeadFree_v2_obj()
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-rootdir = 'H:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast\30\';
-Amp = 30;
-filename = ['Ramp_HeadFree_' num2str(Amp) '_DATA'];
+% rootdir = 'H:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast\30\';
+% Amp = 30;
+% filename = ['Ramp_HeadFree_' num2str(Amp) '_DATA'];
 % filename = 'Ramp_HeadFree_SACCD_Anti';
-% rootdir = 'H:\EXPERIMENTS\Experiment_Ramp';
+filename = 'Ramp_HeadFree_SACCD_Anti_filt=15';
+rootdir = 'H:\EXPERIMENTS\Experiment_Ramp';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
 % root.daq = fullfile(rootdir,num2str(Amp));
 root.daq = rootdir;
-root.ang = fullfile(root.daq,'\Vid\HeadAngles\');
+root.ang = fullfile(root.daq,'\Vid\Angles\');
 
 % Select files
 [D,I,N,U,T,FILES,PATH.ang]  = GetFileData(root.ang,false,'fly','trial','vel');
@@ -50,19 +51,19 @@ for kk = 1:N.file
     % Get head data
     head.Time = t_v;
     head.Pos = hAngles;
-    Head = Fly(head.Pos,head.Time,40,[],tt); % head object
+    Head = Fly(head.Pos,head.Time,15,[],tt); % head object
   	%-----------------------------------------------------------------------------------------------------------------------------
     % Get wing data from DAQ
 	wing.f          = medfilt1(100*data(:,6),3); % wing beat frequency [Hz]
     wing.Time       = t_p; % wing time [s]
     wing.Fs         = 1/mean(diff(wing.Time)); % sampling frequency [Hz]
-    wing.Fc         = 20; % cutoff frequency [Hz]
+    wing.Fc         = 15; % cutoff frequency [Hz]
     [b,a]           = butter(2,wing.Fc/(wing.Fs/2)); % butterworth filter
 	wing.Left       = filtfilt(b,a,(data(:,4))); % left wing [V]
     wing.Right      = filtfilt(b,a,(data(:,5))); % right wing [V]
     wing.Pos        = wing.Left - wing.Right; % dWBA (L-R) [V]
   	wing.Pos        = wing.Pos - mean(wing.Pos); % subtract mean [V]
-   	Wing            = Fly(wing.Pos,t_p,40,[],Head.Time); % wing object
+   	Wing            = Fly(wing.Pos,t_p,15,[],Head.Time); % wing object
     
     wing.f          = interp1(wing.Time,wing.f,Head.Time);
    	wing.Left     	= interp1(wing.Time,wing.Left,Head.Time);
@@ -119,7 +120,7 @@ for kk = 1:N.file
     I_table.Properties.VariableNames{4} = 'speed';
     
     [Saccade,Interval,Stimulus,Error,IntError,matchFlag] = SaccdInter(Head.X(:,1),Head.Time,head.SACD, ...
-                                                                    -1 ,Stim(:,I{kk,3}), true);
+                                                                    -1 ,Stim(:,I{kk,3}), false);
     
     var1 = {Saccade.Time, Saccade.Pos,Saccade.Vel, Error.Saccade.Pos, Error.Saccade.Vel,...
                 IntError.Saccade.Pos, IntError.Saccade.Vel, Stimulus.Saccade.Pos , Stimulus.Saccade.Vel};
@@ -195,8 +196,8 @@ for kk = 1:N.file
         TRIAL{I{kk,1},I{kk,3}}{qq+1,ww} = vars{ww};
     end
 
-    pause()
-    close all
+%     pause()
+%     close all
 end
 
 % clear jj ii kk pp qq ww n a b  t_v hAngles data head wing pat tt I_table Dir loop Saccade Interval Stimulus Error IntError...
