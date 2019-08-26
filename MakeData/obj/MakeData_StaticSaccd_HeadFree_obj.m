@@ -70,6 +70,8 @@ for kk = 1:N.file
 %         continue
     end
     %-----------------------------------------------------------------------------------------------------------------------------
+    Head2Wing = IO_Class(Head,Wing);
+    %-----------------------------------------------------------------------------------------------------------------------------
     % Get Saccade Stats   
     [head.SACD,head.thresh,head.count,head.rate,head.SACDRmv] = SacdDetect(Head.X(:,1),Head.Time,2.5,false);
     [wing.SACD,wing.thresh,wing.count,wing.rate,wing.SACDRmv] = SacdDetect(Wing.X(:,1),Wing.Time,1.75,false);
@@ -132,7 +134,7 @@ for kk = 1:N.file
     
  	%-----------------------------------------------------------------------------------------------------------------------------
     % Store objects in cells
-    vars = {Head,Wing,HeadRmv,WingRmv}; 
+    vars = {Head,Wing,HeadRmv,WingRmv,Head2Wing}; 
 	qq = size(TRIAL{I{kk,1},I{kk,3}},1);
     for ww = 1:length(vars)
         TRIAL{I{kk,1},I{kk,3}}{qq+1,ww} = vars{ww};
