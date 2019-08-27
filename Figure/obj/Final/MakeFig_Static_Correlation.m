@@ -48,19 +48,20 @@ for ww = 1:nAmp
         end
     end
 end
-%%
 
+%%
 FIG = figure (1); clf
 FIG.Color = 'w';
 FIG.Units = 'inches';
-FIG.Position = [2 2 3 3];
+FIG.Position = [2 2 3*3 2*3];
 FIG.Name = filename;
 movegui(FIG,'center')
 
 for ww = 1:nAmp
     pp = 1;
-    for jj = 1
-        ax = subplot(1,1,pp) ; hold on
+    for jj = [2:4,[6 5 1]]
+        ax = subplot(2,3,pp) ; hold on
+        ax.Title.String = num2str(HeadFree{ww}.U{1,3}{1}(jj));
         ax.Title.FontWeight = 'bold';
       	ax.FontSize = 8;
         ax.YLabel.FontSize = 8;
@@ -77,7 +78,7 @@ for ww = 1:nAmp
         
      	[h] = scatplot(xData(:),yData(:));
         delete(h.cb)
-        h.fit = lsline;
+%         h.fit = lsline;
         
         % Calculate linear best fit
         [r,m,b] = regression(xData',yData','one');
@@ -89,8 +90,46 @@ for ww = 1:nAmp
         pp =  pp + 1;
     end
 end
+
 %%
 FIG = figure (2); clf
+FIG.Color = 'w';
+FIG.Units = 'inches';
+FIG.Position = [2 2 3 3];
+FIG.Name = filename;
+movegui(FIG,'center')
+
+HEAD_ALL = cat(2,HEAD{:});
+WING_ALL = cat(2,WING{:});
+
+
+ax = gca; hold on
+ax.FontSize = 8;
+ax.YLabel.FontSize = 8;
+ax.XLim = 20*[-1 1];
+ax.YLim = 6*[-1 1];
+ax.XLabel.FontSize = 8;
+ax.YLabel.FontSize = 8;
+
+ax.XLabel.String = ['Head (' char(176) ')'];
+ax.YLabel.String = 'Wing (V)';
+
+xData = HEAD_ALL;
+yData = WING_ALL;
+
+[h] = scatplot(xData(:),yData(:));
+% delete(h.cb)
+% h.fit = lsline;
+
+% Calculate linear best fit
+[r,m,b] = regression(xData',yData','one');
+text(mean(ax.XLim),mean(ax.YLim),['r =' num2str(r)]);
+xFit = linspace(-20,20,4000);
+yFit = m*xFit + b;
+plot(xFit,yFit,'r','LineWidth',2)
+
+%%
+FIG = figure (3); clf
 FIG.Color = 'w';
 FIG.Units = 'inches';
 FIG.Position = [2 2 3 3];
@@ -121,7 +160,7 @@ for ww = 1:nAmp
                                 'MarkerEdgeColor','none');
         end
         
-        h.fit = lsline;
+%         h.fit = lsline;
         
         % Calculate linear best fit
         [r,m,b] = regression(xData,yData,'one');
