@@ -9,7 +9,7 @@ imaqreset
 %% Set directories & experimental paramters %%
 %---------------------------------------------------------------------------------------------------------------------------------
 %rootdir = uigetdir({}, 'Select folder to save data'); % define directory to save file
-root = 'D:\EXPERIMENTS\Experiment_SOS_v2_Replay\';
+root = 'C:\BC\Rigid_data\Experiment_SOS_v2_Replay\';
 
 % EXPERIMENTAL PARAMETERS
 n_tracktime = 20 + 1;       % length(func)/fps; seconds for each EXPERIMENT
@@ -17,7 +17,7 @@ n_resttime = 1;             % seconds for each REST
 n_pause = 0.2;              % seconds for each pause between panel commands
 n_trial = 20;               % # of repetitions
 patID = 2;                  % Spatial frequency grating pattern
-yPos  = 4;                  % 30 deg spatial frequency
+yPos  = 5;                  % 30 deg spatial frequency
 funcX = 1;                  % SOS replay (20s)
 xUpdate = 200;              % function update rate
 FPS = 100;                  % camera frame rate
@@ -66,7 +66,7 @@ for ii = 1:n_trial
 	%-----------------------------------------------------------------------------------------------------------------------------
     % START EXPERIMENT & DATA COLLECTION %
     queueOutputData(s,TRIG) % set trigger AO signal
-    T = timer('StartDelay',0.5,'TimerFcn',@(src,evt) Panel_com('start'));
+    T = timer('StartDelay',0.1,'TimerFcn',@(src,evt) Panel_com('start'));
     start(T)
     tic
         [data, t_p ] = s.startForeground; % data collection
@@ -80,7 +80,7 @@ for ii = 1:n_trial
     trig = logical(round(data(:,1)));
     syncIdx  = find(trig==true,1,'first');
     syncTime = t_p(syncIdx);
-    tt = t_p - syncTime;
+    t_sync = t_p - syncTime;
     
     %-----------------------------------------------------------------------------------------------------------------------------
     % CLOSED LOOP BAR TRACKING %
@@ -88,8 +88,8 @@ for ii = 1:n_trial
     %-----------------------------------------------------------------------------------------------------------------------------
     % SAVE DATA %
     disp('Saving...') ; disp('----------------------------------------------------------------------')
-    fname = ['fly_' num2str(Fn) '_trial_' num2str(ii) '.mat'];
-    save(fullfile(root,fname),'-v7.3','data','t_p','vidData','t_v','Fs','syncTime','tt');
+    fname = ['fly_' num2str(Fn) '_trial_' num2str(ii) '_SOSReplay.mat'];
+    save(fullfile(root,fname),'-v7.3','data','t_p','vidData','t_v','Fs','syncTime','t_sync');
 end
 
 delete(vid)
