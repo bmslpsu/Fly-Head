@@ -1,5 +1,5 @@
-function [FIG] = MakeFig_SOS_HeadFree_pat2w_ComplexGain()
-%% MakeFig_SOS_HeadFree_pat2head_ComplexGain:
+function [FIG] = MakeFig_SOS_HeadFree_pat2wing_ComplexGain()
+%% MakeFig_SOS_HeadFree_pat2wing_ComplexGain:
 %   INPUTS:
 %       -
 %   OUTPUTS:

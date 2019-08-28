@@ -1,12 +1,12 @@
-function [] = MakeData_SOS_HeadFixed_obj(rootdir)
-%% MakeData_SOS_HeadFixed_obj: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
+function [] = MakeData_SOS_HeadFixed_Replay_obj(rootdir)
+%% MakeData_SOS_HeadFixed_Replay_obj: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
 %   INPUTS:
 %       rootdir    	:   root directory
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-rootdir = 'H:\EXPERIMENTS\Experiment_SOS_v2_HeadFixed';
-filename = 'SOS_HeadFixed_DATA';
+rootdir = 'H:\EXPERIMENTS\Experiment_SOS_v2_Replay';
+filename = 'SOS_HeadFixed_Replay_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -25,21 +25,19 @@ clear rootdir
 % IOFreq = 0.1*round(linspace(0.1,8,10)/0.1)';
 IOFreq = [1, 3.1, 5.3, 7.4, 9.6];
 disp('Loading...')
-ALL 	= cell([N{1,end},5]); % cell array to store all data objects
 TRIAL  	= cell(N{1,1},1);
 n.catg  = size(N,2) - 1;
 pp = 0;
-span = 1:2100;
 tt = linspace(0,20,2000)';
 for kk = 1:N{1,end}
     disp(kk)
     % Load DAQ data
     data = [];
-	load(fullfile(PATH.daq, FILES{kk}),'data','t_p'); % load pattern x-position
+	load(fullfile(PATH.daq, FILES{kk}),'data','t_sync'); % load pattern x-position
   	%-----------------------------------------------------------------------------------------------------------------------------
     % Get wing data from DAQ
 	wing.f          = medfilt1(100*data(:,6),3); % wing beat frequency [Hz]
-    wing.Time       = t_p; % wing time [s]
+    wing.Time       = t_sync; % wing time [s]
     wing.Fs         = 1/mean(diff(wing.Time)); % sampling frequency [Hz]
     wing.Fc         = 20; % cutoff frequency [Hz]
     [b,a]           = butter(2,wing.Fc/(wing.Fs/2)); % butterworth filter
@@ -47,7 +45,7 @@ for kk = 1:N{1,end}
     wing.Right      = filtfilt(b,a,(data(:,5))); % right wing [V]
     wing.Pos        = wing.Left - wing.Right; % dWBA (L-R) [V]
   	wing.Pos        = wing.Pos - mean(wing.Pos); % subtract mean [V]
-   	Wing            = Fly(wing.Pos,t_p,40,IOFreq,tt); % wing object
+   	Wing            = Fly(wing.Pos,t_sync,40,IOFreq,tt); % wing object
     
     wing.f          = interp1(wing.Time,wing.f,tt);
    	wing.Left     	= interp1(wing.Time,wing.Left,tt);
@@ -62,13 +60,13 @@ for kk = 1:N{1,end}
         continue
     elseif any(wing.Left>10.6) || any(wing.Right>10.6)
         fprintf('WBA out of range: Fly %i Trial %i \n',D{kk,1},D{kk,2})
-        continue
+%         continue
     else
         pp = pp + 1; % set next index to store data
     end
 	%-----------------------------------------------------------------------------------------------------------------------------
 	% Get pattern data from DAQ
-    pat.Time	= tt;
+    pat.Time	= t_sync;
     pat.Pos 	= panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]  
     pat.Pos  	= FitPanel(pat.Pos,pat.Time,tt); % fit panel data
  	Pat      	= Fly(pat.Pos,tt,0.4*100,IOFreq); % pattern object
@@ -80,22 +78,12 @@ for kk = 1:N{1,end}
     err2wing = IO_Class(Err,Wing);
     %-----------------------------------------------------------------------------------------------------------------------------
     % Store objects in cells
-    for jj = 1:n.catg
-        ALL{pp,jj} = I{kk,jj};
-    end
-
 	vars = {Pat,Wing,err2wing};
-    for jj = 1:length(vars)
-        ALL{pp,n.catg+jj} = vars{jj};
-    end
-    
 	qq = size(TRIAL{I{kk,1}},1);
     for ww = 1:length(vars)
         TRIAL{I{kk,1}}{qq+1,ww} = vars{ww};
     end
 end
-
-ALL( all(cellfun(@isempty, ALL),2), : ) = []; % get rid of emtpty rows becuase of low WBF
 
 clear jj ii kk pp qq ww n a b spant_p t_v hAngles data head wing pat bode tt ...
     Head Pat Wing Err pat2head pat2wing err2wing head2wing vars root t_p span
