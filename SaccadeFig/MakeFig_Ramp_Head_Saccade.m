@@ -16,7 +16,7 @@ load(fullfile(root,FILE{1}),'SACCADE','INTERVAL','SACD','Stim','U','N','I','TRIA
 CC = repmat({[1 0 0],[0 1 0],[0 0 1]},1,2);
 
 Vel = 3.75*U{1,3}{1};
-
+clearvars -except SACCADE INTERVAL SACD Stim U N I TRIAL FLY GRAND CC Vel
 %% Saccade Position %%
 FIG = figure (1) ; clf
 FIG.Units = 'inches';
@@ -108,6 +108,42 @@ set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',1000*0.05*[-1 1
 set(ax([1:4,6]),'XColor','none')
 set(ax([2:3,5:6]),'YColor','none')
 
+%% Saccade Velocity ALL %%
+FIG = figure (20) ; clf
+FIG.Units = 'inches';
+FIG.Position = [2 2 6/3 4/2];
+FIG.Name = 'Saccade Velocity';
+FIG.PaperPositionMode = 'auto';
+movegui(FIG,'center')
+FIG.Color = 'w';
+clear ax h
+ax(1) = subplot(1,1,1) ; hold on
+pp = 1;
+for jj = 6
+    cent = max(SACCADE.cIdx{jj},[],'all');
+    span = (cent-5):(cent+5);
+    
+    h.all{jj} = plot(1000*SACCADE.Head.Time{jj},SACCADE.Head.Velocity{jj}, 'Color', 0.7*CC{jj});
+    set(h.all{jj}(:),'Color',0.9*[h.all{jj}(1).Color 0.1])
+
+%     plot(1000*SACCADE.HeadStats.Time(jj).Median(span),SACCADE.HeadStats.Velocity(jj).Median(span),'w','LineWidth',3)
+    
+	[h.patch(jj),h.grand(jj)] = PlotPatch(SACCADE.HeadStats.Velocity(jj).Median(span), SACCADE.HeadStats.Velocity(1,1).STD(span), ...
+        1000*SACCADE.HeadStats.Time(jj).Median(span), 3, N.fly, CC{jj}, [0.7 0.7 0.7], 0.4, 3);
+    delete(h.patch(jj))
+    
+    plot([-100 100],-sign(Vel(jj))*300*[1 1],'--','Color',[0.5 0.5 0.5],'LineWidth',1);
+%     plot([-100 100],0*[1 1],'-','Color','k','LineWidth',0.5)
+    
+    pp = pp + 1;
+end
+set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',1000*0.05*[-1 1],'YLim',[0 820])
+ax(1).XLabel.String = 'Time (ms)';
+ax.XTick = -50:25:50;
+% set(h.all,'Color','c')
+% uistack(h.grand(4:6),'top')
+% uistack(h.patch(4:6),'top')
+
 %% Inter-Saccade Position %%
 FIG = figure (3) ; clf
 FIG.Units = 'inches';
@@ -148,7 +184,7 @@ uistack(hp,'top')
 %% Inter-Saccade Position Error %%
 FIG = figure (4) ; clf
 FIG.Units = 'inches';
-FIG.Position = [2 2 6 4];
+FIG.Position = [2 2 3 2];
 FIG.Name = 'Inter-Saccade Head Position Error';
 FIG.PaperPositionMode = 'auto';
 movegui(FIG,'center')
@@ -167,21 +203,26 @@ for jj = 1:N{1,3}
     tLim = sum(isnan(INT),2)./(size(INT,2)-1);
     span = 1:length(tLim(tLim<pLim));
     
-    plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Position_Error{jj},'Color', 0.5*CC{jj})
+    h.trial = plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Position_Error{jj},'Color', 0.5*CC{jj});
+    set(h.trial(:),'Color',[h.trial(1).Color 0.2])
     hh(jj) = plot(INTERVAL.HeadStats.Time(jj).Median(span),INTERVAL.HeadStats.Position_Error(jj).Median(span),...
         'Color', CC{jj}, 'LineWidth', 3);
     
-    hp(jj) = plot(INTERVAL.HeadStats.Time(jj).Median(span), Stim(span,jj), '--', 'Color', SS{jj}, 'LineWidth', 2);
+%     hp(jj) = plot(INTERVAL.HeadStats.Time(jj).Median(span), Stim(span,jj), '--', 'Color', SS{jj}, 'LineWidth', 2);
     
-    plot([0 10],[0 0], '-', 'Color', [0.5 0.5 0.5], 'LineWidth', 1)
-    plot([0 ; repmat(INTERVAL.HeadStats.Time(jj).Median(span(end)),2,1)],...
-        [0 , INTERVAL.HeadStats.Position_Error(jj).Median(span(end)) , 0],...
-        '-', 'Color', [0.5 0.5 0.5], 'LineWidth', 2);
+    plot([0 10],[0 0], '--', 'Color', [0.5 0.5 0.5], 'LineWidth', 1)
+%     plot([0 ; repmat(INTERVAL.HeadStats.Time(jj).Median(span(end)),2,1)],...
+%         [0 , INTERVAL.HeadStats.Position_Error(jj).Median(span(end)) , 0],...
+%         '-', 'Color', [0.5 0.5 0.5], 'LineWidth', 2);
+    
+	plot([repmat(INTERVAL.HeadStats.Time(jj).Median(span(end)),2,1)],...
+        [INTERVAL.HeadStats.Position_Error(jj).Median(span(end)) , 0],...
+        '--', 'Color', CC{jj}, 'LineWidth', 2);
     
 end
 set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',[0 1.5])
 % ax.YLim = max(abs(ax.YLim))*[-1 1];
-ax.YLim = 100*[-1 1];
+ax.YLim = 60*[-1 1];
 ax.XLabel.String = 'Time (s)';
 ax.YLabel.String = ['Head Position Error (' char(176) ')'];
 
@@ -321,7 +362,7 @@ AX = gobjects(length(SS),1);
 for ww = 1:length(SS)
     FF(ww) = figure (10+ww) ; clf ; hold on
     FF(ww).Units = 'inches';
-    FF(ww).Position = [0+(0.6*ww) , 6-(0.3*ww) , 3 , 3];
+    FF(ww).Position = [0+(0.6*ww) , 6-(0.3*ww) , 2 , 2];
     FF(ww).Color = 'w';
     AX(ww) = gca;
     axis tight
@@ -361,6 +402,7 @@ FIG.PaperPositionMode = 'auto';
 movegui(FIG,'center')
 FIG.Color = 'w';
 hold on
+clear h
 ax = gobjects(N{1,3},1);
 rmvIdx = 4;
 for jj = 1:N.vel
@@ -394,7 +436,7 @@ FIG.PaperPositionMode = 'auto';
 movegui(FIG,'center')
 FIG.Color = 'w';
 ax = gobjects(N{1,3},1);
-for jj = 1:N.speed
+for jj = 1:N{1,3}
     ax(jj) = subplot(2,3,jj); hold on
     for kk = 1:N.fly
         for ii = 1:size(TRIAL{kk,jj},1)
@@ -405,7 +447,7 @@ for jj = 1:N.speed
     plot(GRAND{jj,2}.Mean{1}{7}, GRAND{jj,2}.Mean{1}{8}(:,1), 'Color', 'k','LineWidth',2)
 end
 set(ax,'XLim',[0 40])
-set(ax,'YLim',[0 2])
+set(ax,'YLim',[0 1.2])
 
 
 

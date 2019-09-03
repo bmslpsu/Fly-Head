@@ -130,6 +130,9 @@ ax2 = subplot(2,1,2) ; hold on
     uistack(h.phase_1,'top')
     
     plot(ax1.XLim,[0 0],'--k','LineWidth',1);
+    
+    leg = legend([h.phase_1,h.phase_2,h.phase_3,h.phase_4],'Free: Ref2Wing','Free: Err2Wing','Fixed: Err2Wing','Replay: Err2Wing');
+    leg.Box = 'off';
 
 
 end

@@ -12,7 +12,6 @@ root = 'H:\DATA\Rigid_Data\';
 FILE = cellstr(FILE)';
 
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','GRAND','U','N');
-%%
 
 clearvars -except HeadFree Amp nAmp
 
@@ -45,21 +44,21 @@ for jj = 3
 
 	plot(HeadFree.TRIAL{8,jj}{2,1}.Time,HeadFree.TRIAL{10,jj}{1,1}.X(:,xIdx),'Color','g','LineWidth',2)
     
-    ax.L = axes;
+    ax.L = axes; hold on
     ax.L.YColor = [0 0 0];
     ax.L.FontSize = 8;
     ax.L.YLabel.String = '\Delta WBA (V)';
     ax.L.YLabel.FontSize = ax.R.YLabel.FontSize;
     ax.L.YLim = 2*[-1 1];
-%     ax.L.XLabel.String = 'Time (s)';
-%     ax.L.XLabel.FontSize = 8;
+    ax.L.XLabel.String = 'Time (s)';
+    ax.L.XLabel.FontSize = 8;
     ax.L.XColor = 'none';
     ax.L.Color = 'none';
     
     ax.L.Position = ax.R.Position;
 
     PlotPatch(HeadFree.GRAND{jj,catIdx}.Mean{2}{6}(:,xIdx),HeadFree.GRAND{jj,catIdx}.STD{2}{6}(:,xIdx),...
-        HeadFree.GRAND{jj,catIdx}.Mean{2}{5},3,HeadFree.N{1,1},'r',[0.1 0.1 0.6],0.3,2);
+        HeadFree.GRAND{jj,catIdx}.Mean{2}{5},2,HeadFree.N{1,1},'r',[0.1 0.1 0.6],0.3,2);
      
     pp = pp + 1;
 end

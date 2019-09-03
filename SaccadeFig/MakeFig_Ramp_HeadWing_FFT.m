@@ -12,7 +12,7 @@ FILE = cellstr(FILE)';
 
 % load(fullfile(root,FILE{1}),'SACCADE','INTERVAL','SACD','Stim','U','N','I','TRIAL','FLY','GRAND');
 load(fullfile(root,FILE{1}),'SACD','Stim','U','N','TRIAL','FLY','GRAND');
-%%
+
 clearvars -except SACCADE INTERVAL SACD Stim U N I TRIAL FLY GRAND
 
 CC = repmat({[1 0 0],[0 1 0],[0 0 1]},1,2);
@@ -79,6 +79,39 @@ set(ax,'XLim',[0 40])
 set(ax,'YLim',[0 1])
 % set(ax([1:4,6]),'XColor','none')
 set(ax([2:3,5:6]),'YColor','none')
+set(ax,'FontSize',8)
+
+%% Saccade Removed Frequency Domain ALL %%
+FIG = figure (2) ; clf
+FIG.Units = 'inches';
+FIG.Position = [2 2 3 2];
+FIG.Name = 'Removed Saccades';
+FIG.PaperPositionMode = 'auto';
+movegui(FIG,'center')
+FIG.Color = 'w';
+hold on
+clear ax
+ax = subplot(1,1,1) ; hold on
+rmvIdx = 2;
+for jj = 1:N.vel
+%     ax.Title.String = [num2str(Vel(jj)) ' (' char(176) '/s)'];
+    ax.XLabel.String = 'Frequency (Hz)';
+    ax.YLabel.String = ['Head Angle (' char(176) ')'];
+%     for kk = 1:N.fly
+%         for ii = 1:size(TRIAL{kk,jj},1)
+%             h.trial = plot(TRIAL{kk,jj}{ii,rmvIdx}.Fv, TRIAL{kk,jj}{ii,rmvIdx}.Mag(:,1), 'Color', 0.5*CC{jj});
+%             h.trial.Color(4) = 0.3;
+%         end
+% %         plot(FLY{jj}{kk,rmvIdx}.Mean{7}, FLY{jj}{kk,rmvIdx}.Mean{8}(:,1), 'Color', 0.7*CC{jj},'LineWidth',1)
+%     end
+    plot(GRAND{jj,rmvIdx}.Mean{1}{7}, GRAND{jj,rmvIdx}.Mean{1}{8}(:,1), 'Color', CC{jj},'LineWidth',3)
+    
+%     PlotPatch(GRAND{jj,rmvIdx}.Mean{1}{8}(:,1), GRAND{jj,rmvIdx}.STD{1}{8}(:,1), ...
+%         GRAND{jj,rmvIdx}.Mean{1}{7}, 2, N.fly, CC{jj}, [0.7 0.7 0.7], 0.4, 3);
+end
+set(ax,'XLim',[5 30])
+set(ax,'YLim',[0 0.7])
+% set(ax([1:4,6]),'XColor','none')
 set(ax,'FontSize',8)
 
 end
