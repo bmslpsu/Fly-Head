@@ -312,14 +312,18 @@ set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',[0 1.5])
 %% Saccade Trigger Polar Plot %%
 FIG = figure (7) ; clf
 FIG.Units = 'inches';
-FIG.Position = [2 2 4 4];
+FIG.Position = 0.75*[2 2 2 2];
 FIG.Name = 'Saccade Trigger';
 FIG.PaperPositionMode = 'auto';
 movegui(FIG,'center')
 FIG.Color = 'w';
 
-polarhistogram(deg2rad(SACD.Head.StartPos(SACD.Head.Dir==-1)),100,'FaceColor','g','FaceAlpha',.9); hold on
-polarhistogram(deg2rad(SACD.Head.EndPos(SACD.Head.Dir==-1)),100,'FaceColor','r','FaceAlpha',.9) ; hold on
+polarhistogram([deg2rad(SACD.Head.StartPos(SACD.Head.Dir==-1));-deg2rad(SACD.Head.StartPos(SACD.Head.Dir==1))],100,'FaceColor','g','FaceAlpha',.9); hold on
+polarhistogram([deg2rad(SACD.Head.EndPos(SACD.Head.Dir==-1));-deg2rad(SACD.Head.EndPos(SACD.Head.Dir==1))],100,'FaceColor','r','FaceAlpha',.9) ; hold on
+% polarhistogram(-deg2rad(SACD.Head.StartPos(SACD.Head.Dir==1)),100,'FaceColor','g','FaceAlpha',.9); hold on
+% polarhistogram(-deg2rad(SACD.Head.EndPos(SACD.Head.Dir==1)),100,'FaceColor','r','FaceAlpha',.9) ; hold on
+% polarhistogram(deg2rad(SACD.Head.StartPos),100,'FaceColor','g','FaceAlpha',.9); hold on
+% polarhistogram(deg2rad(SACD.Head.EndPos),100,'FaceColor','r','FaceAlpha',.9) ; hold on
 ax = gca;
 ax.FontSize = 8;
 grid off
@@ -332,8 +336,9 @@ thetaticklabels({'20','10','0','-10','-20'})
 ax.ThetaZeroLocation = 'top';
 ax.ThetaAxis.Label.String = ['Head Position (' char(176) ')'];
 ax.ThetaAxis.Label.FontSize = 8;
-leg = legend('Start','End','Location','North');
-leg.Location = 'northwest';
+% leg = legend('Start','End','Location','North');
+% leg.Location = 'northwest';
+% leg.Box = 'off';
 
 %% Saccade Statistics %%
 G = [];
