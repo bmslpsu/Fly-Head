@@ -54,9 +54,9 @@ ax1 = subplot(1,1,1);
     ax1.XLim = [0.1 12];
     ax1.XTick = [ax1.XLim(1),2:2:ax1.XLim(2)];
     
-    h.patch = PlotPatch(MAG,   MSTD, FREQ, 3, HeadFree.N{1,1}, 'g', [0.4 0.4 0.6], 0.5, 2);
+    h.patch = PlotPatch(MAG,   MSTD, FREQ, 0, HeadFree.N{1,1}, 'g', [0.4 0.4 0.6], 0.5, 2);
 
- 	h.patch = PlotPatch(ERROR, ESTD, FREQ, 3, HeadFree.N{1,1}, 'y', [0.4 0.4 0.6], 0.5, 2);
+ 	h.patch = PlotPatch(ERROR, ESTD, FREQ, 2, HeadFree.N{1,1}, 'y', [0.4 0.4 0.6], 0.5, 2);
  	
     ax1.XTick = unique(sort([min(ax1.XLim) ax1.XTick]));
     vel = round(AMP*2*pi*ax1.XTick);
@@ -115,7 +115,7 @@ ax1 = subplot(1,1,1);
     
     h.patch = PlotPatch(MAG,   MSTD, TIME, 0, HeadFree.N{1,1}, 'k', [0.4 0.4 0.6], 0.5, 2);
 
- 	h.patch = PlotPatch(ERROR, ESTD, TIME, 3, HeadFree.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
+ 	h.patch = PlotPatch(ERROR, ESTD, TIME, 2, HeadFree.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
     
 ax2 = axes;
     hold on
@@ -167,16 +167,15 @@ ax1 = subplot(1,1,1);
     ax1.XLabel.Color = 'k';
     ax1.XLim = [0.1 12];
     ax1.XTick = [0.1 1 10];
+  	ax1.XScale = 'log';
+    ax1.XGrid = 'on';
     
-    h.patch = PlotPatch(MAG,   MSTD, FREQ, 3, HeadFree.N{1,1}, 'g', [0.4 0.4 0.6], 0.5, 2);
-
- 	h.patch = PlotPatch(ERROR, ESTD, FREQ, 0, HeadFree.N{1,1}, 'y', [0.4 0.4 0.6], 0.5, 2);
+    h.patch = PlotPatch(MAG,   MSTD, FREQ, 0, HeadFree.N{1,1}, 'g', [0.4 0.4 0.6], 0.5, 2);
+    
+ 	h.patch = PlotPatch(ERROR(2:end), ESTD(2:end), FREQ(2:end), 2, HeadFree.N{1,1}, 'y', [0.4 0.4 0.6], 0.5, 2);
  	
     vel = round(AMP*2*pi*ax1.XTick);
     velLabel = cellfun(@(x) num2str(x), num2cell(vel), 'UniformOutput', false);
-    
-    ax1.XScale = 'log';
-    ax1.XGrid = 'on';
 
     ax3 = axes;
     ax3.Position = ax1.Position + [0 -0.00 0 0];

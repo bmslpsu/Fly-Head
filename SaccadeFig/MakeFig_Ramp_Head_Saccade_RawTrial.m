@@ -16,7 +16,9 @@ load(fullfile(root,FILE{1}),'SACCADE','INTERVAL','SACD','Stim','U','N','I','TRIA
 CC = repmat({[1 0 0],[0 1 0],[0 0 1]},1,2);
 
 Vel = 3.75*U{1,3}{1};
+
 clearvars -except SACCADE INTERVAL SACD Stim U N I TRIAL FLY GRAND CC Vel
+
 %% Saccade Trial %%
 FIG = figure (1) ; clf
 FIG.Units = 'inches';
@@ -43,14 +45,5 @@ xlabel('Time (s)')
 ylabel(['Angle (' char(176) ')'])
 leg = legend('Stimulus','Head','location','northwest');
 leg.Box = 'off';
-
-
-
-
-
-
-
-
-
 
 end
