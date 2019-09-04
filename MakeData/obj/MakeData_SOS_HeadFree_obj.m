@@ -168,22 +168,26 @@ movegui(FIG, 'center')
 
 subplot(2,1,1) ; hold on
 xlabel('Time')
-ylabel('Angle (deg)')
+ylabel(['Angle (' char(176) ')'])
 % plot(Time,RefMean,'b')
-[~,h.ErrMean] = PlotPatch(ErrMean, ErrSTD, Time, 3, 1, 'k' ,[0.4 0.4 0.6], 0.4 , 2);
+[~,h.ErrMean] = PlotPatch(ErrMean, ErrSTD, Time, 2, 1, 'k' ,[0.4 0.4 0.6], 0.4 , 1);
 h.ErrTrial = plot(Time,Error(:,minIdx),'r');
+leg = legend([h.ErrMean,h.ErrTrial],'Mean Error','Replay Trial Error');
+leg.Box = 'off';
+
 
 subplot(2,1,2) ; hold on
 xlim([0 10])
 xlabel('Frequency (Hz)')
-ylabel('Mag (deg)')
-plot(TRIAL{1}{1,1}.Fv, TRIAL{1}{1,1}.Mag(:,xIdx), 'b', 'LineWidth', 1)
+ylabel(['Mag (' char(176) ')'])
+plot(TRIAL{1}{1,1}.Fv, TRIAL{1}{1,1}.Mag(:,xIdx), 'g', 'LineWidth', 1)
 plot(TEST.Fv, TEST.Mag(:,1), 'r', 'LineWidth', 1)
 
-plot(TRIAL{1}{1,1}.IOFreq, TRIAL{1}{1,1}.IOMag(:,xIdx), '-b*', 'LineWidth', 1)
+plot(TRIAL{1}{1,1}.IOFreq, TRIAL{1}{1,1}.IOMag(:,xIdx), '-g*', 'LineWidth', 1)
 plot(TEST.IOFreq, TEST.IOMag(:,1), '-r*', 'LineWidth', 1)
 
-legend('Reference','Error')
+leg = legend('Reference','Trial Error');
+leg.Box = 'off';
 
 centPos = 15;
 func = deg2panel(Error(:,minIdx)) + centPos;
@@ -193,8 +197,8 @@ tt = 0:(1/Fs):TT;
 func = round(interp1(Time, func , tt, 'linear','extrap')); % interpolate to match new time
 
 subplot(2,1,1) ; hold on
-h.func = plot(tt, 3.75*(func - centPos), 'g', 'LineWidth', 1);
-legend([h.ErrMean,h.ErrTrial,h.func], 'Mean Error','Selected Trial Error','Function')
+% h.func = plot(tt, 3.75*(func - centPos), 'g', 'LineWidth', 1);
+% legend([h.ErrMean,h.ErrTrial,h.func], 'Mean Error','Selected Trial Error','Function')
 
 % Name file
 strFreq = '';
@@ -205,6 +209,7 @@ strFreq(end) = [];
 
 fname = sprintf(['position_function_SOS_REPLAY_fs_%1.1f_T_%1.1f_freq_' strFreq '.mat'],Fs,TT);
 targetDir = 'C:\Users\boc5244\Documents\GitHub\Arena\Functions';
+%%
 save(fullfile(targetDir,fname), 'func');
 
 %% SAVE %%
