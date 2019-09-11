@@ -1,5 +1,5 @@
-function [] = Experiment_SOS_Replay(Fn)
-%% Experiment_SOS_Replay: runs an experiment using LED arena and fly panel controller
+function [] = Experiment_SOS_HaltereFixed(Fn)
+%% Experiment_SOS_HaltereFixed: runs an experiment using LED arena and fly panel controller
 % Written for Panel Controller v3 and NiDAQ seesion mode
 %   INPUTS:
 %       Fn          :  	fly number
@@ -9,7 +9,7 @@ imaqreset
 %% Set directories & experimental paramters %%
 %---------------------------------------------------------------------------------------------------------------------------------
 %rootdir = uigetdir({}, 'Select folder to save data'); % define directory to save file
-root = 'C:\BC\Rigid_data\Experiment_SOS_v2_Replay\';
+root = 'C:\BC\Rigid_data\Experiment_SOS_v2_HaltereFixBoth';
 
 % EXPERIMENTAL PARAMETERS
 n_tracktime = 20 + 1;       % length(func)/fps; seconds for each EXPERIMENT
@@ -18,7 +18,7 @@ n_pause = 0.2;              % seconds for each pause between panel commands
 n_trial = 20;               % # of repetitions
 patID = 2;                  % Spatial frequency grating pattern
 yPos  = 5;                  % 30 deg spatial frequency
-funcX = 1;                  % SOS replay (20s)
+funcX = 1;                  % SOS (20s)
 xUpdate = 200;              % function update rate
 FPS = 100;                  % camera frame rate
 nFrame = FPS*n_tracktime;   % # of frames to log
@@ -35,9 +35,6 @@ AO = 0;                     % Analog output channels
 t = 0:1/s.Rate:n_tracktime;
 TRIG = ((1/2)*(square(2*pi*FPS*t,50) - 1)');
 TRIG(TRIG==-1) = 4;
-% TRIG = 1*(square(2*pi*FPS*t,90) + 1)';;
-% plot(t,TRIG)
-% ylim([-1 6])
 
 [vid,~] = Basler_acA640_120gm(FPS,Gain,nFrame);
 
@@ -89,7 +86,7 @@ for ii = 1:n_trial
     %-----------------------------------------------------------------------------------------------------------------------------
     % SAVE DATA %
     disp('Saving...') ; disp('----------------------------------------------------------------------')
-    fname = ['fly_' num2str(Fn) '_trial_' num2str(ii) '_SOSReplay.mat'];
+    fname = ['fly_' num2str(Fn) '_trial_' num2str(ii) '_SOS_HaltereFixed_Both.mat'];
     save(fullfile(root,fname),'-v7.3','data','t_p','vidData','t_v','Fs','syncTime','t_sync');
 end
 
