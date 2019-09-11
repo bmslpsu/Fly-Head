@@ -42,7 +42,7 @@ for jj = 3
     ax.R.YTick = 15*[-1 0 1];
     ax.R.YAxisLocation = 'right';
 
-	plot(HeadFixed.TRIAL{8,jj}{2,1}.Time,HeadFixed.TRIAL{10,jj}{1,1}.X(:,xIdx),'Color','g','LineWidth',2)
+	plot(HeadFixed.TRIAL{8,jj}{2,1}.Time,HeadFixed.TRIAL{10,jj}{1,1}.X(:,xIdx),'Color','k','LineWidth',1)
     
     ax.L = axes; hold on
     ax.L.YColor = [0 0 0];
@@ -58,7 +58,7 @@ for jj = 3
     ax.L.Position = ax.R.Position;
 
     PlotPatch(HeadFixed.GRAND{jj,catIdx}.Mean{2}{6}(:,xIdx),HeadFixed.GRAND{jj,catIdx}.STD{2}{6}(:,xIdx),...
-        HeadFixed.GRAND{jj,catIdx}.Mean{2}{5},2,HeadFixed.N{1,1},'r',[0.1 0.1 0.6],0.3,2);
+        HeadFixed.GRAND{jj,catIdx}.Mean{2}{5},1,HeadFixed.N{1,1},'r',[0.1 0.1 0.6],0.3,2);
      
     pp = pp + 1;
 end

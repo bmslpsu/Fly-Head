@@ -64,10 +64,10 @@ for ww = 1
             ax.L.XTickLabels = [];
         end
         
-    	plot(HeadFree{ww}.TRIAL{5,jj}{2,1}.Time,HeadFree{ww}.TRIAL{5,jj}{2,1}.X(:,xIdx),'-g','LineWidth',1.5)
+    	plot(HeadFree{ww}.TRIAL{5,jj}{2,1}.Time,HeadFree{ww}.TRIAL{5,jj}{2,1}.X(:,xIdx),'-k','LineWidth',1)
 
         h.patch = PlotPatch(HeadFree{ww}.GRAND{jj,catIdx}.Mean{2}{6}(:,xIdx),2*HeadFree{ww}.GRAND{jj,catIdx}.STD{2}{6}(:,xIdx),...
-            HeadFree{ww}.GRAND{jj,catIdx}.Mean{2}{5},2,HeadFree{ww}.N{1,1},'b',[0.4 0.4 0.6],0.5,2);
+            HeadFree{ww}.GRAND{jj,catIdx}.Mean{2}{5}, 1, HeadFree{ww}.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
         
 %         yyaxis right ; ax.R = gca;
 %         ax.R.YColor = [0 1 0];

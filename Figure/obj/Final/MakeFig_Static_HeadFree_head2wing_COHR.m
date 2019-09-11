@@ -44,10 +44,10 @@ ax.XLabel.String = 'Frequency (Hz)';
 ax.XLabel.FontSize = 8;
 
 [~,h.stat] = PlotPatch(STATIC.GRAND{freqIdx,head2wing_stat}.Mean{1}{7}(:,xIdx), STATIC.GRAND{freqIdx,head2wing_stat}.STD{1}{7}(:,xIdx),...
-    STATIC.GRAND{freqIdx,head2wing_stat}.Mean{1}{8}(:,xIdx), 2, STATIC.N{1,1}, [0 0.5 0.7], [0.4 0.4 0.6], 0.5, 2);
+    STATIC.GRAND{freqIdx,head2wing_stat}.Mean{1}{8}(:,xIdx), 1, STATIC.N{1,1}, [0 0.5 0.7], [0.4 0.4 0.6], 0.5, 2);
 
 [~,h.sos] = PlotPatch(SOS.GRAND{1,head2wing_sos}.Mean{1}{7}(:,xIdx), SOS.GRAND{1,head2wing_sos}.STD{1}{7}(:,xIdx),...
-    SOS.GRAND{1,head2wing_sos}.Mean{1}{8}(:,xIdx), 2, SOS.N{1,1}, [0.4 0.7 0.2], [0.4 0.4 0.6], 0.5, 2);
+    SOS.GRAND{1,head2wing_sos}.Mean{1}{8}(:,xIdx), 1, SOS.N{1,1}, [0.4 0.7 0.2], [0.4 0.4 0.6], 0.5, 2);
 
 uistack([h.sos h.stat], 'top')
 leg = legend([h.sos h.stat], 'SOS', 'Static');

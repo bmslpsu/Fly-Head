@@ -35,14 +35,14 @@ end
 Real        = real(CmplxGain);
 Imag        = imag(CmplxGain);
 
-for jj = 1:nFreq
-    for kk = 1:size(Real,1)
-        if (jj==5) && ( Real(kk,jj)<0 && Imag(kk,jj)>0 )
-            Imag(kk,jj) = -Imag(kk,jj);
-            Real(kk,jj) = -Real(kk,jj);
-        end
-    end
-end
+% for jj = 1:nFreq
+%     for kk = 1:size(Real,1)
+%         if (jj==5) && ( Real(kk,jj)<0 && Imag(kk,jj)>0 )
+%             Imag(kk,jj) = -Imag(kk,jj);
+%             Real(kk,jj) = -Real(kk,jj);
+%         end
+%     end
+% end
 
 CmplxGain   = Real + 1i*Imag;
 

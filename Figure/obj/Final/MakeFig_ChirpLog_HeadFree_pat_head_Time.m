@@ -41,10 +41,10 @@ for jj = 3
     ax.L.XLabel.String = 'Time (s)';
     ax.L.XLabel.FontSize = 8;
 
-    plot(HeadFree.TRIAL{8,jj}{2,1}.Time,HeadFree.TRIAL{10,jj}{1,1}.X(:,xIdx),'Color','g','LineWidth',2)
+    plot(HeadFree.TRIAL{8,jj}{2,1}.Time,HeadFree.TRIAL{10,jj}{1,1}.X(:,xIdx),'Color','k','LineWidth',1)
 
     PlotPatch(HeadFree.GRAND{jj,catIdx}.Mean{2}{6}(:,xIdx),HeadFree.GRAND{jj,catIdx}.STD{2}{6}(:,xIdx),...
-        HeadFree.GRAND{jj,catIdx}.Mean{2}{5},3,HeadFree.N{1,1},'b',[0.1 0.1 0.6],0.3,2);
+        HeadFree.GRAND{jj,catIdx}.Mean{2}{5},1,HeadFree.N{1,1},'b',[0.1 0.1 0.6],0.3,2);
      
     pp = pp + 1;
 end

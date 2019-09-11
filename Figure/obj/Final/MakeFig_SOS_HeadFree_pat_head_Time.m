@@ -38,9 +38,9 @@ ax.L.XLabel.Color = 'k';
 ax.L.XLabel.FontSize = 8;
 ax.L.XLim = [0 20];
 
-plot(HeadFree.TRIAL{1}{2,1}.Time,HeadFree.TRIAL{1}{2,1}.X(:,xIdx),'g','LineWidth',2)
+plot(HeadFree.TRIAL{1}{2,1}.Time,HeadFree.TRIAL{1}{2,1}.X(:,xIdx),'k','LineWidth',1)
 
-PlotPatch(HeadFree.GRAND{1,catIdx}.Mean{2}{6}(:,xIdx),HeadFree.GRAND{1,catIdx}.STD{2}{6}(:,xIdx),...
-    HeadFree.GRAND{1,catIdx}.Mean{2}{5},3, HeadFree.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
+PlotPatch(HeadFree.GRAND{1,catIdx}.Mean{1}{6}(:,xIdx),HeadFree.GRAND{1,catIdx}.STD{2}{6}(:,xIdx),...
+    HeadFree.GRAND{1,catIdx}.Mean{2}{5}, 1, HeadFree.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
 
 end

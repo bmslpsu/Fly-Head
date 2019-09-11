@@ -27,7 +27,7 @@ movegui(FIG,'center')
 FIG.Name = filename;
 
 ax.R = gca; hold on
-ax.R.YColor = 'g';
+ax.R.YColor = 'k';
 ax.R.YAxisLocation = 'right';
 ax.R.FontSize = 8;
 ax.R.YLabel.String = ['(' char(176) ')'];
@@ -39,7 +39,7 @@ ax.R.XLabel.Color = 'k';
 ax.R.XLabel.FontSize = 8;
 ax.R.XLim = [0 20];
 
-plot(HeadFree.TRIAL{1}{2,1}.Time,HeadFree.TRIAL{1}{2,1}.X(:,xIdx),'g','LineWidth',2)
+plot(HeadFree.TRIAL{1}{2,1}.Time,HeadFree.TRIAL{1}{2,1}.X(:,xIdx),'k','LineWidth',1)
 
 ax.L = axes; hold on
 ax.L.YColor = 'k';
@@ -54,6 +54,6 @@ ax.L.Position = ax.R.Position;
 ax.L.XColor = 'none';
 
 PlotPatch(HeadFree.GRAND{1,catIdx}.Mean{2}{6}(:,xIdx),HeadFree.GRAND{1,catIdx}.STD{2}{6}(:,xIdx),...
-    HeadFree.GRAND{1,catIdx}.Mean{2}{5},3, HeadFree.N{1,1}, 'r', [0.4 0.4 0.6], 0.5, 2);
+    HeadFree.GRAND{1,catIdx}.Mean{2}{5},1, HeadFree.N{1,1}, 'r', [0.4 0.4 0.6], 0.5, 2);
 
 end

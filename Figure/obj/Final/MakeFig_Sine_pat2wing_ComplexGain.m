@@ -434,7 +434,7 @@ amp = 3;
 ax1 = subplot(2,1,1) ; hold on
     ax1.FontSize = 8;
     ax1.XLim = [0 12.5];
-    ax1.YLim = [0 0.3];
+    ax1.YLim = [0 0.2];
     ax1.XLabel.FontSize = 8;
     ax1.XLabel.Color = 'w';
     ax1.YLabel.String = ['Gain (' char(176) '/' char(176) ')'];
@@ -444,7 +444,7 @@ ax1 = subplot(2,1,1) ; hold on
 
 %     errorbar(Freq,GAIN(amp,:),2*GAIN_STD(amp,:),'-b','LineWidth',2)
     
-	[~,h.gain] = PlotPatch(GAIN(amp,:), GAIN_STD(amp,:), Freq, 3, HeadFree{amp}.N{1,1}, 'c', [0.4 0.4 0.6], 0.5, 2);
+	[~,h.gain] = PlotPatch(GAIN(amp,:), GAIN_STD(amp,:), Freq, 1, HeadFree{amp}.N{1,1}, 'c', [0.4 0.4 0.6], 0.5, 2);
     h.gain.Marker = '.';
     h.gain.MarkerSize = 20;
     
@@ -462,7 +462,7 @@ ax2 = subplot(2,1,2) ; hold on
 
 %     errorbar(Freq,PHASE(amp,:),2*PHASE_STD(amp,:),'-b','LineWidth',2)
     
-	[~,h.gain] = PlotPatch(PHASE(amp,:), PHASE_STD(amp,:), Freq, 3, HeadFree{amp}.N{1,1}, 'c', [0.4 0.4 0.6], 0.5, 2);
+	[~,h.gain] = PlotPatch(PHASE(amp,:), PHASE_STD(amp,:), Freq, 1, HeadFree{amp}.N{1,1}, 'c', [0.4 0.4 0.6], 0.5, 2);
     h.gain.Marker = '.';
     h.gain.MarkerSize = 20;
     

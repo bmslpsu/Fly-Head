@@ -37,25 +37,25 @@ Imag        = imag(CmplxGain);
 
 for jj = 1:nFreq
     for kk = 1:size(Real,1)
-        if (jj==5 || jj==4 || jj==3 || jj==2) && ( Real(kk,jj)>0 && Imag(kk,jj)>0 )
-            Imag(kk,jj) = -Imag(kk,jj);
-            Real(kk,jj) = -Real(kk,jj);
-        end
+%         if (jj==5 || jj==4 || jj==3 || jj==2) && ( Real(kk,jj)>0 && Imag(kk,jj)>0 )
+%             Imag(kk,jj) = -Imag(kk,jj);
+%             Real(kk,jj) = -Real(kk,jj);
+%         end
         
         if jj==5 && ( Real(kk,jj)>0 && Imag(kk,jj)<0 )
             Imag(kk,jj) = Imag(kk,jj);
             Real(kk,jj) = -Real(kk,jj);
         end
         
-        if (jj==1 || jj ==2 || jj==3 || jj==4) && ( Real(kk,jj)<0 && Imag(kk,jj)>0 )
-            Imag(kk,jj) = -Imag(kk,jj);
-            Real(kk,jj) = -Real(kk,jj);
-        end
-        
-        if (jj==1 || jj ==2) && ( Real(kk,jj)<0 && Imag(kk,jj)<0 )
-            Imag(kk,jj) = -Imag(kk,jj);
-            Real(kk,jj) = -Real(kk,jj);
-        end
+%         if (jj==1 || jj ==2 || jj==3 || jj==4) && ( Real(kk,jj)<0 && Imag(kk,jj)>0 )
+%             Imag(kk,jj) = -Imag(kk,jj);
+%             Real(kk,jj) = -Real(kk,jj);
+%         end
+%         
+%         if (jj==1 || jj ==2) && ( Real(kk,jj)<0 && Imag(kk,jj)<0 )
+%             Imag(kk,jj) = -Imag(kk,jj);
+%             Real(kk,jj) = -Real(kk,jj);
+%         end
     end
 end
 

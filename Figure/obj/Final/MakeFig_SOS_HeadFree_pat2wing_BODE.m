@@ -59,7 +59,7 @@ Phase_4(cnd) = Phase_4(cnd) - 2*pi;
 ax1 = subplot(2,1,1) ; hold on
     ax1.FontSize = 8;
     ax1.XLim = [0 10];
-	ax1.YLim = [0 0.3];
+	ax1.YLim = [0 0.2];
     ax1.XTickLabel = '';
     ax1.XLabel.FontSize = 8;
     ax1.XLabel.Color = 'none';
@@ -70,22 +70,22 @@ ax1 = subplot(2,1,1) ; hold on
 %         2*HeadFree.GRAND{1,catIdx}.STD{2}{5}(:,xIdx),'-ob','LineWidth',3);
     
     [~,h.gain_1] = PlotPatch(HeadFree.GRAND{1,stim2wing}.Mean{2}{5}(:,xIdx), HeadFree.GRAND{1,stim2wing}.STD{2}{5}(:,xIdx), ...
-        HeadFree.GRAND{1,stim2wing}.Mean{2}{4}, 2, HeadFree.N{1,1}, 'r', [0.4 0.4 0.6], 0.5, 2);
+        HeadFree.GRAND{1,stim2wing}.Mean{2}{4}, 1, HeadFree.N{1,1}, 'r', [0.4 0.4 0.6], 0.5, 2);
 	h.gain_1.Marker = '.';
     h.gain_1.MarkerSize = 20;
     
   	[~,h.gain_2] = PlotPatch(HeadFree.GRAND{1,err2wing}.Mean{2}{5}(:,xIdx), HeadFree.GRAND{1,err2wing}.STD{2}{5}(:,xIdx), ...
-        HeadFree.GRAND{1,err2wing}.Mean{2}{4}, 2, HeadFree.N{1,1}, 'c', [0.4 0.4 0.6], 0.5, 2);
+        HeadFree.GRAND{1,err2wing}.Mean{2}{4}, 1, HeadFree.N{1,1}, 'c', [0.4 0.4 0.6], 0.5, 2);
 	h.gain_2.Marker = '.';
     h.gain_2.MarkerSize = 20;
     
  	[~,h.gain_3] = PlotPatch(HeadFixed.GRAND{1,fixedwing}.Mean{2}{5}(:,xIdx), HeadFixed.GRAND{1,fixedwing}.STD{2}{5}(:,xIdx), ...
-        HeadFixed.GRAND{1,fixedwing}.Mean{2}{4}, 2, HeadFixed.N{1,1}, [0.4 0 0.7], [0.4 0.4 0.6], 0.5, 2);
+        HeadFixed.GRAND{1,fixedwing}.Mean{2}{4}, 1, HeadFixed.N{1,1}, [0.4 0 0.7], [0.4 0.4 0.6], 0.5, 2);
 	h.gain_3.Marker = '.';
     h.gain_3.MarkerSize = 20;
     
 	[~,h.gain_4] = PlotPatch(HeadReplay.GRAND{1,fixedwing}.Mean{2}{5}(:,xIdx), HeadReplay.GRAND{1,fixedwing}.STD{2}{5}(:,xIdx), ...
-	HeadReplay.GRAND{1,fixedwing}.Mean{2}{4}, 2, HeadReplay.N{1,1}, 'y', [0.4 0.4 0.6], 0.5, 2);
+	HeadReplay.GRAND{1,fixedwing}.Mean{2}{4}, 1, HeadReplay.N{1,1}, 'y', [0.4 0.4 0.6], 0.5, 2);
 	h.gain_4.Marker = '.';
     h.gain_4.MarkerSize = 20;
     
@@ -107,22 +107,22 @@ ax2 = subplot(2,1,2) ; hold on
 %         2*rad2deg(HeadFree.GRAND{1,8}.CircSTD{7}{6}(:,xIdx)),'-ob','LineWidth',3);
     
     [~,h.phase_1] = PlotPatch(rad2deg(HeadFree.GRAND{1,stim2wing}.CircMean{7}{6}(:,xIdx)), rad2deg(HeadFree.GRAND{1,stim2wing}.CircSTD{7}{6}(:,xIdx)), ...
-        HeadFree.GRAND{1,stim2wing}.Mean{2}{4}, 2, HeadFree.N{1,1}, 'r', [0.4 0.4 0.6], 0.5, 2);
+        HeadFree.GRAND{1,stim2wing}.Mean{2}{4}, 1, HeadFree.N{1,1}, 'r', [0.4 0.4 0.6], 0.5, 2);
     h.phase_1.Marker = '.';
     h.phase_1.MarkerSize = 20;
     
  	[~,h.phase_2] = PlotPatch(rad2deg(Phase_2), rad2deg(HeadFree.GRAND{1,err2wing}.CircSTD{7}{6}(:,xIdx)), ...
-        HeadFree.GRAND{1,err2wing}.Mean{2}{4}, 2, HeadFree.N{1,1}, 'c', [0.4 0.4 0.6], 0.5, 2);
+        HeadFree.GRAND{1,err2wing}.Mean{2}{4}, 1, HeadFree.N{1,1}, 'c', [0.4 0.4 0.6], 0.5, 2);
     h.phase_2.Marker = '.';
     h.phase_2.MarkerSize = 20;
     
     [~,h.phase_3] = PlotPatch(rad2deg(Phase_3), rad2deg(HeadFixed.GRAND{1,fixedwing}.CircSTD{7}{6}(:,xIdx)), ...
-        HeadFixed.GRAND{1,fixedwing}.Mean{2}{4}, 2, HeadFixed.N{1,1}, [0.4 0 0.7], [0.4 0.4 0.6], 0.5, 2);
+        HeadFixed.GRAND{1,fixedwing}.Mean{2}{4}, 1, HeadFixed.N{1,1}, [0.4 0 0.7], [0.4 0.4 0.6], 0.5, 2);
     h.phase_3.Marker = '.';
     h.phase_3.MarkerSize = 20;
     
   	[~,h.phase_4] = PlotPatch(rad2deg(Phase_4), rad2deg(HeadReplay.GRAND{1,fixedwing}.CircSTD{7}{6}(:,xIdx)), ...
-	HeadReplay.GRAND{1,fixedwing}.Mean{2}{4}, 2, HeadReplay.N{1,1}, 'y', [0.4 0.4 0.6], 0.5, 2);
+	HeadReplay.GRAND{1,fixedwing}.Mean{2}{4}, 1, HeadReplay.N{1,1}, 'y', [0.4 0.4 0.6], 0.5, 2);
     h.phase_4.Marker = '.';
     h.phase_4.MarkerSize = 20;
     

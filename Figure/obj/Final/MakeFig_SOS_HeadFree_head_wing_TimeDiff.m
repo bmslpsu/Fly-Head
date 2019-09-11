@@ -13,9 +13,9 @@ root = 'H:\DATA\Rigid_Data\';
 FILE = cellstr(FILE)';
 
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','GRAND','U','N');
-
-headIdx = 3;
-wingIdx = 3;
+%%
+headIdx = 5;
+wingIdx = 8;
 
 xIdx = 1;
 
@@ -45,7 +45,7 @@ ax1 = subplot(1,1,1) ; hold on
     HTimeDiff       = 1000*(HPhase/360).*(1./HFreq);
     HTimeDiff_STD   = 1000*(HPhase_STD/360).*(1./HFreq);
     
-    [~,h.gain] = PlotPatch(HTimeDiff, HTimeDiff_STD, HFreq, 3, HeadFree.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
+    [~,h.gain] = PlotPatch(HTimeDiff, HTimeDiff_STD, HFreq, 1, HeadFree.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
 	h.gain.Marker = '.';
     h.gain.MarkerSize = 20;
     
@@ -55,7 +55,7 @@ ax1 = subplot(1,1,1) ; hold on
     WTimeDiff       = 1000*(WPhase/360).*(1./HFreq);
     WTimeDiff_STD   = 1000*(WPhase_STD/360).*(1./HFreq);
     
-    [~,h.phase] = PlotPatch(WTimeDiff, WTimeDiff_STD, WFreq, 3, HeadFree.N{1,1}, 'r', [0.4 0.4 0.6], 0.5, 2);
+    [~,h.phase] = PlotPatch(WTimeDiff, WTimeDiff_STD, WFreq, 1, HeadFree.N{1,1}, 'r', [0.4 0.4 0.6], 0.5, 2);
 	h.phase.Marker = '.';
     h.phase.MarkerSize = 20;
     

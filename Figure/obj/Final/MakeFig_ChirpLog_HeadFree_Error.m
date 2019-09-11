@@ -56,7 +56,7 @@ ax1 = subplot(1,1,1);
     
     h.patch = PlotPatch(MAG,   MSTD, FREQ, 0, HeadFree.N{1,1}, 'g', [0.4 0.4 0.6], 0.5, 2);
 
- 	h.patch = PlotPatch(ERROR, ESTD, FREQ, 2, HeadFree.N{1,1}, 'y', [0.4 0.4 0.6], 0.5, 2);
+ 	h.patch = PlotPatch(ERROR, ESTD, FREQ, 1, HeadFree.N{1,1}, 'y', [0.4 0.4 0.6], 0.5, 2);
  	
     ax1.XTick = unique(sort([min(ax1.XLim) ax1.XTick]));
     vel = round(AMP*2*pi*ax1.XTick);
@@ -113,9 +113,9 @@ ax1 = subplot(1,1,1);
     ax1.XLim = [0 20];
     ax1.XTick = [ax1.XLim(1),2:2:ax1.XLim(2)];
     
-    h.patch = PlotPatch(MAG,   MSTD, TIME, 0, HeadFree.N{1,1}, 'k', [0.4 0.4 0.6], 0.5, 2);
+    h.patch = PlotPatch(MAG,   MSTD, TIME, 0, HeadFree.N{1,1}, 'k', [0.4 0.4 0.6], 0.5, 1);
 
- 	h.patch = PlotPatch(ERROR, ESTD, TIME, 2, HeadFree.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
+ 	h.patch = PlotPatch(ERROR, ESTD, TIME, 1, HeadFree.N{1,1}, 'c', [0.4 0.4 0.6], 0.5, 2);
     
 ax2 = axes;
     hold on
@@ -154,6 +154,9 @@ MSTD = 0*HeadFree.GRAND{amp,magIdx}.STD{1}{8}(:,xIdx);
 
 ax1 = subplot(1,1,1);
     hold on
+    off = 0.2;
+	ax1.Position(2) = ax1.Position(2) + 0.5*off;
+    ax1.Position(4) = ax1.Position(4) - off;
     ax1.Title.String = [num2str(AMP) , char(176)];
     ax1.Title.Color = 'w';
     ax1.Title.FontSize = 8;
@@ -170,23 +173,29 @@ ax1 = subplot(1,1,1);
   	ax1.XScale = 'log';
     ax1.XGrid = 'on';
     
-    h.patch = PlotPatch(MAG,   MSTD, FREQ, 0, HeadFree.N{1,1}, 'g', [0.4 0.4 0.6], 0.5, 2);
+    h.patch = PlotPatch(MAG,   MSTD, FREQ, 0, HeadFree.N{1,1}, 'k', [0.4 0.4 0.6], 0.5, 1);
     
- 	h.patch = PlotPatch(ERROR(2:end), ESTD(2:end), FREQ(2:end), 2, HeadFree.N{1,1}, 'y', [0.4 0.4 0.6], 0.5, 2);
+ 	h.patch = PlotPatch(ERROR(2:end), ESTD(2:end), FREQ(2:end), 1, HeadFree.N{1,1}, 'c', [0.4 0.4 0.6], 0.5, 2);
  	
     vel = round(AMP*2*pi*ax1.XTick);
     velLabel = cellfun(@(x) num2str(x), num2cell(vel), 'UniformOutput', false);
 
-    ax3 = axes;
+ax3 = axes;
     ax3.Position = ax1.Position + [0 -0.00 0 0];
     ax3.FontSize = ax1.FontSize ;
     ax3.Color = 'none';
     ax3.YAxisLocation = 'right';
     ax3.YAxis.Color = 'none';
+	ax3.XScale = 'log';
     ax3.XAxisLocation = 'top';
     ax3.XLim = ax1.XLim;
     ax3.XTick = ax1.XTick;
     ax3.XTickLabels = velLabel;
-    ax3.XLabel.String = ['Peak Velocity (' char(176) '/s)'];
+    ax3.XLabel.String = ['Peak Speed (' char(176) '/s)'];
     ax3.XLabel.FontSize = ax1.YLabel.FontSize;
+    
+    linkaxes([ax1 ax3],'x')
+    
+
+    
 end

@@ -43,14 +43,14 @@ ax1 = subplot(2,1,1) ; hold on
 %         2*HeadFree.GRAND{1,catIdx}.STD{2}{5}(:,xIdx),'-ob','LineWidth',3);
     
     [~,h.gain] = PlotPatch(HeadFree.GRAND{1,catIdx}.Mean{2}{5}(:,xIdx), HeadFree.GRAND{1,catIdx}.STD{2}{5}(:,xIdx), ...
-        HeadFree.GRAND{1,catIdx}.Mean{2}{4}, 3, HeadFree.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
+        HeadFree.GRAND{1,catIdx}.Mean{2}{4}, 1, HeadFree.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
 	h.gain.Marker = '.';
     h.gain.MarkerSize = 20;
     
 ax2 = subplot(2,1,2) ; hold on
     ax2.FontSize = ax1.FontSize;
     ax2.XLim = ax1.XLim;
-    ax2.YLim = [-180 60];
+    ax2.YLim = [-300 60];
    	ax2.XLabel.String = 'Frequency (Hz)';
     ax2.XLabel.FontSize = 8;
     ax2.XLabel.Color = 'k';
@@ -62,7 +62,7 @@ ax2 = subplot(2,1,2) ; hold on
 %         2*rad2deg(HeadFree.GRAND{1,catIdx}.CircSTD{7}{6}(:,xIdx)),'-ob','LineWidth',3);
     
     [~,h.phase] = PlotPatch(rad2deg(HeadFree.GRAND{1,catIdx}.CircMean{7}{6}(:,xIdx)), rad2deg(HeadFree.GRAND{1,catIdx}.CircSTD{7}{6}(:,xIdx)), ...
-        HeadFree.GRAND{1,catIdx}.Mean{2}{4}, 3, HeadFree.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
+        HeadFree.GRAND{1,catIdx}.Mean{2}{4}, 1, HeadFree.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
     h.phase.Marker = '.';
     h.phase.MarkerSize = 20;
     

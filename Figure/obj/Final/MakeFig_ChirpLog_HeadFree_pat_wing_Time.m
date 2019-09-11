@@ -12,7 +12,7 @@ root = 'H:\DATA\Rigid_Data\';
 FILE = cellstr(FILE)';
 
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','GRAND','U','N');
-
+%%
 clearvars -except HeadFree Amp nAmp
 
 figNum = 1;
@@ -33,7 +33,7 @@ hold on
 pp = 1;
 for jj = 3
     ax.R = subplot(1,1,pp) ; hold on ; title([num2str(HeadFree.U{1,3}{1}(jj)) char(176)],'FontSize',15)
-    ax.R.YColor = [0 1 0];
+    ax.R.YColor = 'k';
     ax.R.XLabel.String = 'Time (s)';
     ax.R.FontSize = 8;
     ax.R.YLabel.String = ['(' char(176) ')'];
@@ -42,7 +42,7 @@ for jj = 3
     ax.R.YTick = 15*[-1 0 1];
     ax.R.YAxisLocation = 'right';
 
-	plot(HeadFree.TRIAL{8,jj}{2,1}.Time,HeadFree.TRIAL{10,jj}{1,1}.X(:,xIdx),'Color','g','LineWidth',2)
+	plot(HeadFree.TRIAL{8,jj}{2,1}.Time,HeadFree.TRIAL{10,jj}{1,1}.X(:,xIdx),'Color','k','LineWidth',1)
     
     ax.L = axes; hold on
     ax.L.YColor = [0 0 0];
@@ -58,7 +58,7 @@ for jj = 3
     ax.L.Position = ax.R.Position;
 
     PlotPatch(HeadFree.GRAND{jj,catIdx}.Mean{2}{6}(:,xIdx),HeadFree.GRAND{jj,catIdx}.STD{2}{6}(:,xIdx),...
-        HeadFree.GRAND{jj,catIdx}.Mean{2}{5},2,HeadFree.N{1,1},'r',[0.1 0.1 0.6],0.3,2);
+        HeadFree.GRAND{jj,catIdx}.Mean{2}{5},1,HeadFree.N{1,1},'r',[0.1 0.1 0.6],0.3,2);
      
     pp = pp + 1;
 end

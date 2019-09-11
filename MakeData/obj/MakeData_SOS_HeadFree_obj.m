@@ -27,6 +27,7 @@ clear rootdir
 %% Get Data %%
 %---------------------------------------------------------------------------------------------------------------------------------
 % IOFreq = 0.1*round(linspace(0.1,8,10)/0.1)';
+% IOFreq = [0.1, 1, 1.85, 2.75, 3.6, 4.5, 5.35, 6.25, 7.1, 8];
 IOFreq = [1, 3.1, 5.3, 7.4, 9.6];
 disp('Loading...')
 ALL 	= cell([N{1,end},10]); % cell array to store all data objects
@@ -170,7 +171,7 @@ subplot(2,1,1) ; hold on
 xlabel('Time')
 ylabel(['Angle (' char(176) ')'])
 % plot(Time,RefMean,'b')
-[~,h.ErrMean] = PlotPatch(ErrMean, ErrSTD, Time, 2, 1, 'k' ,[0.4 0.4 0.6], 0.4 , 1);
+[~,h.ErrMean] = PlotPatch(ErrMean, ErrSTD, Time, 2, N{1,1}, 'k' ,[0.4 0.4 0.6], 0.4 , 1);
 h.ErrTrial = plot(Time,Error(:,minIdx),'r');
 leg = legend([h.ErrMean,h.ErrTrial],'Mean Error','Replay Trial Error');
 leg.Box = 'off';

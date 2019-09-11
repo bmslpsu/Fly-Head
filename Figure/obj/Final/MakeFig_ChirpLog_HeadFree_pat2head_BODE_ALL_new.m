@@ -14,7 +14,7 @@ CHIRP = cellstr(CHIRP)';
 HeadFree = load(fullfile(root,CHIRP{1}),'GRAND','U','N');
 
 filename = 'ChirpLog_HeadFree_pat2head_BODE_ALL_new';
-catIdx = 4;
+catIdx = 5;
 xIdx = 1;
 CC = [0 0 0.7];
 
@@ -60,10 +60,7 @@ ax1 = subplot(2,1,1);
     ax1.XLim = [0.3 10];
     ax1.XTick = [ax1.XLim(1),2:2:ax1.XLim(2)];
     ax1.XTickLabels = '';
-    h.patch = PlotPatch(GAIN, GSTD, FREQ,...
-                        2,HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,2);
-
-%     plot([0 12],[1 1],'--k','LineWidth',1);           
+    h.patch = PlotPatch(GAIN, GSTD, FREQ, 1, HeadFree.N{1,1},CC, [0.4 0.4 0.6], 0.5,2);
 
     ax1.XTick = unique(sort([min(ax1.XLim) ax1.XTick]));
     vel = round(AMP*2*pi*ax1.XTick);
@@ -84,8 +81,7 @@ ax2 = subplot(2,1,2);
     ax2.XLim = ax1.XLim;
     ax2.YTick = -180:60:180;
     
-    h.patch = PlotPatch(PHASE, PSTD,FREQ,...
-        2,HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,2);
+    h.patch = PlotPatch(PHASE, PSTD,FREQ, 1, HeadFree.N{1,1},CC, [0.4 0.4 0.6], 0.5,2);
 
     plot([0 12],[0 0],'--k','LineWidth',1);
 

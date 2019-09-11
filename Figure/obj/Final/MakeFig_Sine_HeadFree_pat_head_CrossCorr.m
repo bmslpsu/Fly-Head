@@ -30,7 +30,7 @@ clearvars -except HeadFree Amp nAmp
 filename = 'Sine_HeadFree_head2wing_CrossCorr';
 
 hold on
-catIdx = 7;
+catIdx = 8;
 xIdx = 1;
 
 FIG = figure (1); clf
@@ -44,7 +44,7 @@ for ww = 1:nAmp % amplitudes
     pp = 1;
     for jj = 1:HeadFree{ww}.N{1,3} % frequencies
         freq = HeadFree{ww}.U{1,3}{1}(jj);
-        ax = subplot(ceil(HeadFree{ww}.N{1,3}/3),3,pp) ; hold on
+        ax = subplot(ceil(HeadFree{ww}.N{1,3}/1),1,pp) ; hold on
       	ax.FontSize = 8;
 %         title([num2str(freq) ' Hz'],'FontSize',8,'FontWeight','bold')
         ax.YLabel.FontSize = 8;

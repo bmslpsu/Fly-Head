@@ -159,11 +159,11 @@ for jj = amp
         ax1.FontSize = 8;
         ax1.YLabel.String = ['Gain (V/' char(176) ')'];
         ax1.YLabel.FontSize = 8;
-        ax1.YLim = [0 0.7];
+        ax1.YLim = [0 0.6];
      	ax1.XLabel.String = 'Frequency (Hz)';
         ax1.XLabel.FontSize = ax1.YLabel.FontSize;
         ax1.XLabel.Color = 'w';
-       	ax1.XLim = [0.3 10];
+       	ax1.XLim = [0.5 10];
         ax1.XTickLabels = '';
         
         if pp>1
@@ -172,7 +172,7 @@ for jj = amp
         end
         hold on
 
-        h.patch = PlotPatch(GAIN(:,jj), GSTD(:,jj), FREQ(:,jj) , 3,HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,2);
+        h.patch = PlotPatch(GAIN(:,jj), GSTD(:,jj), FREQ(:,jj) ,1 , HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,2);
                         
         plot([0 12],[1 1],'--g','LineWidth',2);           
               
@@ -187,7 +187,7 @@ for jj = amp
         ax2.FontSize = ax1.FontSize;
         ax2.YLabel.String = ['Phase Difference (' char(176) ')'];
         ax2.YLabel.FontSize = ax1.YLabel.FontSize;
-        ax2.XLabel.String = 'Frequency (Hz)';
+        % ax2.XLabel.String = 'Frequency (Hz)';
         ax2.XLabel.FontSize = ax1.YLabel.FontSize;
       	ax2.XLabel.Color = 'k';
         ax2.YLim = rad2deg(pi*[-1 0.1]);
@@ -199,7 +199,7 @@ for jj = amp
             ax2.YTickLabels = '';
         end
         
-        h.patch = PlotPatch(PHASE(:,jj), PSTD(:,jj), FREQ(:,jj) , 3, HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,2);
+        h.patch = PlotPatch(PHASE(:,jj), PSTD(:,jj), FREQ(:,jj), 1, HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,2);
 
         ax2.XTick = ax1.XTick;
         
@@ -226,11 +226,12 @@ for jj = amp
         ax4.XLabel.String = 'Frequency (Hz)';
         ax4.XLabel.FontSize = ax1.YLabel.FontSize;
       	ax4.XLabel.Color = 'k';
-        ax4.YLim = [-180 60];
+        ax4.YLim = [-180 15];
         ax4.YTick = -180:60:60;
        	ax4.XLim = ax1.XLim;
+        ax4.XTick = ax3.XTick;
         
-        h.patch = PlotPatch(TD, TD_STD, FREQ(:,jj), 3, HeadFree.N{1,1}, CC, [0.4 0.4 0.6], 0.5, 2);
+        h.patch = PlotPatch(TD, TD_STD, FREQ(:,jj), 1, HeadFree.N{1,1}, CC, [0.4 0.4 0.6], 0.5, 2);
                 
         clear ax
         pp = pp + 1;

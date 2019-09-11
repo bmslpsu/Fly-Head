@@ -340,7 +340,7 @@ ax1 = subplot(2,1,1) ; hold on
 
 %     errorbar(Freq,GAIN_NORM,2*GAIN_NORM_STD,'-b','LineWidth',2)
     
-    [~,h2] = PlotPatch(GAIN_NORM,GAIN_NORM_STD,Freq,2,1,'b',[0.4 0.4 0.6],0.5,2);
+    [~,h2] = PlotPatch(GAIN_NORM,GAIN_NORM_STD,Freq,1,11,'b',[0.4 0.4 0.6],0.5,2);
     h2.Marker = '.';
     h2.MarkerSize = 20;
     
@@ -444,7 +444,7 @@ FIG.Name = 'BODE';
 movegui(FIG,'center')
 hold on
 
-amp = 1;
+amp = 3;
 ax1 = subplot(2,1,1) ; hold on
     ax1.FontSize = 8;
     ax1.XLim = [0 12.5];
@@ -458,7 +458,7 @@ ax1 = subplot(2,1,1) ; hold on
 
 %     errorbar(Freq,GAIN(amp,:),2*GAIN_STD(amp,:),'-b','LineWidth',2)
     
-	[~,h.gain] = PlotPatch(GAIN(amp,:), GAIN_STD(amp,:), Freq, 3, HeadFree{amp}.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
+	[~,h.gain] = PlotPatch(GAIN(amp,:), GAIN_STD(amp,:), Freq, 1, HeadFree{amp}.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
     h.gain.Marker = '.';
     h.gain.MarkerSize = 20;
     
@@ -476,7 +476,7 @@ ax2 = subplot(2,1,2) ; hold on
 
 %     errorbar(Freq,PHASE(amp,:),2*PHASE_STD(amp,:),'-b','LineWidth',2)
     
-	[~,h.gain] = PlotPatch(PHASE(amp,:), PHASE_STD(amp,:), Freq, 3, HeadFree{amp}.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
+	[~,h.gain] = PlotPatch(PHASE(amp,:), PHASE_STD(amp,:), Freq, 1, HeadFree{amp}.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
     h.gain.Marker = '.';
     h.gain.MarkerSize = 20;
     
