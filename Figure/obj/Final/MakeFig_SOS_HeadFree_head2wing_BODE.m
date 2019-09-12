@@ -13,7 +13,7 @@ root = 'H:\DATA\Rigid_Data\';
 FILE = cellstr(FILE)';
 
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','FLY','GRAND','U','N');
-
+%%
 figNum = 1;
 catIdx = 7;
 xIdx = 1;
@@ -48,7 +48,7 @@ ax1 = subplot(3,1,1) ; hold on
     ax1.YLabel.FontSize = ax1.XLabel.FontSize;
     ax1.XTickLabels = '';
         
-    [~,h.gain] = PlotPatch(Gain , Gain_STD, IOFreq, 3, HeadFree.N{1,1}, 'k', [0.4 0.4 0.6], 0.5, 2);
+    [~,h.gain] = PlotPatch(Gain , Gain_STD, IOFreq, 1, HeadFree.N{1,1}, 'k', [0.4 0.4 0.6], 0.5, 2);
     h.gain.Marker = '.';
     h.gain.MarkerSize = 15;
     
@@ -63,7 +63,7 @@ ax2 = subplot(3,1,2) ; hold on
     ax2.YTick = -180:60:0;
     ax2.XTickLabels = '';
     
-	[~,h.phase] = PlotPatch(Phase , Phase_STD, IOFreq, 3, HeadFree.N{1,1}, 'k', [0.4 0.4 0.6], 0.5, 2);
+	[~,h.phase] = PlotPatch(Phase , Phase_STD, IOFreq, 1, HeadFree.N{1,1}, 'k', [0.4 0.4 0.6], 0.5, 2);
     h.phase.Marker = '.';
     h.phase.MarkerSize = 15;
         
@@ -78,7 +78,7 @@ ax3 = subplot(3,1,3) ; hold on
     ax3.YLim = [-80 0];
     ax3.YTick = -80:20:0;
     
-	[~,h.time] = PlotPatch(TimeDelay , TimeDelay_STD, IOFreq, 3, HeadFree.N{1,1}, 'k', [0.4 0.4 0.6], 0.5, 2);
+	[~,h.time] = PlotPatch(TimeDelay , TimeDelay_STD, IOFreq, 1, HeadFree.N{1,1}, 'k', [0.4 0.4 0.6], 0.5, 2);
     h.time.Marker = '.';
     h.time.MarkerSize = 15;
     end

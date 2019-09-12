@@ -23,7 +23,7 @@ figNum = 1;
 filename = 'ChirpLog_HeadFree_pat2head_COHR_all';
 xIdx = 1;
 CC = [0 0 1];
-offset = 0.2;
+offset = 0.05;
 
 FIG = figure (figNum); clf
 FIG.Color = 'w';
@@ -37,9 +37,8 @@ amp = 3;
 Amp = HeadFree.U{1,3}{1}(amp);
 ax1 = gca;
     hold on
-    initPos = ax1.Position;
-    ax1.Position = ax1.Position + [0 offset 0 -offset];
-	ax1.Title.String = [num2str(Amp) , char(176)];
+    ax1.Position = ax1.Position + [0 offset/2 0 -offset];
+% 	ax1.Title.String = [num2str(Amp) , char(176)];
     ax1.Title.Color = 'k';
     ax1.Title.FontSize = 8;
     ax1.FontSize = 8;
@@ -56,19 +55,19 @@ ax1 = gca;
     COHR = HeadFree.GRAND{amp,5}.Mean{1}{7}(:,xIdx);
     STD  = HeadFree.GRAND{amp,5}.STD{1}{7}(:,xIdx);
 
-    [~,h.head] = PlotPatch(COHR, STD, FREQ , 3, HeadFree.N{1,1}, CC, [0.4 0.4 0.6], 0.5, 2);
+    [~,h.head] = PlotPatch(COHR, STD, FREQ , 1, HeadFree.N{1,1}, CC, [0.4 0.4 0.6], 0.5, 1);
     
 	FREQ = HeadFree.GRAND{amp,8}.Mean{1}{8};
     COHR = HeadFree.GRAND{amp,8}.Mean{1}{7}(:,xIdx);
     STD  = HeadFree.GRAND{amp,8}.STD{1}{7}(:,xIdx);
 
-    [~,h.wing] = PlotPatch(COHR, STD, FREQ , 3, HeadFree.N{1,1}, 'r', [0.4 0.4 0.6], 0.5, 2);
+    [~,h.wing] = PlotPatch(COHR, STD, FREQ , 1, HeadFree.N{1,1}, 'r', [0.4 0.4 0.6], 0.5, 1);
     
   	FREQ = HeadFixed.GRAND{amp,3}.Mean{1}{8};
     COHR = HeadFixed.GRAND{amp,3}.Mean{1}{7}(:,xIdx);
     STD  = HeadFixed.GRAND{amp,3}.STD{1}{7}(:,xIdx);
 
-    [~,h.wing_fixed] = PlotPatch(COHR, STD, FREQ , 3, HeadFree.N{1,1}, 'g', [0.4 0.4 0.6], 0.5, 2);
+    [~,h.wing_fixed] = PlotPatch(COHR, STD, FREQ , 1, HeadFree.N{1,1}, [0.3 0.1 0.7], [0.4 0.4 0.6], 0.5, 1);
     
     uistack(h.head,'top')
     uistack(h.wing,'top')
@@ -78,12 +77,12 @@ ax1 = gca;
     velLabel = cellfun(@(x) num2str(x), num2cell(vel), 'UniformOutput', false);               
 
     ax3 = axes;
-    ax3.Position = initPos + [0 0.05 0 0];
+    ax3.Position = ax1.Position;
     ax3.FontSize = ax1.FontSize ;
     ax3.Color = 'none';
     ax3.YAxisLocation = 'right';
     ax3.YAxis.Color = 'none';
-    ax3.XAxisLocation = 'bottom';
+    ax3.XAxisLocation = 'top';
     ax3.XLim = ax1.XLim;
     ax3.XTick = ax1.XTick;
     ax3.XTickLabels = velLabel;

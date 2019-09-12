@@ -29,7 +29,7 @@ clearvars -except nAmp Amp HeadFree
 
 filename = 'Sine_HeadFree_ComplexGain';
 
-catIdx = 6;
+catIdx = 8;
 xIdx = 1;
 
 Freq = HeadFree{1}.U{1,3}{1}';
@@ -444,7 +444,7 @@ ax1 = subplot(2,1,1) ; hold on
 
 %     errorbar(Freq,GAIN(amp,:),2*GAIN_STD(amp,:),'-b','LineWidth',2)
     
-	[~,h.gain] = PlotPatch(GAIN(amp,:), GAIN_STD(amp,:), Freq, 1, HeadFree{amp}.N{1,1}, 'c', [0.4 0.4 0.6], 0.5, 2);
+	[~,h.gain] = PlotPatch(GAIN(amp,:), GAIN_STD(amp,:), Freq, 1, HeadFree{amp}.N{1,1}, 'r', [0.4 0.4 0.6], 0.5, 2);
     h.gain.Marker = '.';
     h.gain.MarkerSize = 20;
     
@@ -462,7 +462,7 @@ ax2 = subplot(2,1,2) ; hold on
 
 %     errorbar(Freq,PHASE(amp,:),2*PHASE_STD(amp,:),'-b','LineWidth',2)
     
-	[~,h.gain] = PlotPatch(PHASE(amp,:), PHASE_STD(amp,:), Freq, 1, HeadFree{amp}.N{1,1}, 'c', [0.4 0.4 0.6], 0.5, 2);
+	[~,h.gain] = PlotPatch(PHASE(amp,:), PHASE_STD(amp,:), Freq, 1, HeadFree{amp}.N{1,1}, 'r', [0.4 0.4 0.6], 0.5, 2);
     h.gain.Marker = '.';
     h.gain.MarkerSize = 20;
     
@@ -542,7 +542,7 @@ for ww = 1:nAmp
    FIG.Name = [FIG.Name '_' num2str(Amp(ww))];  
 end
 [ax,h] = ComplexAxes(gains,-15); hold on
-ax.XLim = [-0.04 0.1];
+ax.XLim = [-0.08 0.08];
 ax.YLim = [-0.08 0.08];
 set(h.text,'Color','k')
 clear h

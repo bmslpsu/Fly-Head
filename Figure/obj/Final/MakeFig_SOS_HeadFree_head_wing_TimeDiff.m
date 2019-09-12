@@ -14,8 +14,8 @@ FILE = cellstr(FILE)';
 
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','GRAND','U','N');
 %%
-headIdx = 5;
-wingIdx = 8;
+headIdx = 3;
+wingIdx = 3;
 
 xIdx = 1;
 
