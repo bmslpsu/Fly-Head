@@ -1,5 +1,5 @@
 function [] = MakeData_Ramp_HeadFree_v2_obj()
-%% MakeData_Ramp_HeadFree: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
+%% MakeData_Ramp_HeadFree_v2_obj: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
 %   INPUTS:
 %       root    : root directory
 %   OUTPUTS:
@@ -19,7 +19,7 @@ root.daq = rootdir;
 root.ang = fullfile(root.daq,'\Vid\Angles\');
 
 % Select files
-[D,I,N,U,T,FILES,PATH.ang]  = GetFileData(root.ang,false,'fly','trial','vel');
+[D,I,N,U,T,FILES,PATH.ang] = GetFileData(root.ang,false,'fly','trial','vel');
 
 PATH.daq = root.daq;
 
@@ -37,10 +37,10 @@ SACD.Interval.Head = cell(N{1,3},1);
 SACD.Stimulus.Saccade.Head = cell(N{1,3},1);
 SACD.Stimulus.Interval.Head = cell(N{1,3},1);
 
-% Vel = 3.75*U{1,3}{1};
-Vel = U{1,3}{1};
-tt = (0:(1/200):9.8)';
-% tt = linspace(0,10,2000)';
+Vel = 3.75*U{1,3}{1};
+% Vel = U{1,3}{1};
+% tt = (0:(1/200):9.95)';
+tt = linspace(0,10,2000)';
 Stim = (Vel*tt')';
 for kk = 1:N.file
     disp(kk)
@@ -51,13 +51,14 @@ for kk = 1:N.file
     % Get head data
     head.Time = t_v;
     head.Pos = hAngles;
-    Head = Fly(head.Pos,head.Time,15,[],tt); % head object
+    head.Fc = 30;
+    Head = Fly(head.Pos,head.Time,head.Fc,[],tt); % head object
   	%-----------------------------------------------------------------------------------------------------------------------------
     % Get wing data from DAQ
 	wing.f          = medfilt1(100*data(:,6),3); % wing beat frequency [Hz]
     wing.Time       = t_p; % wing time [s]
     wing.Fs         = 1/mean(diff(wing.Time)); % sampling frequency [Hz]
-    wing.Fc         = 15; % cutoff frequency [Hz]
+    wing.Fc         = 30; % cutoff frequency [Hz]
     [b,a]           = butter(2,wing.Fc/(wing.Fs/2)); % butterworth filter
 	wing.Left       = filtfilt(b,a,(data(:,4))); % left wing [V]
     wing.Right      = filtfilt(b,a,(data(:,5))); % right wing [V]
@@ -200,8 +201,8 @@ for kk = 1:N.file
 %     close all
 end
 
-% clear jj ii kk pp qq ww n a b  t_v hAngles data head wing pat tt I_table Dir loop Saccade Interval Stimulus Error IntError...
-%     Head Pat Wing  vars root t_p var1 var2 Err_table pos_err vel_err pos_int_err vel_int_err stim_pos matchFlag emptyFlag
+clear jj ii kk pp qq ww n a b  t_v hAngles data head wing pat tt I_table Dir loop Saccade Interval Stimulus Error IntError...
+    Head Pat Wing  vars root t_p var1 var2 Err_table pos_err vel_err pos_int_err vel_int_err stim_pos matchFlag emptyFlag
 
 %% Normalize Head Saccades
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -248,35 +249,6 @@ end
 INTERVAL.Head = cell2table(INTERVAL.Head,'VariableNames',varnames);
 INTERVAL.HeadStats = cell2table(cellfun(@(x) MatStats(x,2), table2cell(INTERVAL.Head),...
                             'UniformOutput',false),'VariableNames',varnames);
-
-% TIME = cell(N{1,3},1);
-% POS  = cell(N{1,3},1);
-% dR   = cell(N{1,3},1);
-% for jj = 1:N{1,3}
-%     [TIME{jj},~,~,~,dR{jj}] = nancat_center(SACD.Interval.Head{jj}(:,1),0,1);
-%     for kk = 1:size(SACD.Interval.Head{jj},1)
-%         for ii = 1:size(SACD.Interval.Head{jj}{kk,2},2)
-%             POS{jj}{kk,1}(:,ii) = cat_pad(SACD.Interval.Head{jj}{kk,2}(:,ii), dR{jj}{kk}(:,1),nan);
-%         end
-%     end
-% 	POS{jj} = cat(2,POS{jj}{:});
-% end
-% 
-% CC = repmat(prism(ceil(N.speed)),2,1);
-% FIG = figure (2) ; clf
-% FIG.Color = 'k';
-% ax = gca;
-% ax.Color = 'k';
-% set(ax,'YColor','w','XColor','w')
-% for jj = [1 4 2 5 3 6]
-% 	hold on
-%     plot(TIME{jj}, POS{jj}, 'Color', CC(jj,:))
-%     xlim([0 2])
-% end
-
-%% Normalize Wing Saccades
-%---------------------------------------------------------------------------------------------------------------------------------
-
                         
 %% Fly Statistics %%
 %---------------------------------------------------------------------------------------------------------------------------------

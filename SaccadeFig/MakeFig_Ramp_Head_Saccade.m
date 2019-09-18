@@ -53,7 +53,7 @@ for jj = 1:N{1,3}
     end
 end
 set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',1000*0.05*[-1 1],'YLim',20*[-1 1])
-set(ax([1:4,6]),'XColor','none')
+% set(ax([1:4,6]),'XColor','none')
 set(ax([2:3,4:6]),'YColor','none')
 
 %% Saccade Velocity %%
@@ -105,8 +105,8 @@ for jj = 1:N{1,3}
     end
 end
 set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',1000*0.05*[-1 1])
-set(ax([1:4,6]),'XColor','none')
-set(ax([2:3,5:6]),'YColor','none')
+% set(ax([1:4,6]),'XColor','none')
+% set(ax([2:3,5:6]),'YColor','none')
 
 %% Saccade Velocity ALL %%
 FIG = figure (20) ; clf

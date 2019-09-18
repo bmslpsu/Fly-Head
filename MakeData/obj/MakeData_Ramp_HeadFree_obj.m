@@ -60,7 +60,8 @@ for kk = 1:N{1,end}
     % Get head data
     head.Time = t_v;
     head.Pos = hAngles;
-    Head = Fly(head.Pos,head.Time,40,[],tt); % head object
+    head.Fc = 20;
+    Head = Fly(head.Pos,head.Time,head.Fc,[],tt); % head object
   	%-----------------------------------------------------------------------------------------------------------------------------
     % Get wing data from DAQ
     wing.Time       = t_p; % wing time [s]
