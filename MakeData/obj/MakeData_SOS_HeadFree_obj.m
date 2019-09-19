@@ -49,6 +49,7 @@ for kk = 1:N{1,end}
     Head = Fly(head.Pos,head.Time,40,IOFreq); % head object
 	%-----------------------------------------------------------------------------------------------------------------------------
     % Get wing data from DAQ
+%     sync = find(data(:,1)>1,1,'first');
 	wing.f          = medfilt1(100*data(:,6),3); % wing beat frequency [Hz]
     wing.Time       = t_p; % wing time [s]
     wing.Fs         = 1/mean(diff(wing.Time)); % sampling frequency [Hz]
