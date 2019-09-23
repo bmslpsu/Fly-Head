@@ -1,5 +1,5 @@
-function [FIG] = MakeFig_SOS_HeadFree_pat2head_BODE_FIT()
-%% MakeFig_SOS_HeadFree_pat2head_BODE_FIT: BODE head position for SOS
+function [FIG] = MakeFig_Chirp_HeadFree_pat2head_BODE_FIT()
+%% MakeFig_Chirp_HeadFree_pat2head_BODE_FIT: BODE head position for SOS
 %   INPUTS:
 %       -
 %   OUTPUTS:
@@ -18,13 +18,10 @@ figNum = 1;
 catIdx = 9;
 xIdx = 1;
 
-filename = 'SOS_HeadFree_pat2head_BODE_FIT';
-
 FIG = figure (figNum); clf
 FIG.Color = 'w';
 FIG.Units = 'inches';
 FIG.Position = [1 1 4 4];
-FIG.Name = filename;
 movegui(FIG,'center')
 hold on
 
@@ -68,13 +65,13 @@ ax2 = subplot(2,1,2) ; hold on
 
 refIdx = 1;
 errIdx = 4;
-% Ts = HeadFree.GRAND{1,1}.Mean{2}{3};
-% IN = HeadFree.GRAND{1,refIdx}.Mean{2}{6}(:,1);
-% OUT = HeadFree.GRAND{1,errIdx}.Mean{2}{6}(:,1);
+Ts = HeadFree.GRAND{1,1}.Mean{2}{3};
+IN = HeadFree.GRAND{1,refIdx}.Mean{2}{6}(:,1);
+OUT = HeadFree.GRAND{1,errIdx}.Mean{2}{6}(:,1);
 
-FREQ = HeadFree.GRAND{1,refIdx}.Mean{2}{7}(:,1);
-IN = HeadFree.GRAND{1,refIdx}.Mean{2}{24}(:,1);
-OUT = HeadFree.GRAND{1,errIdx}.Mean{2}{24}(:,1);
+% FREQ = HeadFree.GRAND{1,refIdx}.Mean{2}{7}(:,1);
+% IN = HeadFree.GRAND{1,refIdx}.Mean{2}{24}(:,1);
+% OUT = HeadFree.GRAND{1,errIdx}.Mean{2}{24}(:,1);
 
 
 

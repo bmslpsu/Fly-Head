@@ -94,13 +94,14 @@ for kk = 1:N{1,end}
     err2wing    = IO_Class(Err,Wing);
 	head2wing   = IO_Class(Head,Wing);
     pat2wing    = IO_Class(Pat,Wing);
+    pat2err     = IO_Class(Pat,Err);
     %-----------------------------------------------------------------------------------------------------------------------------
     % Store objects in cells
     for jj = 1:n.catg
         ALL{pp,jj} = I{kk,jj};
     end
 
-	vars = {Pat,Head,Wing,Err,pat2head,err2wing,head2wing,pat2wing};
+	vars = {Pat,Head,Wing,Err,pat2head,err2wing,head2wing,pat2wing,pat2err};
     for jj = 1:length(vars)
         ALL{pp,n.catg+jj} = vars{jj};
     end
