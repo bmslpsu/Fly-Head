@@ -5,8 +5,8 @@ function [FIG] = MakeFig_Chirp_HeadFree_pat2head_BODE_FIT()
 %   OUTPUTS:
 %       FIG     :   figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'H:\DATA\Rigid_Data\';
-
+% root = 'H:\DATA\Rigid_Data\';
+root = 'Q:\';
 % Select files
 [FILE,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
     'Select head angle trials', root, 'MultiSelect','off');
@@ -65,20 +65,39 @@ ax2 = subplot(2,1,2) ; hold on
 
 refIdx = 1;
 errIdx = 4;
-Ts = HeadFree.GRAND{1,1}.Mean{2}{3};
-IN = HeadFree.GRAND{1,refIdx}.Mean{2}{6}(:,1);
-OUT = HeadFree.GRAND{1,errIdx}.Mean{2}{6}(:,1);
+ampIdx = 1;
 
-% FREQ = HeadFree.GRAND{1,refIdx}.Mean{2}{7}(:,1);
-% IN = HeadFree.GRAND{1,refIdx}.Mean{2}{24}(:,1);
-% OUT = HeadFree.GRAND{1,errIdx}.Mean{2}{24}(:,1);
-
-
-
-
-
-
-
-
+Ts = HeadFree.GRAND{ampIdx,1}.Mean{2}{3};
+% IN = HeadFree.GRAND{ampIdx,refIdx}.Mean{2}{6}(:,1);
+U = HeadFree.TRIAL{1,ampIdx}{1,refIdx}.X(:,1);
+Y = HeadFree.GRAND{ampIdx,errIdx}.Mean{2}{6}(:,1);
+%%
+mydata = iddata(Y,U,Ts);
+                                    
+% Transfer function estimation                              
+ Options = tfestOptions;                                    
+ Options.Display = 'on';                                    
+ Options.WeightingFilter = [];                              
+                                                            
+ np = 1;                                                    
+ nz = 1;                                                    
+ num = arrayfun(@(x)NaN(1,x), nz+1,'UniformOutput',false);  
+ den = arrayfun(@(x)[1, NaN(1,x)],np,'UniformOutput',false);
+                                                            
+ % Prepare input/output delay                               
+ iodValue = 0.01;                                           
+ iodFree = false;                                           
+ iodMin = 0.005;                                            
+ iodMax = 0.05;                                             
+ sysinit = idtf(num, den, 0);                               
+ iod = sysinit.Structure.ioDelay;                           
+ iod.Value = iodValue;                                      
+ iod.Free = iodFree;                                        
+ iod.Maximum = iodMax;                                      
+ iod.Minimum = iodMin;                                      
+ sysinit.Structure.ioDelay = iod;                           
+                                                            
+ % Perform estimation using "sysinit" as template           
+ chirp_tf = tfest(mydata, sysinit, Options);                    
 
 end
