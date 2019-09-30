@@ -1,4 +1,4 @@
-function [D,I,N,U,T,FILES,PATH] = GetFileData(FILES,abscat,varargin)
+function [D,I,N,U,T,FILES,PATH,basename] = GetFileData(FILES,abscat,varargin)
 %% GetFileData: Parse file name data and returns tables with relevant information
 %   INPUTS:
 %       FILES       :   file cells in the form "var1_val1_var2_val2_..._varn_valn". The first variable is
@@ -24,7 +24,7 @@ if ~nargin % open file selection GUi in current folder
     FILES = cellstr(files)';
     abscat = false;
 elseif nargin>=1
-    if ischar(FILES) % if root directory given, open file selection GUi in root
+    if ischar(FILES) || isstring(FILES) % if root directory given, open file selection GUi in root
         [files, PATH] = uigetfile({'*', 'files'}, 'Select files',FILES, 'MultiSelect','on');
         FILES = cellstr(files)';
     else
@@ -43,8 +43,10 @@ n.file = length(FILES);
 filedata = textscan(char(filename), '%s', 'delimiter', '_'); % deliminate file name
 n.vars = length(filedata{1}); % # of variables in file name
 vardata = cell(n.file,n.vars);
+basename = cell(n.file,1); % filenames without extension
 for kk = 1:n.file
     [~,filename,~] = fileparts(FILES{kk}); % remove file extension from file name
+    basename{kk} = filename;
     filedata = textscan(char(filename), '%s', 'delimiter', '_'); % deliminate file name
     filedata = filedata{1}'; % get data from cell
     n.vars = length(filedata); % # of variables in file name
@@ -54,7 +56,7 @@ for kk = 1:n.file
     end
 end
 
-% Test whether data is string or number >> determine if category or value
+% Test whether data is string or number --> determine if category or value
 valvar = false(1,n.vars);
 for ii = 1:n.vars
     valvar(ii) = isnan(str2double(vardata{1,ii}));
@@ -81,7 +83,7 @@ end
 
 [~,loc.catg] = find(valvar==true); % find locations of categorical variable 
 [~,loc.val] = find(valvar==false); % find locations of value variables
-loc.catg = loc.catg(1:length(loc.val)); % if there are more categories than values >>> get rid of trailing categories
+loc.catg = loc.catg(1:length(loc.val)); % if there are more categories than values --> get rid of trailing categories
 n.catg = length(loc.val); % # of categories
 n.val = length(loc.catg); % # of values
 if length(varargin)>n.catg
@@ -213,7 +215,7 @@ for kk = 1:nn(1) % per fly
     end
 end
 
-% If there are no condtions, use trials instead >>>  make variable names for map
+% If there are no condtions, use trials instead -->  make variable names for map
 if isempty(map) % no conditions
    map = reps{:,1};
    mapname = {'reps'};
