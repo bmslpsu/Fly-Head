@@ -21,7 +21,7 @@ FILES = cellstr(FILES)';
 
 PATH.daq = root.daq;
 
-[D,I,N,U,T] = GetFileData(FILES);
+[D,I,N,U,T,~,~,basename]= GetFileData(FILES);
 
 clear rootdir
 %% Get Data %%
@@ -33,19 +33,19 @@ ALL 	= cell([N{1,end},10]); % cell array to store all data objects
 TRIAL  	= cell(N{1,1},1);
 n.catg  = size(N,2) - 1;
 pp = 0;
-span = 1:2000;
 tt = linspace(0,20,2000)';
 for kk = 1:N{1,end}
     disp(kk)
     % Load HEAD & DAQ data
     data = [];
 	load(fullfile(PATH.daq, FILES{kk}),'data','t_p'); % load pattern x-position
-    load(fullfile(PATH.ang, FILES{kk}),'hAngles','t_v'); % load head angles % time arrays
+    beniflydata = ImportBenifly_18a(fullfile(PATH.ang, FILES{kk})); % load head angles % time arrays
 	%-----------------------------------------------------------------------------------------------------------------------------
     % Get head data
-    head.Time = t_v(span);
-    head.Pos = hAngles(span) - mean(hAngles(span));
-    Head = Fly(head.Pos,head.Time,40,IOFreq); % head object
+    hAngles = beniflydata.head;
+    head.Time = rawTime;
+    head.Pos = hAngles - mean(hAngles);
+    Head = Fly(head.Pos,head.Time,40,IOFreq,tt); % head object
     pp = pp + 1; % set next index to store data
 	%-----------------------------------------------------------------------------------------------------------------------------
 	% Get pattern data from DAQ
@@ -90,9 +90,6 @@ for ii = 1:size(FLY,2)
     GRAND{ii} = GrandStats(FLY(:,ii));
 end
 clear ii
-
-%%
-save(fullfile(targetDir,fname), 'func');
 
 %% SAVE %%
 %---------------------------------------------------------------------------------------------------------------------------------
