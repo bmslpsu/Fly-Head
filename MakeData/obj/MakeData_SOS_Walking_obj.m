@@ -5,17 +5,17 @@ function [] = MakeData_SOS_Walking_obj(rootdir)
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-rootdir = 'E:\Walking_Experiments\SOS\mat\Retrack';
-filename = 'SOS_HeadFree_DATA';
+rootdir = 'E:\Walking_Experiments\SOS\mat';
+filename = 'SOS_Walking_DATA';
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
 root.daq = rootdir;
 % root.ang = fullfile(root.daq,'\Vid\Angles\');
-root.ang = fullfile(root.daq,'\Angles\');
+root.ang = fullfile(root.daq,'\Retrack\');
 
 % Select files
-[FILES, PATH.ang] = uigetfile({'*.mat', 'DAQ-files'}, ...
+[FILES, PATH.ang] = uigetfile({'*.csv', 'DAQ-files'}, ...
     'Select head angle trials', root.ang, 'MultiSelect','on');
 FILES = cellstr(FILES)';
 
@@ -26,8 +26,7 @@ PATH.daq = root.daq;
 clear rootdir
 %% Get Data %%
 %---------------------------------------------------------------------------------------------------------------------------------
-% IOFreq = 0.1*round(linspace(0.1,8,10)/0.1)';
-% IOFreq = [0.1, 1, 1.85, 2.75, 3.6, 4.5, 5.35, 6.25, 7.1, 8];
+
 IOFreq = [1, 3.1, 5.3, 7.4, 9.6];
 disp('Loading...')
 ALL 	= cell([N{1,end},10]); % cell array to store all data objects
