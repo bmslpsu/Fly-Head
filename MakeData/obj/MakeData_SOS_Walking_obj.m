@@ -34,23 +34,28 @@ TRIAL  	= cell(N{1,1},1);
 n.catg  = size(N,2) - 1;
 pp = 0;
 tt = linspace(0,20,2000)';
+
 for kk = 1:N{1,end}
     disp(kk)
     % Load HEAD & DAQ data
     data = [];
-	load(fullfile(PATH.daq, FILES{kk}),'data','t_p'); % load pattern x-position
+	load(fullfile(PATH.daq, basename{kk}),'AI','rawTime'); % load pattern x-position
     beniflydata = ImportBenifly_18a(fullfile(PATH.ang, FILES{kk})); % load head angles % time arrays
+    deltaPos=diff(AI.ch0);
+    startIndex = find(deltaPos>1)+1;
+    startTime = AI.Time(startIndex+5);
 	%-----------------------------------------------------------------------------------------------------------------------------
     % Get head data
-    hAngles = beniflydata.head;
-    head.Time = rawTime;
+    hAngles = beniflydata.Head;
+    t_p = AI.Time-startTime;
+    head.Time = rawTime-startTime;
     head.Pos = hAngles - mean(hAngles);
     Head = Fly(head.Pos,head.Time,40,IOFreq,tt); % head object
     pp = pp + 1; % set next index to store data
 	%-----------------------------------------------------------------------------------------------------------------------------
 	% Get pattern data from DAQ
     pat.Time	= t_p;
-    pat.Pos 	= panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]  
+    pat.Pos 	= panel2deg(AI.ch0);  % pattern x-pos: subtract mean and convert to deg [deg]  
     pat.Pos  	= FitPanel(pat.Pos,pat.Time,tt); % fit panel data
  	Pat      	= Fly(pat.Pos,Head.Time,0.4*Head.Fs,IOFreq); % pattern object
 	%-----------------------------------------------------------------------------------------------------------------------------
@@ -94,7 +99,7 @@ clear ii
 %% SAVE %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
-save(['H:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
+save(['E:\Walking_Experiments\SOS_Data' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
     'TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
 disp('SAVING DONE')
 end
