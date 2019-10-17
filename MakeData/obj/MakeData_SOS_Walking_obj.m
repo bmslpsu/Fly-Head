@@ -50,6 +50,7 @@ for kk = 1:N{1,end}
     t_p = AI.Time-startTime;
     head.Time = rawTime-startTime;
     head.Pos = hAngles - mean(hAngles);
+    head.Pos = rad2deg(head.Pos);
     Head = Fly(head.Pos,head.Time,40,IOFreq,tt); % head object
     pp = pp + 1; % set next index to store data
 	%-----------------------------------------------------------------------------------------------------------------------------
