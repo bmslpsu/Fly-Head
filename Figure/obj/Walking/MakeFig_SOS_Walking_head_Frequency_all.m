@@ -50,6 +50,7 @@ for kk = 1:Walking.N{1,1}
 end
 plot(Walking.TRIAL{1}{1,1}.IOFreq, Walking.TRIAL{1}{1,1}.IOMag(:,xIdx),'color', [0.6350 0.0780 0.1840])
 plot(Walking.TRIAL{1}{1,1}.Fv,Walking.TRIAL{1}{1,1}.Mag(:,xIdx),'color', [0.6350 0.0780 0.1840],'LineWidth',2)
-plot(Walking.GRAND{1,catIdx}.Mean{2}{7},Walking.GRAND{1,catIdx}.Mean{2}{8}(:,xIdx),'k','LineWidth',2)
+h.patch = PlotPatch(Walking.GRAND{1,catIdx}.Mean{2}{8}(:,xIdx),Walking.GRAND{1,catIdx}.STD{2}{8}(:,xIdx),...
+        Walking.GRAND{1,catIdx}.Mean{2}{7}(:,xIdx),2,Walking.N{1,1},'k',[0.4 0.4 0.6],0.5,3);
 plot(Walking.GRAND{1,catIdx}.Mean{2}{10},Walking.GRAND{1,catIdx}.Mean{2}{11}(:,xIdx),'k')
 end

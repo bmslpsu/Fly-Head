@@ -1,4 +1,4 @@
-function [FIG] = MakeFig_SOS_Walking_head_Cohr_all()
+function [FIG] = MakeFig_SOS_Walking_pat2head_Cohr_all()
 %% MakeFig_SOS_HeadFree_pat_head_Time:
 %   INPUTS:
 %       -
@@ -14,8 +14,8 @@ FILE = cellstr(FILE)';
 Walking = load(fullfile(root,FILE{1}),'TRIAL','GRAND', 'FLY','U','N', 'T');
 %%
 figNum = 1;
-catIdx = 2;
-xIdx = 2;
+catIdx = 4;
+xIdx = 1;
 
 filename = 'SOS_Walking_all_head_Time';
 
@@ -28,7 +28,7 @@ FIG.Name = filename;
 
 ax.L = gca; hold on
 ax.L.YColor = 'k';
-ax.L.FontSize = ;
+ax.L.FontSize = 12 ;
 ax.L.YLabel.String = ['Magnitude'];
 ax.L.YLabel.FontSize = 12;
 % ax.L.YLim =[0 10];
@@ -41,14 +41,17 @@ ax.L.XTick = [1, 3.1, 5.3, 7.4, 9.6, 20];
 
 for kk = 1:Walking.N{1,1}
     for jj = 1:Walking.T{kk,2}
-    plot(Walking.TRIAL{kk}{jj,catIdx}.Fv,Walking.TRIAL{kk}{jj,catIdx}.Mag(:,xIdx),'color',[.5 .5 .5 .5], 'LineWidth',.5)
+    plot(Walking.TRIAL{kk}{jj,catIdx}.CoherenceFV,Walking.TRIAL{kk}{jj,catIdx}.Coherence,'color',[.5 .5 .5 .5], 'LineWidth',.5)
     end
 end
 
 for kk = 1:Walking.N{1,1}
-     plot(Walking.FLY{kk,catIdx}.Mean{7},Walking.FLY{kk,catIdx}.Mean{8}(:,xIdx),'LineWidth',1)
+     plot(Walking.FLY{kk,catIdx}.Mean{8},Walking.FLY{kk,catIdx}.Mean{7}(:,xIdx),'LineWidth',1)
 end
-plot(Walking.GRAND{1,1}.Mean{2}{7},Walking.GRAND{1,1}.Mean{2}{8}(:,xIdx),'color', [0.6350 0.0780 0.1840],'LineWidth',2)
- plot(Walking.GRAND{1,catIdx}.Mean{2}{7},Walking.GRAND{1,catIdx}.Mean{2}{8}(:,xIdx),'k','LineWidth',2)
 
+h.plot = PlotPatch(Walking.GRAND{1,catIdx}.Mean{2}{7}(:,xIdx),Walking.GRAND{1,catIdx}.STD{2}{7}(:,xIdx), ...
+    Walking.GRAND{1,catIdx}.Mean{2}{8}(:,xIdx),2,Walking.N{1,1},'k',[0.4 0.4 0.6],0.5,3);
+
+plot(Walking.GRAND{1,catIdx}.Mean{2}{8},Walking.GRAND{1,catIdx}.Mean{2}{7}(:,xIdx),'k')
+plot(Walking.GRAND{1,catIdx}.Mean{2}{4},Walking.GRAND{1,catIdx}.Mean{2}{9}(:,xIdx),'k')
 end
