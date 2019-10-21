@@ -26,7 +26,7 @@ end
 time.data       = tt;                               % time vector
 Ts              = mean(diff(time.data));        	% sampling time
 pos.data        = xx;                               % position
-vel.data        = [diff(pos.data)/Ts ; 0];          % velocity
+vel.data        = [0 ; diff(pos.data)/Ts];          % velocity
 avel.data       = abs(vel.data);                    % absolute velocity
 vel.mean      	= mean(avel.data);                  % mean absolute velocity
 vel.std       	= std(vel.data);                    % std absolute velocity

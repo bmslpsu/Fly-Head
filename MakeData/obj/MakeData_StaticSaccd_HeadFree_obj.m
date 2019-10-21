@@ -30,7 +30,7 @@ SACD.Head = [];
 SACD.Wing = [];
 SACD.Saccade.Head = cell(N{1,3},1);
 SACD.Interval.Head = cell(N{1,3},1);
-tt = (0:(1/200):9.8)';
+tt = (0:(1/200):10)';
 for kk = 1:N.file
     disp(kk)
     % Load HEAD & DAQ data
@@ -141,7 +141,7 @@ for kk = 1:N.file
     end
 
 %     pause()
-    close all
+%     close all
 end
 
 % clear jj ii kk pp qq ww n a b  t_v hAngles data head wing pat tt I_table Dir loop Saccade Interval Stimulus Error IntError...
@@ -192,36 +192,7 @@ end
 INTERVAL.Head = cell2table(INTERVAL.Head,'VariableNames',varnames);
 INTERVAL.HeadStats = cell2table(cellfun(@(x) MatStats(x,2), table2cell(INTERVAL.Head),...
                             'UniformOutput',false),'VariableNames',varnames);
-
-% TIME = cell(N{1,3},1);
-% POS  = cell(N{1,3},1);
-% dR   = cell(N{1,3},1);
-% for jj = 1:N{1,3}
-%     [TIME{jj},~,~,~,dR{jj}] = nancat_center(SACD.Interval.Head{jj}(:,1),0,1);
-%     for kk = 1:size(SACD.Interval.Head{jj},1)
-%         for ii = 1:size(SACD.Interval.Head{jj}{kk,2},2)
-%             POS{jj}{kk,1}(:,ii) = cat_pad(SACD.Interval.Head{jj}{kk,2}(:,ii), dR{jj}{kk}(:,1),nan);
-%         end
-%     end
-% 	POS{jj} = cat(2,POS{jj}{:});
-% end
-% 
-% CC = repmat(prism(ceil(N.speed)),2,1);
-% FIG = figure (2) ; clf
-% FIG.Color = 'k';
-% ax = gca;
-% ax.Color = 'k';
-% set(ax,'YColor','w','XColor','w')
-% for jj = [1 4 2 5 3 6]
-% 	hold on
-%     plot(TIME{jj}, POS{jj}, 'Color', CC(jj,:))
-%     xlim([0 2])
-% end
-
-%% Normalize Wing Saccades
-%---------------------------------------------------------------------------------------------------------------------------------
-
-                        
+                     
 %% Fly Statistics %%
 %---------------------------------------------------------------------------------------------------------------------------------
 FLY = cell(N{1,3},1);

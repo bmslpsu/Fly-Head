@@ -5,7 +5,7 @@ function [centData,cIdx,cVal,R,dR,new_length,n_vector] = nancat_center(data,cent
 %       center     	:   data center value (set to empty when using Cent)
 %       dim         :   dimension to center around
 %       Cent     	:   center index , overrides center value
-%       Even     	:   if true,euqual sizing on each side of "center"
+%       Even     	:   if true,equal sizing on each side of "center"
 %   OUTPUTS:
 %       centDara    :   centered data
 %       cIdx        :   center indicies

@@ -93,8 +93,8 @@ end
 
 TimeNorm = cellfun(@(x) x - x(1), Time, 'UniformOutput', false); % normalized times
 TimePeak = cellfun(@(x,y) x - y, Time(:,1), PeakTime, 'UniformOutput', false); % aligned to peak times of saccades
-TimeEnd = cellfun(@(x,y) x - y, Time(:,2), StartTime, ... % aligned to end time of inter-saccde intervals (saccde start)
-    'UniformOutput', false); 
+% TimeEnd = cellfun(@(x,y) x - y, Time(:,2), StartTime, ... % aligned to end time of inter-saccde intervals (saccde start)
+%     'UniformOutput', false); 
 
 [Saccade.Time,~,~,~,dR,~] = nancat_center(TimePeak,0,1);
 
@@ -227,7 +227,7 @@ if debug
         end
         
         if ~isempty(STIM)
-            plot(tt,vel(:,2),'--','Color','c','LineWidth',2)
+            plot(tt,vel(:,2),'--','Color','c','LineWidth',1)
         end
         
         cc = 'w';

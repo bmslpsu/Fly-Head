@@ -9,8 +9,12 @@ function [] = MakeData_Ramp_HeadFree_v2_obj()
 % Amp = 30;
 % filename = ['Ramp_HeadFree_' num2str(Amp) '_DATA'];
 % filename = 'Ramp_HeadFree_SACCD_Anti';
-filename = 'Ramp_HeadFree_SACCD_Anti_filt=15';
+% filename = 'Ramp_HeadFree_SACCD_Anti_filt=15';
+% filename = 'Ramp_HeadFree_SACCD_CO_filt=15';
+filename = 'Ramp_HeadFree_SACCD_All_filt=15';
+
 rootdir = 'H:\EXPERIMENTS\Experiment_Ramp';
+match = nan;
 %---------------------------------------------------------------------------------------------------------------------------------
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -39,8 +43,7 @@ SACD.Stimulus.Interval.Head = cell(N{1,3},1);
 
 Vel = 3.75*U{1,3}{1};
 % Vel = U{1,3}{1};
-% tt = (0:(1/200):9.95)';
-tt = linspace(0,10,2000)';
+tt = (0:(1/200):10)';
 Stim = (Vel*tt')';
 for kk = 1:N.file
     disp(kk)
@@ -51,14 +54,14 @@ for kk = 1:N.file
     % Get head data
     head.Time = t_v;
     head.Pos = hAngles;
-    head.Fc = 30;
+    head.Fc = 15;
     Head = Fly(head.Pos,head.Time,head.Fc,[],tt); % head object
   	%-----------------------------------------------------------------------------------------------------------------------------
     % Get wing data from DAQ
 	wing.f          = medfilt1(100*data(:,6),3); % wing beat frequency [Hz]
     wing.Time       = t_p; % wing time [s]
     wing.Fs         = 1/mean(diff(wing.Time)); % sampling frequency [Hz]
-    wing.Fc         = 30; % cutoff frequency [Hz]
+    wing.Fc         = 15; % cutoff frequency [Hz]
     [b,a]           = butter(2,wing.Fc/(wing.Fs/2)); % butterworth filter
 	wing.Left       = filtfilt(b,a,(data(:,4))); % left wing [V]
     wing.Right      = filtfilt(b,a,(data(:,5))); % right wing [V]
@@ -121,7 +124,7 @@ for kk = 1:N.file
     I_table.Properties.VariableNames{4} = 'speed';
     
     [Saccade,Interval,Stimulus,Error,IntError,matchFlag] = SaccdInter(Head.X(:,1),Head.Time,head.SACD, ...
-                                                                    -1 ,Stim(:,I{kk,3}), false);
+                                                                    match ,Stim(:,I{kk,3}), true);
     
     var1 = {Saccade.Time, Saccade.Pos,Saccade.Vel, Error.Saccade.Pos, Error.Saccade.Vel,...
                 IntError.Saccade.Pos, IntError.Saccade.Vel, Stimulus.Saccade.Pos , Stimulus.Saccade.Vel};
@@ -197,8 +200,8 @@ for kk = 1:N.file
         TRIAL{I{kk,1},I{kk,3}}{qq+1,ww} = vars{ww};
     end
 
-%     pause()
-%     close all
+    pause()
+    close all
 end
 
 clear jj ii kk pp qq ww n a b  t_v hAngles data head wing pat tt I_table Dir loop Saccade Interval Stimulus Error IntError...
@@ -229,7 +232,7 @@ end
 SACCADE.Head = cell2table(SACCADE.Head,'VariableNames',varnames);
 SACCADE.HeadStats = cell2table(cellfun(@(x) MatStats(x,2), table2cell(SACCADE.Head),...
                             'UniformOutput',false),'VariableNames',varnames);
-
+%%
 clear INTERVAL
 INTERVAL.Head = cell(N{1,3},9);
 dR = cell(N{1,3},1);
