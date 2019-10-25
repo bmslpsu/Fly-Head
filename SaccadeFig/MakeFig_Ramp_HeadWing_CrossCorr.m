@@ -1,24 +1,69 @@
-function [FIG] = MakeFig_Ramp_HeadWing_Saccade()
-%% MakeFig_Ramp_HeadWing_Saccade:
+function [FIG] = MakeFig_Ramp_HeadWing_CrossCorr()
+%% MakeFig_Ramp_HeadWing_CrossCorr:
 %   INPUTS:
 %       -
 %   OUTPUTS:
 %       FIG     :   figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
 root = 'H:\DATA\Rigid_Data\';
-% root = 'Q:\Box Sync\';
 [FILE,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
     'Select head angle trials', root, 'MultiSelect','off');
 FILE = cellstr(FILE)';
 
-load(fullfile(root,FILE{1}),'SACD','U','N','TRIAL');
+load(fullfile(root,FILE{1}),'SACD','U','N','TRIAL','GRAND');
 
 %%
 clearvars -except SACCADE INTERVAL SACD Stim U N I TRIAL FLY GRAND
 
+clear FIG ax
+FIG = figure (1) ; clf ; hold on
+FIG.Color = 'w';
+FIG.Units = 'inches';
+FIG.Position = [1 1 4 3];
+movegui(FIG,'center')
+FIG.Name = 'Head vs Wing';
+
 headIdx = 2;
 wingIdx = 3;
+h2w = 6;
+pp = 1;
+TD = cell(N{1,3},1);
+ax = gobjects(N{1,3},1);
+for jj = 1:N{1,3}
+    ax(jj) = subplot(2,3,jj); hold on ; title(['Vel = ' num2str(3.75*U{1,3}{1}(jj)) ' (' char(176) '/s)'])
+    xlabel('Time (ms)')
+    ylabel('Cross Correlation')
+    for kk = 1:N{1,1}
+        for ii = 1:size(TRIAL{kk,jj},1)
+            td = 1000*TRIAL{kk,jj}{ii,h2w}.TimeLags;
+            cc = TRIAL{kk,jj}{ii,h2w}.CrossCorr;
+            
+            t_diff = 1000*TRIAL{kk,jj}{ii,h2w}.TimeDiff;
+            max_cc = TRIAL{kk,jj}{ii,h2w}.MaxCC;
+            
+            TD{jj}(end+1,1) = t_diff;
+            
+%             plot(td, cc, 'k', 'LineWidth', 0.25)
+%             plot(t_diff, max_cc, 'r.', 'MarkerSize', 10)
+            
+            pp = pp + 1;
+        end
+    end
+    td = 1000*GRAND{jj,h2w}.Mean{2}{11};
+    cc = GRAND{jj,h2w}.Mean{2}{10};
+    cc_std = GRAND{jj,h2w}.STD{2}{10};
+    [cc_peak,idx_peak] = max(cc);
+    
+    PlotPatch(cc, cc_std, td, 1, N{1,1}, 'b', [0.4 0.4 0.6], 0.2, 2);
+    plot([td(idx_peak) , td(idx_peak)], [cc_peak, 0], 'r--')
+	plot(td(idx_peak), cc_peak, 'r.', 'MarkerSize', 15)
+end
+set(ax,'XLim',1000*0.2*[-1 1])
+set(ax,'YTickLabels',{})
+% set(ax,'XTick',-150:50:150)
+linkaxes(ax,'xy')
 
+%%
 clear FIG ax
 FIG = figure (1) ; clf ; hold on
 FIG.Color = 'w';

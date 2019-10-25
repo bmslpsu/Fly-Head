@@ -4,9 +4,16 @@ function [Saccade,Interval,Stimulus,Error,IntError,matchFlag] = SaccdInter(xx,tt
 %       xx          :   position
 %       tt          :   time vector
 %       SACD      	:   saccade table
-%       match      	:   remove saccades of a specified direction
+%       match      	:   only analyze saccades of a specified direction
+%                       [ 1 = co-direction
+%                        -1 = anti-direction
+%                         2 = positive
+%                        -2 = negative
+%                     	 nan = all-directions ]
+%
 %       Stim      	:   stimulus data (same size as "xx")
 %       debug       :   showplot boolean
+%
 %   OUTPUTS:
 %       Saccade     :   saccade intervals
 %       Interval   	:   inter-saccade intervals
@@ -25,16 +32,29 @@ if nargin>3
   	matchFlag = false;
     % Remove saccades in specified direction
     if ~isnan(match)
-        [anti] = find(SACD.Match~=match);
-        if ~isempty(anti)
-            SACD(anti,:) = [];
+        if (match==1) || (match==-1)
+            [dir] = find(SACD.Match~=match);
+            if ~isempty(dir)
+                SACD(dir,:) = [];
+            end
+
+            if isempty(SACD)
+                warning('No saccades fit the match condition')
+                matchFlag = true;
+            end
+        elseif (match==2) || (match==-2)
+          	[dir] = find(SACD.Direction~=sign(match));
+            if ~isempty(dir)
+                SACD(dir,:) = [];
+            end
+
+            if isempty(SACD)
+                warning('No saccades fit the match condition')
+                matchFlag = true;
+            end
+        else
+            error('match input incorrect')
         end
-        
-        if isempty(SACD)
-            warning('No saccades fit the match condition')
-            matchFlag = true;
-        end
-        
     end
 end
 
@@ -60,8 +80,8 @@ for kk = 1:n % all saccades
     % Saccade Intervals
     SI = SACD.StartIdx(kk);             % saccade interval start index
     EI = SACD.EndIdx(kk);               % saccade interval end index
-    Inter{kk,1}(:,1) = xx(SI:EI);       % saccade interval
- 	Inter{kk,1}(:,2) = vel(SI:EI);      % inter-saccade interval
+    Inter{kk,1}(:,1) = xx(SI:EI);       % saccade interval position
+ 	Inter{kk,1}(:,2) = vel(SI:EI);      % saccade interval velocity
     Time{kk,1} = tt(SI:EI);             % saccade interval times
     PeakTime{kk} = SACD.PeakTime(kk);   % peak velocity time
     StartTime{kk} = SACD.StartTime(kk);	% start times for each inter-saccade interval (based on 
@@ -73,7 +93,7 @@ for kk = 1:n % all saccades
     
     % Inter-Saccde Intervals
     if kk==1 % 1st saccade does not have valid inter-saccade interval
-    	Time{kk,2}(:,1) = tt(SI:EI);
+    	Time{kk,2}(:,1) = tt(1:SI);
       	Inter{kk,2}(:,1:2) = nan(length(Time{kk,2}(:,1)),2);
         if ~isempty(STIM) % we know the stimulus
             Inter{kk,4}(:,1:2) = nan(length(Time{kk,2}(:,1)),2);
@@ -81,8 +101,8 @@ for kk = 1:n % all saccades
     else
         SI = SACD.EndIdx(kk-1);             % inter-saccade interval start index
         EI = SACD.StartIdx(kk);             % inter-saccade interval end index
-        Inter{kk,2}(:,1) = xx(SI:EI);       % inter-saccade interval
-    	Inter{kk,2}(:,2) = vel(SI:EI,1);    % inter-saccade velocity interval
+        Inter{kk,2}(:,1) = xx(SI:EI);       % inter-saccade interval position
+    	Inter{kk,2}(:,2) = vel(SI:EI,1);    % inter-saccade interval velocity
     	Time{kk,2}(:,1) = tt(SI:EI);        % inter-saccade interval time
         if ~isempty(STIM) % we know the stimulus
             Inter{kk,4}(:,1) = STIM(SI:EI);
@@ -201,7 +221,7 @@ end
 
 if debug
     FIG = figure ; clf % data with saccade & inter-saccde intervals highlighted
-    FIG.Color = 'k';
+    FIG.Color = 'w';
     FIG.Units = 'inches';
     FIG.Position = [2 2 6 4];
         clear ax
@@ -209,45 +229,45 @@ if debug
         ax(1).XLabel.String = 'Time';
         ax(1).YLabel.String = 'Data';
         
-        plot(tt,xx,'--w','LineWidth',0.5)
+        plot(tt,xx,'--k','LineWidth',0.5)
         for kk = 1:n
             h.sacd  = plot(Time{kk,1},Inter{kk,1}(:,1),'-','LineWidth',2);
-            h.inter = plot(Time{kk,2},Inter{kk,2}(:,1),'-w','LineWidth',0.5);
+            h.inter = plot(Time{kk,2},Inter{kk,2}(:,1),'-k','LineWidth',0.5);
         end
 %         legend([h.sacd h.inter],'Saccade','Interval')
 
         ax(2) = subplot(2,1,2) ; hold on
         ax(2).XLabel.String = 'Time';
         ax(2).YLabel.String = 'Diff Data';
-        plot(tt,vel(:,1),'--w','LineWidth',0.5)
+        plot(tt,vel(:,1),'--k','LineWidth',0.5)
        
         for kk = 1:n
             h.sacd  = plot(Time{kk,1},Inter{kk,1}(:,2),'-','LineWidth',2);
-            h.inter = plot(Time{kk,2},Inter{kk,2}(:,2),'-w','LineWidth',0.5);
+            h.inter = plot(Time{kk,2},Inter{kk,2}(:,2),'-k','LineWidth',0.5);
         end
         
         if ~isempty(STIM)
             plot(tt,vel(:,2),'--','Color','c','LineWidth',1)
         end
         
-        cc = 'w';
-        set(ax,'Color','k','YColor',cc,'XColor',cc)
+        cc = 'k';
+        set(ax,'Color','w','YColor',cc,'XColor',cc)
     
 	FIG = figure ; clf % normalized saccade & inter-saccde intervals
-    FIG.Color = 'k';
+    FIG.Color = 'w';
     FIG.Units = 'inches';
     FIG.Position = [2+6.5 2 6 4];
         clear ax
         ax(1) = subplot(2,2,1) ; hold on
         ax(1).YLabel.String = 'Saccade';
      	h.sacd  = plot(Sacd_Time_Mean,Saccade.Pos,'-','LineWidth',1);
-        plot(Sacd_Time_Mean,Sacd_Pos_Mean,'-w','LineWidth',2);
-        plot([0 0],ax(1).YLim,'--w','LineWidth',1.5);
+        plot(Sacd_Time_Mean,Sacd_Pos_Mean,'-k','LineWidth',2);
+        plot([0 0],ax(1).YLim,'--k','LineWidth',1.5);
                 
         ax(2) = subplot(2,2,2) ; hold on
         ax(2).YLabel.String = 'Interval-Sacadde Interval';
        	h.inter = plot(Interval.Time,Interval.Pos,'-','LineWidth',1);
-        plot(Inter_Time_Mean,Inter_Pos_Mean,'-w','LineWidth',2);
+        plot(Inter_Time_Mean,Inter_Pos_Mean,'-k','LineWidth',2);
         
         if ~isempty(STIM)
             plot(Interval.Time,Stimulus.Interval.Pos,'--r','LineWidth',2)
@@ -257,21 +277,21 @@ if debug
         ax(3).XLabel.String = 'Normalized Time';
         ax(3).YLabel.String = 'Saccade Diff';
        	h.sacd  = plot(Saccade.Time,Saccade.Vel,'-','LineWidth',1);
-        plot(Sacd_Time_Mean,Sacd_Vel_Mean,'w','LineWidth',2);
-        plot([0 0],ax(3).YLim,'--w','LineWidth',1.5);
+        plot(Sacd_Time_Mean,Sacd_Vel_Mean,'k','LineWidth',2);
+        plot([0 0],ax(3).YLim,'--k','LineWidth',1.5);
 
         ax(4) = subplot(2,2,4) ; hold on
         ax(4).XLabel.String = 'Normalized Time';
         ax(4).YLabel.String = 'Interval-Sacadde Interval Diff';
        	h.inter = plot(Interval.Time,Interval.Vel,'-','LineWidth',1);
-       	plot(Inter_Time_Mean,Inter_Vel_Mean,'-w','LineWidth',2);
+       	plot(Inter_Time_Mean,Inter_Vel_Mean,'-k','LineWidth',2);
         
         if ~isempty(STIM)
             plot(Interval.Time,Stimulus.Interval.Vel,'--r','LineWidth',2)
         end
 
-        cc = 'w';
-        set(ax,'Color','k','YColor',cc,'XColor',cc)
+        cc = 'k';
+        set(ax,'Color','w','YColor',cc,'XColor',cc)
 end
 
 end
