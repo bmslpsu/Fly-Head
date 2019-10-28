@@ -97,9 +97,11 @@ for kk = 1:N.file
 	%-----------------------------------------------------------------------------------------------------------------------------
 	% Get pattern data from DAQ
     pat.Time	= t_p;
-    pat.Pos 	= panel2deg(data(:,2)); % pattern x-pos: subtract mean and convert to deg [deg]  
-    pat.Pos  	= FitPanel(pat.Pos,pat.Time,tt); % fit panel data
- 	Pat      	= Fly(pat.Pos,Head.Time,[],[]); % pattern object
+  	pat.Pos     = 3.75*round((96/10)*data(:,2)); % panel position [panel index]
+    % pat.Pos 	= panel2deg(data(:,2)); % pattern x-pos: subtract mean and convert to deg [deg]  
+    % pat.Pos  	= FitPanel(pat.Pos,pat.Time,tt); % fit panel data
+ 	% Pat      	= Fly(pat.Pos,Head.Time,[],[]); % pattern object
+    Pat      	= Fly(pat.Pos,pat.Time,[],[],Head.Time); % pattern obje
     %-----------------------------------------------------------------------------------------------------------------------------
     % Get Saccade Stats   
     [head.SACD,head.thresh,head.count,head.rate,head.SACDRmv] = SacdDetect(Head.X(:,1),Head.Time,2.5,false);

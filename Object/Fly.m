@@ -52,6 +52,10 @@ classdef Fly
             obj.X = data(:); % store data
             obj.Time = time(:); % store time
             
+            if isempty(tt)
+                tt = obj.Time;
+            end
+            
             if nargin==3
                 IOFreq = 0;
             elseif nargin==5 % interpolate if new time vector is input
