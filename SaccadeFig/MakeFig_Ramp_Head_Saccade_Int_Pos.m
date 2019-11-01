@@ -15,8 +15,9 @@ load(fullfile(root,FILE{1}),'INTERVAL','Stim','U','N','T');
 
 clearvars -except SACCADE INTERVAL SACD Stim U N I TRIAL FLY GRAND CC Vel
 
-CC = repmat({[1 0 0],[0 1 0],[0 0 1]},1,2);
-Vel = 3.75*U.vel{1};
+clms = N.vel/2;
+CC = repmat(hsv(clms),2,1);
+Vel = U.vel{1};
 
 %% Inter-Saccade Time %%
 interval_times = cell(N.vel,1);
@@ -40,27 +41,27 @@ std_times = cellfun(@(x) std(x), interval_times, 'UniformOutput',  true);
 velIdx = num2cell((1:N.vel)');
 G = cellfun(@(x,y) y*(x./x), interval_times, velIdx, 'UniformOutput',  false);
 G = cat(1,G{:});
-G(G>3) = G(G>3) - 3;
+G(G>clms) = G(G>clms) - clms;
 interval_times = cat(1,interval_times{:});
 
 %% Inter-Saccade Times %%
 FIG = figure (1) ; clf
 FIG.Color = 'w';
 FIG.Units = 'inches';
-FIG.Position = [2 2 2 2];
+FIG.Position = [2 2 (2/3)*clms 2];
 FIG.Name = 'Inter-Saccade Times';
 FIG.PaperPositionMode = 'auto';
 movegui(FIG,'center')
 
 ax = gca;
-bx = boxplot(interval_times,G,'Labels',{Vel(1:3)},'Width',0.5,'Symbol','','Whisker',2);
+bx = boxplot(interval_times,G,'Labels',{Vel(1:clms)},'Width',0.5,'Symbol','','Whisker',2);
 xlabel(['Stimulus Velocity (' char(176) '/s)'])
 ylabel('Inter-Saccade Interval Time (s)')
 box off
 
 h = get(bx(5,:),{'XData','YData'});
-for k = 1:size(h,1)
-   patch(h{k,1},h{k,2},[0.1 0.6 0.45]);
+for kk = 1:size(h,1)
+   patch(h{kk,1},h{kk,2},CC(kk,:));
 end
 
 set(findobj(ax,'tag','Median'), 'Color', 'w','LineWidth',1.5);
@@ -95,10 +96,10 @@ for jj = 1:N{1,3}
 %     tlim = med_times(jj) + 1.5*std_times(jj);
 %     span = 1:round(tlim/Ts);
     
-    plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Position{jj},'Color', [0.7*CC{jj} , 0.2])
+    plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Position{jj},'Color', [0.7*CC(jj,:) , 0.2])
     
  	[h.std(jj),h.med(jj)] = PlotPatch(INTERVAL.HeadStats.Position(jj).Median(span), INTERVAL.HeadStats.Position(jj).STD(span), ...
-        INTERVAL.HeadStats.Time(jj).Median(span), 1, 1, CC{jj}, [0.7 0.7 0.7], 0.4, 3);
+        INTERVAL.HeadStats.Time(jj).Median(span), 1, 1, CC(jj,:), [0.7 0.7 0.7], 0.4, 3);
     
 	hp(jj) = plot(INTERVAL.HeadStats.Time(jj).Median(span), Stim(span,jj), '--', 'Color', [0.2 0.2 0.2], 'LineWidth', 1.5);
     
@@ -135,9 +136,9 @@ for jj = 1:N{1,3}
     tLim = sum(isnan(INT),2)./(size(INT,2)-1);
     span = 1:length(tLim(tLim<pLim));
     
-    h.trial = plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Position_Error{jj},'Color', [0.5*CC{jj},0.2]);
+    h.trial = plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Position_Error{jj},'Color', [0.5*CC(jj,:),0.2]);
   	[h.std(jj),h.med(jj)] = PlotPatch(INTERVAL.HeadStats.Position_Error(jj).Median(span), INTERVAL.HeadStats.Position_Error(jj).STD(span), ...
-        INTERVAL.HeadStats.Time(jj).Median(span), 1, 1, CC{jj}, [0.7 0.7 0.7], 0.4, 3);
+        INTERVAL.HeadStats.Time(jj).Median(span), 1, 1, CC(jj,:), [0.7 0.7 0.7], 0.4, 3);
     
     hp(jj) = plot(INTERVAL.HeadStats.Time(jj).Median(span), Stim(span,jj), '--', 'Color', [0.2 0.2 0.2], 'LineWidth', 2);
     
@@ -149,7 +150,7 @@ for jj = 1:N{1,3}
     
 % 	plot([repmat(INTERVAL.HeadStats.Time(jj).Median(span(end)),2,1)],...
 %         [INTERVAL.HeadStats.Position_Error(jj).Median(span(end)) , 0],...
-%         '--', 'Color', CC{jj}, 'LineWidth', 2);
+%         '--', 'Color', CC(jj,:), 'LineWidth', 2);
     
 end
 set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',[0 1.5])
@@ -183,9 +184,9 @@ for jj = 1:N{1,3}
     tLim = sum(isnan(INT),2)./(size(INT,2)-1);
     span = 1:length(tLim(tLim<pLim));
     
-%     h.trial = plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Position_Error{jj},'Color', [0.5*CC{jj},0.2]);
+%     h.trial = plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Position_Error{jj},'Color', [0.5*CC(jj,:),0.2]);
 %   	[h.std(jj),h.med(jj)] = PlotPatch(INTERVAL.HeadStats.Position_Error(jj).Median(span), INTERVAL.HeadStats.Position_Error(jj).STD(span), ...
-%         INTERVAL.HeadStats.Time(jj).Median(span), 1, 1, CC{jj}, [0.7 0.7 0.7], 0.4, 3);
+%         INTERVAL.HeadStats.Time(jj).Median(span), 1, 1, CC(jj,:), [0.7 0.7 0.7], 0.4, 3);
     
 %     hp(jj) = plot(INTERVAL.HeadStats.Time(jj).Median(span), Stim(span,jj), '--', 'Color', [0.2 0.2 0.2], 'LineWidth', 2);
     
@@ -193,11 +194,11 @@ for jj = 1:N{1,3}
     
     plot([0 ; repmat(INTERVAL.HeadStats.Time(jj).Median(span(end)),2,1)],...
         [0 , INTERVAL.HeadStats.Position_Error(jj).Median(span(end)) , 0],...
-        '-', 'Color', CC{jj}, 'LineWidth', 2);
+        '-', 'Color', CC(jj,:), 'LineWidth', 2);
     
 	plot([repmat(INTERVAL.HeadStats.Time(jj).Median(span(end)),2,1)],...
         [INTERVAL.HeadStats.Position_Error(jj).Median(span(end)) , 0],...
-        '--', 'Color', CC{jj}, 'LineWidth', 2);
+        '--', 'Color', CC(jj,:), 'LineWidth', 2);
     
 end
 set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',[0 1.5])
@@ -231,15 +232,15 @@ for jj = 1:N{1,3}
     tLim = sum(isnan(INT),2)./(size(INT,2)-1);
     span = 1:length(tLim(tLim<pLim));
     
-    h.trial = plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Position_IntError{jj},'Color', [0.5*CC{jj},0.2]);
+    h.trial = plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Position_IntError{jj},'Color', [0.5*CC(jj,:),0.2]);
     
     int_level(jj) = INTERVAL.HeadStats.Position_IntError(jj).Median(span(end));
     t_level(jj) = INTERVAL.HeadStats.Time(jj).Median(span(end));
     
   	[h.std(jj),h.med(jj)] = PlotPatch(INTERVAL.HeadStats.Position_IntError(jj).Median(span), INTERVAL.HeadStats.Position_IntError(jj).STD(span), ...
-        INTERVAL.HeadStats.Time(jj).Median(span), 1, 1, CC{jj}, [0.7 0.7 0.7], 0.4, 3);
+        INTERVAL.HeadStats.Time(jj).Median(span), 1, 1, CC(jj,:), [0.7 0.7 0.7], 0.4, 3);
     
-    h.int_level(jj) = plot([0 t_level(jj)], [int_level(jj) int_level(jj)], '--', 'Color', CC{jj}, 'LineWidth', 1.5);
+    h.int_level(jj) = plot([0 t_level(jj)], [int_level(jj) int_level(jj)], '--', 'Color', CC(jj,:), 'LineWidth', 1.5);
     h.int_marker(jj) = plot(t_level(jj), int_level(jj), '.k', 'MarkerSize', 20);
     
 end

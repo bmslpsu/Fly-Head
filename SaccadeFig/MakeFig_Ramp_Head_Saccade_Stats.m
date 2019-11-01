@@ -13,11 +13,11 @@ FILE = cellstr(FILE)';
 
 load(fullfile(root,FILE{1}),'SACD','U','N','T');
 
-Vel = 3.75*U{1,3}{1};
+Vel = U{1,3}{1};
 clearvars -except SACD U N T Vel
 
 %% Saccade Statistics %%
-match = 1;
+match = -1;
 mIdx = SACD.Head.Match==match;
 % mIdx = (SACD.Head.Match==1) | (SACD.Head.Match==-1); % for anti & co -directional
 pp = 1:(length(U{1,3}{1})/2);
@@ -56,6 +56,7 @@ YY = {  ['Duration (ms)'],...
     
 CC = {[0 0 0.5],[0 0 0],[0 0.7 0 ],[0.7 0 0],[0.5 0.5 0.5],[0.1 0.5 0.5],...
       [0.5 0.1 0.5],[0.9 0.7 0.7],[0.3 0.3 0.9],[0.6 0.1 0.4],[0 0.8 0.8],[0.9 0.7 0.3]};
+CC = repmat(prism(N.vel/2),2,1);
 
 FIG = figure (1) ; clf
 FIG.Color = 'w';
@@ -77,34 +78,25 @@ for ww = 1:n_plot-1
     xlabel(['Stimulus Velocity (' char(176) '/s)'])
     ylabel(YY{ww})
     box off
-%     ax(ww).XColor = 'none';
-%     ax(ww).XAxis.Label.Color = 'k';
-%     ax(ww).XAxis.Label.Visible = 'on';
 
     h = get(bx(5,:),{'XData','YData'});
-    for k = 1:size(h,1)
-       patch(h{k,1},h{k,2},CC{ww});
+    for kk = 1:size(h,1)
+       patch(h{kk,1},h{kk,2},CC(kk,:));
     end
 
     set(findobj(ax(ww),'tag','Median'), 'Color', 'w','LineWidth',1.5);
     set(findobj(ax(ww),'tag','Box'), 'Color', 'none');
     set(findobj(ax(ww),'tag','Upper Whisker'), 'Color', 'k');
     ax(ww).Children = ax(ww).Children([end 1:end-1]);
-
-    uLim = findobj(ax(ww),'tag','Upper Whisker');
-    lLim = findobj(ax(ww),'tag','Lower Whisker');
-    uLim = uLim(3).YData(2);
-    lLim = lLim(1).YData(1);
-    ax(ww).YLim = [0.5*lLim 1.5*uLim];
     ax(ww).YLim(1) = 0;
 end
 ax(1).YLim(2) = 0.08e3;
 ax(2).YLim(2) = 30;
 ax(3).YLim(2) = 1000;
 ax(4).YLim(2) = 600;
-ax(5).YLim(2) = 100;
-ax(6).YLim(2) = 50;
-
+ax(5).YLim(2) = 160;
+ax(6).YLim(2) = 70;
+ax(10).YLim(2) = 400;
 
 pp = 1:(length(U{1,3}{1})/2);
 n_sacd = size(SACD.Head,1);
@@ -123,20 +115,14 @@ ylabel(YY{n_plot})
 box off
 
 h = get(bx(5,:),{'XData','YData'});
-for k = 1:size(h,1)
-   patch(h{k,1},h{k,2},CC{n_plot});
+for kk = 1:size(h,1)
+   patch(h{kk,1},h{kk,2},CC(kk,:));
 end
 
 set(findobj(ax(n_plot),'tag','Median'), 'Color', 'w','LineWidth',1.5);
 set(findobj(ax(n_plot),'tag','Box'), 'Color', 'none');
 set(findobj(ax(n_plot),'tag','Upper Whisker'), 'Color', 'k');
 ax(n_plot).Children = ax(n_plot).Children([end 1:end-1]);
-
-uLim = findobj(ax(n_plot),'tag','Upper Whisker');
-lLim = findobj(ax(n_plot),'tag','Lower Whisker');
-uLim = uLim(3).YData(2);
-lLim = lLim(1).YData(1);
-ax(n_plot).YLim = [0.5*lLim 1.5*uLim];
 ax(n_plot).YLim(1) = 0;
 ax(n_plot).YLim(2) = 2;
 
