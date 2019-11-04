@@ -5,8 +5,8 @@ function [] = MakeData_Ramp_Wave_HeadFree_obj(match,Fc)
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-Fc = 30;
-match = -1;
+% Fc = 30;
+% match = -1;
 if match==1
     clss = 'CO';
 elseif match==-1
@@ -18,7 +18,7 @@ else
 end
 
 wave = 30;
-filename = ['Ramp_HeadFree_SACCD_' clss '_filt=' num2str(Fc) '_Wave_' num2str(wave)];
+filename = ['Ramp_HeadFree_SACCD_' clss '_filt=' num2str(Fc) '_Wave=' num2str(wave)];
 rootdir = ['H:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast\' num2str(wave)];
 
 %% Setup Directories %%
@@ -98,7 +98,7 @@ for kk = 1:N.file
   	% Check WBF & WBA
     if min(wing.f)<150 || mean(wing.f)<200 % check WBF, if too low then don't use trial
         fprintf('Low WBF: Fly %i Trial %i \n',D{kk,1},D{kk,2})
-        continue
+        % continue
     elseif any(wing.Left>10.6) || any(wing.Right>10.6)
         fprintf('WBA out of range: Fly %i Trial %i \n',D{kk,1},D{kk,2})
         % continue

@@ -13,7 +13,7 @@ FILE = cellstr(FILE)';
 
 load(fullfile(root,FILE{1}),'Stim','U','N','I','T','TRIAL');
 
-Vel = 3.75*U{1,3}{1};
+Vel = U{1,3}{1};
 
 clearvars -except SACCADE INTERVAL SACD Stim U N I T TRIAL FLY GRAND CC Vel
 

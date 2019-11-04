@@ -15,8 +15,8 @@ load(fullfile(root,FILE{1}),'SACD','Stim','U','N','TRIAL','FLY','GRAND');
 
 clearvars -except SACCADE INTERVAL SACD Stim U N I TRIAL FLY GRAND
 
-CC = repmat({[1 0 0],[0 1 0],[0 0 1]},1,2);
-Vel = 3.75*U{1,3}{1};
+CC = repmat(hsv(N{1,3}/2),2,1);
+Vel = U{1,3}{1};
 
 %% Saccade Removed Time Domain %%
 FIG = figure (1) ; clf
@@ -31,7 +31,7 @@ clear h ax
 
 catIdx = [1 2];
 xIdx = 2;
-velIdx = 5;
+velIdx = 7;
 flyIdx = 1;
 trialIdx = 1;
 
@@ -44,7 +44,7 @@ h.stim = plot(TRIAL{flyIdx,velIdx}{trialIdx,catIdx(1)}.Time, TRIAL{flyIdx,velIdx
     'Color', 'k', 'LineWidth',1);
 
 h.head = plot(TRIAL{flyIdx,velIdx}{trialIdx,catIdx(2)}.Time, TRIAL{flyIdx,velIdx}{trialIdx,catIdx(2)}.X(:,xIdx), ...
-    'Color', 0.7*CC{velIdx}, 'LineWidth',1);
+    'Color', 0.7*CC(velIdx,:), 'LineWidth',1);
 
 leg = legend([h.head h.stim],'Head','Stimulus');
 leg.Box = 'off';

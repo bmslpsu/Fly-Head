@@ -18,8 +18,7 @@ clms = N.vel/2;
 CC = repmat(hsv(clms),2,1);
 
 Vel = U{1,3}{1};
-clearvars -except SACCADE INTERVAL SACD Stim U N I TRIAL FLY GRAND CC Vel
-
+% clearvars -except SACCADE INTERVAL SACD Stim U N I TRIAL FLY GRAND CC Vel
 
 %% Saccade Position %%
 FIG = figure (1) ; clf
@@ -78,17 +77,17 @@ for jj = 1:N{1,3}
     
 %     plot([-100 100],-sign(Vel(jj))*300*[1 1],'--','Color',[0.5 0.5 0.5],'LineWidth',1)
     
-    if sign(Vel(jj))==1
-        ax(jj).YLim = 1100*[-1 0.2];
-    else
-        ax(jj).YLim =  1100*[-0.2 1];
-  	end
-    
 %     if sign(Vel(jj))==1
-%         ax(jj).YLim = 1100*[-0.2 1];
+%         ax(jj).YLim = 1100*[-1 0.2];
 %     else
-%         ax(jj).YLim =  1100*[-1 0.2];
-%     end
+%         ax(jj).YLim =  1100*[-0.2 1];
+%   	end
+    
+    if sign(Vel(jj))==1
+        ax(jj).YLim = 1100*[-0.2 1];
+    else
+        ax(jj).YLim =  1100*[-1 0.2];
+    end
     
 end
 set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',1000*0.05*[-1 1])

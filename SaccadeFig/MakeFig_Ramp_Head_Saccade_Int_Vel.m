@@ -13,15 +13,16 @@ FILE = cellstr(FILE)';
 
 load(fullfile(root,FILE{1}),'SACCADE','INTERVAL','SACD','Stim','U','N','I','TRIAL','FLY','GRAND');
 
-CC = repmat({[1 0 0],[0 1 0],[0 0 1]},1,2);
+CC = repmat(hsv(N{1,3}/2),2,1);
+Vel = U{1,3}{1};
+clms = N.vel/2;
 
-Vel = 3.75*U{1,3}{1};
 clearvars -except SACCADE INTERVAL SACD Stim U N I TRIAL FLY GRAND CC Vel
 
 %% Inter-Saccade Velocity %%
 FIG = figure (1) ; clf
 FIG.Units = 'inches';
-FIG.Position = [2 2 6 4];
+FIG.Position = [2 2 (2)*clms 4];
 FIG.Name = 'Inter-Saccade Head Velocity';
 FIG.PaperPositionMode = 'auto';
 movegui(FIG,'center')
@@ -30,9 +31,9 @@ clear h ax
 ax = gobjects(N{1,3},1);
 hp = gobjects(N{1,3},1);
 hold on
-pLim = 0.7;
+pLim = 1;
 for jj = 1:N{1,3}
-	ax(jj) = subplot(ceil(N{1,3}/3),3,jj) ; hold on
+	ax(jj) = subplot(ceil(N{1,3}/clms),clms,jj) ; hold on
     ax(jj).Title.String = [num2str(Vel(jj)) ' (' char(176) '/s)'];
     ax(jj).Title.Color = 'k';
     
@@ -45,15 +46,16 @@ for jj = 1:N{1,3}
 %     plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Velocity{jj},'Color', [0.5*CC{jj} , 0.2])
     
 	[h.std(jj),h.med(jj)] = PlotPatch(INTERVAL.HeadStats.Velocity(jj).Median(span), INTERVAL.HeadStats.Velocity(jj).STD(span), ...
-        INTERVAL.HeadStats.Time(jj).Median(span), 1, N.fly, CC{jj}, [0.7 0.7 0.7], 0.4, 1.5);
+        INTERVAL.HeadStats.Time(jj).Median(span), 1, N.fly, CC(jj,:), [0.7 0.7 0.7], 0.4, 1.5);
     
-    hp(jj) = plot([0 10], repmat(Vel(jj),1,2), '--', 'Color', CC{jj}, 'LineWidth', 1.5);
+    hp(jj) = plot([0 10], repmat(Vel(jj),1,2), '--', 'Color', CC(jj,:), 'LineWidth', 1.5);
 end
 set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',[0 1.5],'YLim',150*[-1 1])
 XLabelHC = get(ax, 'XLabel');
 set([XLabelHC{:}], 'String', 'Time (s)')
-YLabelHC = get(ax([1,4]), 'YLabel');
+YLabelHC = get(ax([1,clms+1]), 'YLabel');
 set([YLabelHC{:}], 'String', ['Head Velocity (' char(176) '/s)'])
+linkaxes(ax,'xy')
 
 
 %% Inter-Saccade Velocity ALL %%
@@ -75,23 +77,24 @@ for jj = 1:N{1,3}
     tLim = sum(isnan(INT),2)./(size(INT,2)-1);
     span = 1:length(tLim(tLim<pLim));
     
-    % plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Velocity{jj},'Color', [0.5*CC{jj} , 0.2])
+    % plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Velocity{jj},'Color', [0.5*CC(jj,:) , 0.2])
     
 	[h.std(jj),h.med(jj)] = PlotPatch(INTERVAL.HeadStats.Velocity(jj).Median(span), INTERVAL.HeadStats.Velocity(jj).STD(span), ...
-        INTERVAL.HeadStats.Time(jj).Median(span), 1, N.fly, CC{jj}, [0.7 0.7 0.7], 0.4, 1.5);
+        INTERVAL.HeadStats.Time(jj).Median(span), 1, N.fly, CC(jj,:), [0.7 0.7 0.7], 0.4, 1.5);
     
-    hp(jj) = plot([0 10], repmat(Vel(jj),1,2), '--', 'Color', 0.7*CC{jj}, 'LineWidth', 1.5);
+    hp(jj) = plot([0 10], repmat(Vel(jj),1,2), '--', 'Color', 0.7*CC(jj,:), 'LineWidth', 1.5);
 end
 set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',[0 1.5],'YLim',150*[-1 1])
 XLabelHC = get(ax, 'XLabel');
 set(XLabelHC, 'String', 'Time (s)')
 YLabelHC = get(ax, 'YLabel');
 set(YLabelHC, 'String', ['Head Velocity (' char(176) '/s)'])
+delete(h.std)
 
 %% Inter-Saccade Velocity Error %%
-FIG = figure (2) ; clf
+FIG = figure (3) ; clf
 FIG.Units = 'inches';
-FIG.Position = [2 2 6 4];
+FIG.Position = [2 2 (2)*clms 4];
 FIG.Name = 'Inter-Saccade Head Velocity Error';
 FIG.PaperPositionMode = 'auto';
 movegui(FIG,'center')
@@ -100,9 +103,9 @@ clear h ax
 ax = gobjects(N{1,3},1);
 hp = gobjects(N{1,3},1);
 hold on
-pLim = 0.70;
+pLim = 0.90;
 for jj = 1:N{1,3}
-	ax(jj) = subplot(ceil(N{1,3}/3),3,jj) ; hold on
+	ax(jj) = subplot(ceil(N{1,3}/clms),clms,jj) ; hold on
     ax(jj).Title.String = [num2str(Vel(jj)) ' (' char(176) '/s)'];
     ax(jj).Title.Color = 'k';
     
@@ -112,21 +115,22 @@ for jj = 1:N{1,3}
     tLim = sum(isnan(INT),2)./(size(INT,2)-1);
     span = 1:length(tLim(tLim<pLim));
     
-    % plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Velocity_Error{jj},'Color', [0.5*CC{jj} , 0.2])
+    % plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Velocity_Error{jj},'Color', [0.5*CC(jj,:) , 0.2])
     
 	[h.std(jj),h.med(jj)] = PlotPatch(INTERVAL.HeadStats.Velocity_Error(jj).Median(span), INTERVAL.HeadStats.Velocity_Error(jj).STD(span), ...
-        INTERVAL.HeadStats.Time(jj).Median(span), 1, N.fly, CC{jj}, [0.7 0.7 0.7], 0.4, 2);
+        INTERVAL.HeadStats.Time(jj).Median(span), 1, N.fly, CC(jj,:), [0.7 0.7 0.7], 0.4, 2);
     
-    hp(jj) = plot([0 10], repmat(Vel(jj),1,2), '--', 'Color', CC{jj}, 'LineWidth', 1.5);
+    hp(jj) = plot([0 10], repmat(Vel(jj),1,2), '--', 'Color', CC(jj,:), 'LineWidth', 1.5);
 end
 set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',[0 1],'YLim',150*[-1 1])
 XLabelHC = get(ax, 'XLabel');
 set([XLabelHC{:}], 'String', 'Time (s)')
 YLabelHC = get(ax([1,4]), 'YLabel');
 set([YLabelHC{:}], 'String', ['Head Velocity Error (' char(176) '/s)'])
+% delete(h.std)
 
 %% Inter-Saccade Velocity Error ALL %%
-FIG = figure (3) ; clf
+FIG = figure (4) ; clf
 FIG.Units = 'inches';
 FIG.Position = [2 2 6 4];
 FIG.Name = 'Inter-Saccade Head Velocity';
@@ -144,12 +148,12 @@ for jj = 1:N{1,3}
     tLim = sum(isnan(INT),2)./(size(INT,2)-1);
     span = 1:length(tLim(tLim<pLim));
     
-    % plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Velocity_Error{jj},'Color', [0.5*CC{jj} , 0.2])
+    % plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Velocity_Error{jj},'Color', [0.5*CC(jj,:) , 0.2])
     
 	[h.std(jj),h.med(jj)] = PlotPatch(INTERVAL.HeadStats.Velocity_Error(jj).Median(span), INTERVAL.HeadStats.Velocity_Error(jj).STD(span), ...
-        INTERVAL.HeadStats.Time(jj).Median(span), 1, N.fly, CC{jj}, [0.7 0.7 0.7], 0.4, 1.5);
+        INTERVAL.HeadStats.Time(jj).Median(span), 1, N.fly, CC(jj,:), [0.7 0.7 0.7], 0.4, 1.5);
     
-    hp(jj) = plot([0 10], repmat(Vel(jj),1,2), '--', 'Color', 0.7*CC{jj}, 'LineWidth', 1.5);
+    hp(jj) = plot([0 10], repmat(Vel(jj),1,2), '--', 'Color', 0.7*CC(jj,:), 'LineWidth', 1.5);
 end
 plot([0 10], [0 0], '--', 'Color', [0.5 0.5 0.5], 'LineWidth', 1.5);
 set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',[0 1.5],'YLim',150*[-1 1])
@@ -158,9 +162,10 @@ set(XLabelHC, 'String', 'Time (s)')
 YLabelHC = get(ax, 'YLabel');
 set(YLabelHC, 'String', ['Head Velocity Error (' char(176) '/s)'])
 uistack(h.med,'top')
-leg = legend(h.med(1:3),string(Vel(1:3)));
+leg = legend(h.med(1:clms),string(Vel(1:clms)));
 leg.Box = 'off';
 leg.Title.String = ['Speed (' char(176) '/s)'];
+delete(h.std)
 
 %% SS Gain %%
 [b,a] = butter(2,2.5/(200/2),'low');
@@ -213,7 +218,7 @@ end
 velIdx = num2cell((1:N.vel)');
 G = cellfun(@(x,y) y*(x./x), Gain, velIdx, 'UniformOutput',  false);
 G = cat(1,G{:});
-G(G>3) = G(G>3) - 3;
+G(G>clms) = G(G>clms) - clms;
 Gain = cat(1,Gain{:});
 SS = cat(1,SS{:});
 TimeSS = cat(1,TimeSS{:});
@@ -223,10 +228,9 @@ YY = {'Gain','Steady State','SS Time'};
 CC = prism(length(DATA));
 
 FIG = figure (4) ; clf
-clms = 3;
-rows = ceil(length(DATA)/clms);
+rows = ceil(length(DATA)/3);
 FIG.Units = 'inches';
-FIG.Position = [2 2 2.5*clms 2*rows];
+FIG.Position = [2 2 2.5*3 2*rows];
 FIG.Name = 'Inter-Saccade Head Velocity';
 FIG.PaperPositionMode = 'auto';
 movegui(FIG,'center')
@@ -234,7 +238,7 @@ FIG.Color = 'w';
 clear h ax
 ax = gobjects(length(DATA),1);
 for jj = 1:length(DATA)
-    ax(jj) = subplot(rows,clms,jj); axis tight
+    ax(jj) = subplot(rows,3,jj); axis tight
     if jj==2
         data = abs(DATA{jj});
     else
