@@ -68,7 +68,8 @@ Pat.pos = round((96/10)*(daq_data.data(:,2)-mean(0))); % pattern position
 Pat.time = daq_data.t_p; % pattern time
 Pat.int = interp1(Pat.time, Pat.pos, Fly.time, 'nearest'); % interpolate pattern to match fly video
 pat_lim = 20;
-Pat.wrap = wrapdata(Pat.int,pat_lim,false);
+Pat.wrap = Pat.int - Pat.int(1);
+% Pat.wrap = wrapdata(Pat.int,pat_lim,false);
 % Pat.wrap = Pat.wrap - Pat.wrap(1);
 
 % Create structure to store frames
@@ -134,7 +135,8 @@ for jj = 1:iter:n_frame % for each frame
  	subplot(12,1,9:10) ; hold on ; set(gca, 'color', 'w')
  	ylabel('Display ($^{\circ}$)','Interpreter','latex','Color','w','FontSize',12);
     xlim([0 round(Fly.time(end))])
-    ylim([0 3.75*pat_lim])
+    ylim([0 360])
+    yticks(0:100:300)
  	set(gca,'ycolor','w');
     set(gca,'xcolor','k');
     set(gca,'XTick',0:1:round(Fly.time(end)))

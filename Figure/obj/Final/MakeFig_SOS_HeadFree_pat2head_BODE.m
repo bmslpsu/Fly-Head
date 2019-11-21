@@ -8,11 +8,12 @@ function [FIG] = MakeFig_SOS_HeadFree_pat2head_BODE()
 root = 'H:\DATA\Rigid_Data\';
 
 % Select files
-[FILE,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
+[FILE,PATH] = uigetfile({'*.mat', 'DAQ-files'}, ...
     'Select head angle trials', root, 'MultiSelect','off');
 FILE = cellstr(FILE)';
 
-HeadFree = load(fullfile(root,FILE{1}),'TRIAL','GRAND','U','N');
+HeadFree = load(fullfile(PATH,FILE{1}),'TRIAL','GRAND','U','N');
+
 %%
 figNum = 1;
 catIdx = 5;

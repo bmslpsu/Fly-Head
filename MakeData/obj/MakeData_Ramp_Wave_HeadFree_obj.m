@@ -1,4 +1,4 @@
-function [] = MakeData_Ramp_Wave_HeadFree_obj(match,Fc)
+function [] = MakeData_Ramp_Wave_HeadFree_obj(match,Fc,wave)
 %% MakeData_Ramp_Wave_HeadFree_obj: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
 %   INPUTS:
 %       root    : root directory
@@ -17,7 +17,7 @@ else
     error('Invalid match condition')
 end
 
-wave = 30;
+% wave = 30;
 filename = ['Ramp_HeadFree_SACCD_' clss '_filt=' num2str(Fc) '_Wave=' num2str(wave)];
 rootdir = ['H:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast\' num2str(wave)];
 
@@ -302,7 +302,11 @@ clear jj ii
 %% SAVE %%
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
+% save(['H:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
+%     'SACD','SACCADE','INTERVAL','Stim','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
+
 save(['H:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
-    'SACD','SACCADE','INTERVAL','Stim','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
+    'SACD','SACCADE','INTERVAL','Stim','D','I','U','N','T','-v7.3')
+
 disp('SAVING DONE')
 end

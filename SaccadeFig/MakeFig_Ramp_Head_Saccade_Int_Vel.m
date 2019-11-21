@@ -14,10 +14,10 @@ FILE = cellstr(FILE)';
 load(fullfile(root,FILE{1}),'SACCADE','INTERVAL','SACD','Stim','U','N','I','TRIAL','FLY','GRAND');
 
 CC = repmat(hsv(N{1,3}/2),2,1);
-Vel = U{1,3}{1};
+Vel = 3.75*U{1,3}{1};
 clms = N.vel/2;
 
-clearvars -except SACCADE INTERVAL SACD Stim U N I TRIAL FLY GRAND CC Vel
+% clearvars -except SACCADE INTERVAL SACD Stim U N I TRIAL FLY GRAND CC Vel
 
 %% Inter-Saccade Velocity %%
 FIG = figure (1) ; clf
@@ -224,7 +224,7 @@ SS = cat(1,SS{:});
 TimeSS = cat(1,TimeSS{:});
 
 DATA = {Gain,SS,TimeSS};
-YY = {'Gain','Steady State','SS Time'};
+YY = {'Gain','Steady State (°/s)','SS Time (s)'};
 CC = prism(length(DATA));
 
 FIG = figure (4) ; clf

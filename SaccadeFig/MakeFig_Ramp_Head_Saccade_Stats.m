@@ -21,7 +21,7 @@ match = -1;
 mIdx = SACD.Head.Match==match;
 % mIdx = (SACD.Head.Match==1) | (SACD.Head.Match==-1); % for anti & co -directional
 pp = 1:(length(U{1,3}{1})/2); % for each speed
-pp = 1:N.vel; % for each velocity
+% pp = 1:N.vel; % for each velocity
 w_scale = 2*length(pp)/10;
 n_sacd = sum(mIdx);
 G = nan(n_sacd,1);
