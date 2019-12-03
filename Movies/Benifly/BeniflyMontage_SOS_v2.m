@@ -14,6 +14,7 @@ function [MOV] = BeniflyMontage_SOS_v2(rootdir,rootpat,vidFs,export)
 % export = true;
 % vidFs = 50;
 % rootdir = 'H:\EXPERIMENTS\Experiment_SOS_v2\Benifly\new';
+% rootdir = 'H:\EXPERIMENTS\Experiment_Sinusoid\15\Vid\Benifly\new';
 % rootpat = 'C:\Users\boc5244\Documents\GitHub\Arena\Patterns';
 
 % Select angle file
@@ -32,7 +33,7 @@ FILE.montage = [FILE.basename '_Montage_v2.avi'];
 
 % Make path for pattern positions from daq and video time (assume one folder back)
 pathparts = strsplit(PATH.benifly,filesep);
-PATH.daq = fullfile(pathparts{1:end-3});
+PATH.daq = fullfile(pathparts{1:end-4});
 PATH.vid = fullfile(pathparts{1:end-3});
 
 % Load data
@@ -160,7 +161,7 @@ for jj = 1:n_frame % for each frame
     
     set(ax, 'Color', 'k', 'YColor', 'w', 'XColor', 'w', 'XLim', [0 round(Fly.time(end))]) 
     set(ax(1:2), 'YLim', 20*[-1 1], 'YTick', [-15 0 15])
-    set(ax(3), 'YLim', 20*[-1 1], 'YTick', [-15 0 15])
+    set(ax(3), 'YLim', 30*[-1 1], 'YTick', [-25 0 25])
     set(ax(1:2), 'XTick', [])
     set(ax(3),  'XTick', 0:2:round(Fly.time(end)))
     set(ax, 'FontSize', 9)
