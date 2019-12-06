@@ -68,8 +68,7 @@ classdef FlyStats
         
         function nTrial = get.nTrial(obj)
             nTrial = obj.nTrial;
-         end
-        
+        end
         
         function [] = PlotTime(obj,n)
             % PlotTime: time domain plot

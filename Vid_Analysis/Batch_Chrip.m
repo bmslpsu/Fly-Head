@@ -2,7 +2,7 @@
 %---------------------------------------------------------------------------------------------------------------------------------
 clear;close all;clc
 
-root = 'F:\EXPERIMENTS\Experiment_ChirpLog_LargeAmp';
+root = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\Vid';
 
 [FILES, dirpath] = uigetfile({'*.mat', 'DAQ-files'}, ... % select video files
     'Select fly trials', root, 'MultiSelect','on'); 
