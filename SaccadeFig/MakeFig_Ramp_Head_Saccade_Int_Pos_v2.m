@@ -11,7 +11,7 @@ root = 'H:\DATA\Rigid_Data\';
     'Select head angle trials', root, 'MultiSelect','off');
 FILE = cellstr(FILE)';
 
-load(fullfile(root,FILE{1}),'INTERVAL','Stim','U','N','T');
+load(fullfile(root,FILE{1}),'INTERVAL','Stim','U','N','T','SACD');
 
 clearvars -except SACCADE INTERVAL SACD Stim U N I TRIAL FLY GRAND CC Vel
 

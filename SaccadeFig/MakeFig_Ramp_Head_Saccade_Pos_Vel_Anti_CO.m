@@ -16,15 +16,16 @@ root = 'H:\DATA\Rigid_Data\';
 Anti    = load(fullfile(root,FILE.Anti),'SACCADE','U','N');
 Co      = load(fullfile(root,FILE.Co),'SACCADE','U','N');
 
-CC = repmat({[1 0 0],[0 1 0],[0 0 1]},1,2);
-
-Vel = 3.75*Anti.U{1,3}{1};
+% CC = repmat({[1 0 0],[0 1 0],[0 0 1]},1,2);
+clms = Anti.N.vel/2;
+CC = repmat(hsv(clms),2,1);
+Vel = 1*Anti.U{1,3}{1};
 % clearvars -except SACCADE INTERVAL SACD Stim U N I TRIAL FLY GRAND CC Vel
 
 %% Saccade Position %%
 FIG = figure (1) ; clf
 FIG.Units = 'inches';
-FIG.Position = [2 2 4 3];
+FIG.Position = [2 2 clms*(4/3) 3];
 FIG.Name = 'Saccade Position';
 FIG.PaperPositionMode = 'auto';
 movegui(FIG,'center')
@@ -32,7 +33,7 @@ FIG.Color = 'w';
 ax = gobjects(Anti.N{1,3},1);
 clear ax h
 for jj = 1:Anti.N{1,3}
-    ax(jj) = subplot(ceil(Anti.N{1,3}/3),3,jj) ; hold on
+    ax(jj) = subplot(ceil(Anti.N{1,3}/clms),clms,jj) ; hold on
     ax(jj).Title.String = [num2str(Vel(jj)) ' (' char(176) '/s)'];
     ax(jj).Title.Color = 'k';
     
@@ -42,7 +43,7 @@ for jj = 1:Anti.N{1,3}
 %     h.trial = plot(1000*Anti.SACCADE.Head.Time{jj}, Anti.SACCADE.Head.Position{jj}, 'Color', [0.7*CC{jj}, 0.2]);
 
     PlotPatch(Anti.SACCADE.HeadStats.Position(jj).Median(span), Anti.SACCADE.HeadStats.Position(jj).STD(span), ...
-        1000*Anti.SACCADE.HeadStats.Time(jj).Median(span), 1, 1, CC{jj}, [0.7 0.7 0.7], 0.4, 3);
+        1000*Anti.SACCADE.HeadStats.Time(jj).Median(span), 1, 1, CC(jj,:), [0.7 0.7 0.7], 0.4, 3);
     
   	cent = max(Co.SACCADE.cIdx{jj},[],'all');
     span = (cent-5):(cent+5);
@@ -57,14 +58,14 @@ XLabelHC = get(ax, 'XLabel');
 set([XLabelHC{:}], 'String', 'Time (ms)')
 YLabelHC = get(ax([1,4]), 'YLabel');
 set([YLabelHC{:}], 'String', ['Head Position (' char(176) ')'])
-linkaxes(ax(1:3),'y')
-linkaxes(ax(4:6),'y')
+linkaxes(ax(1:clms),'y')
+linkaxes(ax((clms+1):N{1,3}),'y')
 linkaxes(ax,'x')
 
 %% Saccade Velocity %%
 FIG = figure (2) ; clf
 FIG.Units = 'inches';
-FIG.Position = [2 2 4 3];
+FIG.Position = [2 2 clms*(4/3) 3];
 FIG.Name = 'Saccade Velocity';
 FIG.PaperPositionMode = 'auto';
 movegui(FIG,'center')
@@ -72,7 +73,7 @@ FIG.Color = 'w';
 clear h
 ax = gobjects(Anti.N{1,3},1);
 for jj = 1:Anti.N{1,3}
-    ax(jj) = subplot(ceil(Anti.N{1,3}/3),3,jj) ; hold on
+    ax(jj) = subplot(ceil(Anti.N{1,3}/clms),clms,jj) ; hold on
     ax(jj).Title.String = [num2str(Vel(jj)) ' (' char(176) '/s)'];
     ax(jj).Title.Color = 'k';
     
@@ -82,7 +83,7 @@ for jj = 1:Anti.N{1,3}
 %     h.trial = plot(1000*Anti.SACCADE.Head.Time{jj},Anti.SACCADE.Head.Velocity{jj}, 'Color', [0.7*CC{jj} , 0.2]);
     
 	PlotPatch(Anti.SACCADE.HeadStats.Velocity(jj).Median(span), Anti.SACCADE.HeadStats.Velocity(jj).STD(span), ...
-        1000*Anti.SACCADE.HeadStats.Time(jj).Median(span), 1, 1, CC{jj}, [0.7 0.7 0.7], 0.4, 3);
+        1000*Anti.SACCADE.HeadStats.Time(jj).Median(span), 1, 1, CC(jj,:), [0.7 0.7 0.7], 0.4, 3);
     
  	cent = max(Co.SACCADE.cIdx{jj},[],'all');
     span = (cent-5):(cent+5);
@@ -110,10 +111,10 @@ end
 set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',1000*0.05*[-1 1])
 XLabelHC = get(ax, 'XLabel');
 set([XLabelHC{:}], 'String', 'Time (ms)')
-YLabelHC = get(ax([1,4]), 'YLabel');
+YLabelHC = get(ax([1,clms+1]), 'YLabel');
 set([YLabelHC{:}], 'String', ['Head Velocity (' char(176) '/s)'])
-linkaxes(ax(1:3),'y')
-linkaxes(ax(4:6),'y')
+linkaxes(ax(1:clms),'y')
+linkaxes(ax((clms+1):Anti.N{1,3}),'y')
 linkaxes(ax,'x')
 
 end

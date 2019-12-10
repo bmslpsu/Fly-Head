@@ -63,7 +63,7 @@ interval_cut_median.pos = cellfun(@(x) nanmean(x,2), interval_cut.pos, 'UniformO
 FIG = figure (1) ; clf
 FIG.Color = 'w';
 FIG.Units = 'inches';
-FIG.Position = [2 2 (2/3)*clms 2];
+FIG.Position = [2 2 1.2 2];
 FIG.Name = 'Inter-Saccade Times';
 FIG.PaperPositionMode = 'auto';
 movegui(FIG,'center')
@@ -133,18 +133,18 @@ for jj = 1:N{1,3}
  	[h.std(jj),h.med(jj)] = PlotPatch(INTERVAL.HeadStats.Position(jj).Median(span), INTERVAL.HeadStats.Position(jj).STD(span), ...
         INTERVAL.HeadStats.Time(jj).Median(span), 1, 1, CC(jj,:), [0.7 0.7 0.7], 0.4, 3);
     
-	hp(jj) = plot(INTERVAL.HeadStats.Time(jj).Median(span), Stim(span,jj), '--', 'Color', 0.5*CC(jj,:), 'LineWidth', 1.5);
+% 	hp(jj) = plot(INTERVAL.HeadStats.Time(jj).Median(span), Stim(span,jj), '--', 'Color', 0.5*CC(jj,:), 'LineWidth', 1.5);
     
 end
 plot([0 10],[0 0],'--','Color',[0.5 0.5 0.5],'LineWidth',1.5)
-set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',[0 1.5])
+set(ax,'FontSize',12,'Color','w','YColor','k','XColor','k','XLim',[0 1.5])
 ax.YLim = max(abs(ax.YLim))*[-1 1];
 ax.YLim = 30*[-1 1];
 ax.XLabel.String = 'Time (s)';
 ax.YLabel.String = ['Head Angle (' char(176) ')'];
 uistack(h.std,'top')
 uistack(h.med,'top')
-uistack(hp,'top')
+% uistack(hp,'top')
 
 
 leg = legend(h.med(1:clms),string(Vel(1:clms)));
@@ -177,7 +177,7 @@ for jj = 1:N{1,3}
   	[h.std(jj),h.med(jj)] = PlotPatch(INTERVAL.HeadStats.Position_Error(jj).Median(span), INTERVAL.HeadStats.Position_Error(jj).STD(span), ...
         INTERVAL.HeadStats.Time(jj).Median(span), 1, 1, CC(jj,:), [0.7 0.7 0.7], 0.4, 3);
     
-    hp(jj) = plot(INTERVAL.HeadStats.Time(jj).Median(span), Stim(span,jj), '--', 'Color', [0.2 0.2 0.2], 'LineWidth', 2);
+%     hp(jj) = plot(INTERVAL.HeadStats.Time(jj).Median(span), Stim(span,jj), '--', 'Color', [0.2 0.2 0.2], 'LineWidth', 2);
     
     plot([0 10],[0 0], '--', 'Color', [0.5 0.5 0.5], 'LineWidth', 1)
     
@@ -190,21 +190,21 @@ for jj = 1:N{1,3}
 %         '--', 'Color', CC(jj,:), 'LineWidth', 2);
     
 end
-set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',[0 1.5])
+set(ax,'FontSize',12,'Color','w','YColor','k','XColor','k','XLim',[0 1.5])
 ax.YLim = max(abs(ax.YLim))*[-1 1];
 ax.YLim = 60*[-1 1];
 ax.XLabel.String = 'Time (s)';
 ax.YLabel.String = ['Head Position Error (' char(176) ')'];
 uistack(h.std,'top')
 uistack(h.med,'top')
-uistack(hp,'top')
+% uistack(hp,'top')
 
 %% Inter-Saccade Integrated Position Error %%
 FIG = figure (5) ; clf
 FIG.Color = 'w';
 FIG.Units = 'inches';
 FIG.Position = [2 2 6 4];
-FIG.Name = 'Inter-Saccade Head Position Error';
+FIG.Name = 'Inter-Saccade Head Integrated Position Error';
 FIG.PaperPositionMode = 'auto';
 movegui(FIG,'center')
 clear ax h
@@ -234,7 +234,7 @@ for jj = 1:N{1,3}
     
 end
 plot([0 10],[0 0], '--', 'Color', [0.5 0.5 0.5], 'LineWidth', 1)
-set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',[0 1.5])
+set(ax,'FontSize',12,'Color','w','YColor','k','XColor','k','XLim',[0 1.5])
 ax.YLim = max(abs(ax.YLim))*[-1 1];
 ax.YLim = 15*[-1 1];
 ax.XLabel.String = 'Time (s)';
