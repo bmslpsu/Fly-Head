@@ -73,7 +73,7 @@ for kk = 1:N.file
     wing.Right      = filtfilt(b,a,(data(:,5))); % right wing [V]
     wing.Pos        = wing.Left - wing.Right; % dWBA (L-R) [V]
   	wing.Pos        = wing.Pos - mean(wing.Pos); % subtract mean [V]
-   	Wing            = Fly(wing.Pos,t_p,15,[],Head.Time); % wing object
+   	Wing            = Fly(wing.Pos,t_p,wing.Fc,[],Head.Time); % wing object
     
     wing.f          = interp1(wing.Time,wing.f,Head.Time);
    	wing.Left     	= interp1(wing.Time,wing.Left,Head.Time);
@@ -97,7 +97,7 @@ for kk = 1:N.file
     pat.Time	= t_p;
     pat.Pos 	= panel2deg(data(:,2)); % pattern x-pos: subtract mean and convert to deg [deg]  
     pat.Pos  	= FitPanel(pat.Pos,pat.Time,tt); % fit panel data
- 	Pat      	= Fly(pat.Pos,Head.Time,[],[]); % pattern object
+ 	Pat      	= Fly(pat.Pos,Head.Time,[],[],Head.Time); % pattern object
     %-----------------------------------------------------------------------------------------------------------------------------
     % Get Saccade Stats   
     [head.SACD,head.thresh,head.count,head.rate,head.SACDRmv] = SacdDetect(Head.X(:,1),Head.Time,2.5,false);
@@ -288,6 +288,10 @@ clear jj ii
 %---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
 save(['H:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
-    'SACD','SACCADE','INTERVAL','Stim','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
+    'SACD','SACCADE','INTERVAL','Stim','D','I','U','N','T','-v7.3')
+
+% save(['H:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
+%     'SACD','SACCADE','INTERVAL','Stim','TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')
+
 disp('SAVING DONE')
 end

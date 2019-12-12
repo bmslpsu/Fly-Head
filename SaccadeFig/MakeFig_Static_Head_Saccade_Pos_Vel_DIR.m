@@ -14,9 +14,8 @@ root = 'H:\DATA\Rigid_Data\';
     'Select negative saccade data', root, 'MultiSelect','off');
 
 Plus    = load(fullfile(root,FILE.Plus),'SACCADE','U','N');
-Minus      = load(fullfile(root,FILE.Minus),'SACCADE','U','N');
+Minus  	= load(fullfile(root,FILE.Minus),'SACCADE','U','N');
 
-% clearvars -except SACCADE INTERVAL SACD Stim U N I TRIAL FLY GRAND CC Vel
 CC = jet(Plus.N{1,3});
 Wave = Plus.U{1,3}{1};
 
@@ -81,7 +80,7 @@ for jj = 1:Plus.N{1,3}
     cent = max(Plus.SACCADE.cIdx{jj},[],'all');
     span = (cent-5):(cent+5);
     
-%     h.trial = plot(1000*Plus.SACCADE.Head.Time{jj},Plus.SACCADE.Head.Velocity{jj}, 'Color', [0.7*CC(jj,:) , 0.2]);
+    h.trial = plot(1000*Plus.SACCADE.Head.Time{jj},Plus.SACCADE.Head.Velocity{jj}, 'Color', [0.7*CC(jj,:) , 0.2]);
     
 	PlotPatch(Plus.SACCADE.HeadStats.Velocity(jj).Median(span), Plus.SACCADE.HeadStats.Velocity(jj).STD(span), ...
         1000*Plus.SACCADE.HeadStats.Time(jj).Median(span), 1, 1, CC(jj,:), [0.7 0.7 0.7], 0.4, 3);
@@ -89,33 +88,20 @@ for jj = 1:Plus.N{1,3}
  	cent = max(Minus.SACCADE.cIdx{jj},[],'all');
     span = (cent-5):(cent+5);
     
-% 	h.trial = plot(1000*Minus.SACCADE.Head.Time{jj}, -Minus.SACCADE.Head.Velocity{jj}, 'Color', [0.5 0.5 0.5, 0.2]);
+	h.trial = plot(1000*Minus.SACCADE.Head.Time{jj}, Minus.SACCADE.Head.Velocity{jj}, 'Color', [0.5 0.5 0.5, 0.2]);
     
 	PlotPatch(Minus.SACCADE.HeadStats.Velocity(jj).Median(span), Minus.SACCADE.HeadStats.Velocity(jj).STD(span), ...
         1000*Minus.SACCADE.HeadStats.Time(jj).Median(span), 1, 1, CC(jj,:), [0.7 0.7 0.7], 0.4, 3);
     
 %     plot([-100 100],-sign(Vel(jj))*300*[1 1],'--','Color',[0.5 0.5 0.5],'LineWidth',1)
-
-%     if sign(Vel(jj))==1
-%         ax(jj).YLim = 1100*[-1 0.2];
-%     else
-%         ax(jj).YLim =  1100*[-0.2 1];
-%   	end
-    
-    if sign(Wave(jj))==1
-        ax(jj).YLim = 1100*[-1 0.2];
-    else
-        ax(jj).YLim =  1100*[-0.2 1];
-    end
-    
+   
 end
-set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',1000*0.05*[-1 1])
+set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',1000*0.05*[-1 1],'YLim',1100*[-1 1])
 XLabelHC = get(ax, 'XLabel');
 set([XLabelHC{:}], 'String', 'Time (ms)')
-YLabelHC = get(ax([1,4]), 'YLabel');
-set([YLabelHC{:}], 'String', ['Head Velocity (' char(176) '/s)'])
-linkaxes(ax(1:3),'y')
-linkaxes(ax(4:6),'y')
-linkaxes(ax,'x')
+YLabelHC = get(ax(1), 'YLabel');
+set(YLabelHC, 'String', ['Head Velocity (' char(176) '/s)'])
+linkaxes(ax,'xy')
+
 
 end

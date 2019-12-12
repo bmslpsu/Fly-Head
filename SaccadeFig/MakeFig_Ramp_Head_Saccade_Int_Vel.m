@@ -104,7 +104,8 @@ clear h ax
 ax = gobjects(N{1,3},1);
 hp = gobjects(N{1,3},1);
 hold on
-pLim = 0.90;
+tt = 0:0.1:10;
+pLim = 0.70;
 for jj = 1:N{1,3}
 	ax(jj) = subplot(ceil(N{1,3}/clms),clms,jj) ; hold on
     ax(jj).Title.String = [num2str(Vel(jj)) ' (' char(176) '/s)'];
@@ -122,13 +123,17 @@ for jj = 1:N{1,3}
         INTERVAL.HeadStats.Time(jj).Median(span), 1, N.fly, CC(jj,:), [0.7 0.7 0.7], 0.4, 2);
     
     hp(jj) = plot([0 10], repmat(Vel(jj),1,2), '--', 'Color', CC(jj,:), 'LineWidth', 1.5);
+    
+    plot(tt, 0.*tt, '-', 'Color', [0.5 0.5 0.5], 'LineWidth', 1.0);
 end
-set(ax,'FontSize',12,'Color','w','YColor','k','XColor','k','XLim',[0 0.75],'YLim',150*[-1 1])
+set(ax,'FontSize',12,'Color','w','YColor','k','XColor','k','XLim',[0 1.2],'YLim',150*[-1 1])
 XLabelHC = get(ax(8:9), 'XLabel');
 set([XLabelHC{:}], 'String', 'Time (s)')
 YLabelHC = get(ax([1,clms+1]), 'YLabel');
 set([YLabelHC{:}], 'String', ['Head Velocity Error (' char(176) '/s)'])
 set([YLabelHC{:}], 'String', ['Retinal Slip (Velocity Error) (' char(176) '/s)'])
+
+
 % delete(h.std)
 
 %% Inter-Saccade Velocity Error ALL %%
