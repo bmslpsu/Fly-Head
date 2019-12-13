@@ -25,9 +25,9 @@ close all ; clc
 % trialIdx = 1;
 % headIdx = 2;
 
-velIdx = 6;
-flyIdx = 12;
-trialIdx = 2;
+velIdx = 2;
+flyIdx = 1;
+trialIdx = 1;
 headIdx = 2;
 
 stimVel = Vel(velIdx);
@@ -40,6 +40,11 @@ stim = stimVel*time;
 
 
 [head.SACD,head.thresh,head.count,head.rate,head.SACDRmv] = SacdDetect(pos,time,2.5,true);
+subplot(3,1,3) ; hold on
+plot(time, stim,'Color', [0.5 0.5 0.5], 'LineWidth', 1)
+
+
+
 [Saccade,Interval,Stimulus,Error,IntError,matchFlag] = SaccdInter(pos,time,head.SACD, nan, Stim(:,velIdx), true);
 
 FIG = findobj('Type', 'figure');

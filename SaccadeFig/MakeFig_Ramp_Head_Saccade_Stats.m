@@ -11,20 +11,20 @@ root = 'H:\DATA\Rigid_Data\';
     'Select head angle trials', root, 'MultiSelect','off');
 FILE.Anti = cellstr(FILE.Anti)';
 
-[FILE.Static,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
-    'Select head angle trials', root, 'MultiSelect','off');
-FILE.Static = cellstr(FILE.Static)';
+% [FILE.Static,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
+%     'Select head angle trials', root, 'MultiSelect','off');
+% FILE.Static = cellstr(FILE.Static)';
 
 Anti    = load(fullfile(root,FILE.Anti{1}),'SACD','U','N','T');
-Static  = load(fullfile(root,FILE.Anti{1}),'SACD','U','N','T');
+% Static  = load(fullfile(root,FILE.Anti{1}),'SACD','U','N','T');
 
-% Vel = U{1,3}{1};
+Vel = Anti.U{1,3}{1};
 
 %% Saccade Statistics %%
 match = -1;
 mIdx = Anti.SACD.Head.Match==match;
 % mIdx = (Anti.SACD.Head.Match==1) | (Anti.SACD.Head.Match==-1); % for anti & co -directional
-pp = 1:(length(U{1,3}{1})/2); % for each speed
+pp = 1:(length(Anti.U{1,3}{1})/2); % for each speed
 % pp = 1:N.vel; % for each velocity
 w_scale = 2*length(pp)/10;
 n_sacd = sum(mIdx);
@@ -54,7 +54,7 @@ YY = {  ['Duration (ms)'],...
     
 % CC = {[0 0 0.5],[0 0 0],[0 0.7 0 ],[0.7 0 0],[0.5 0.5 0.5],[0.1 0.5 0.5],...
 %       [0.5 0.1 0.5],[0.9 0.7 0.7],[0.3 0.3 0.9],[0.6 0.1 0.4],[0 0.8 0.8],[0.9 0.7 0.3]};
-CC = repmat(prism(N.vel/2),2,1);
+CC = repmat(hsv(Anti.N.vel/2),2,1);
 
 FIG = figure (1) ; clf
 FIG.Color = 'w';
@@ -64,7 +64,7 @@ movegui(FIG,'center')
 ax = gobjects(length(SS),1);
 for ww = 1:n_plot-2
     ax(ww) = subplot(rows,clms,ww); axis tight
-    data = SACD.Head{mIdx,SS(ww)};
+    data = Anti.SACD.Head{mIdx,SS(ww)};
     if any(SS(ww)==[6,7,19,24,26,25,27,21,23])
         data = abs(data);
     end
@@ -84,16 +84,17 @@ for ww = 1:n_plot-2
 
     set(findobj(ax(ww),'tag','Median'), 'Color', 'w','LineWidth',1.5);
     set(findobj(ax(ww),'tag','Box'), 'Color', 'none');
-    set(findobj(ax(ww),'tag','Upper Whisker'), 'Color', 'k');
+    set(findobj(ax(ww),'tag','Upper Whisker'), 'Color', 'k','LineStyle','-');
+    set(findobj(ax(ww),'tag','Lower Whisker'), 'Color', 'k','LineStyle','-');
     ax(ww).Children = ax(ww).Children([end 1:end-1]);
     ax(ww).YLim(1) = 0;
 end
 
 
-fIdx = find(~isnan(SACD.Head.Rate(mIdx)));
+fIdx = find(~isnan(Anti.SACD.Head.Rate(mIdx)));
 
 for ww = (n_plot-1):n_plot
-    data = SACD.Head{mIdx,SS(ww)};
+    data = Anti.SACD.Head{mIdx,SS(ww)};
     data = data(fIdx);
     ax(ww) = subplot(rows,clms,ww); axis tight
     bx = boxplot(data,G(fIdx),'Labels',{Vel(pp)},'Width',0.5,'Symbol','','Whisker',2);

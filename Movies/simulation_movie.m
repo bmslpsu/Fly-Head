@@ -90,11 +90,11 @@ for kk = 1:length(body.ang)
         [h.body,body.top,~] = draw_ellipse(body.center,body.L,body.ratio,body.ecc,body.ang(kk),body.C);
         [h.head,head.top,~] = draw_semi_ellipse(body.top,head.L,head.ratio,head.ecc,gaze.ang(kk),head.C);
         [h.ref,~,~] = draw_ellipse_pattern(body.center,2*ref.radius,0.5,0,15,ref.ang(kk));
-        [h.fig,~,~] = draw_ellipse(fig.pos(kk,:),fig.radius,0.5,0,ref.ang(kk),[0 0.9 0.9]);
-        [h.gaze,~]  = draw_gaze(head.top,ref.radius,30,gaze.ang(kk),[0.6 0.1 0.9]);
+        % [h.fig,~,~] = draw_ellipse(fig.pos(kk,:),fig.radius,0.5,0,ref.ang(kk),[0 0.9 0.9]);
+        [h.gaze,~]  = draw_gaze(head.top,ref.radius,50,gaze.ang(kk),[0.6 0.1 0.9]);
     subplot(12,1,9:12) ; hold on
-        ylabel('deg','Color','w','FontSize',15)
-        xlabel('time (s)','Color','w','FontSize',15);
+        ylabel('Angle (°)','Color','w','FontSize',15)
+        xlabel('Time (s)','Color','w','FontSize',15);
         xlim([0 round(tt(end))])
         maxY = 10*round(max(abs([ref.ang;gaze.ang]))/10);
         intY = maxY/5;
