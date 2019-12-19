@@ -13,7 +13,7 @@ FILE = cellstr(FILE)';
 
 Walking = load(fullfile(root,FILE{1}),'TRIAL','GRAND', 'FLY','U','N', 'T');
 %%
-figNum = 1;
+figNum = 2;
 catIdx = 4;
 xIdx = 1;
 
@@ -31,27 +31,27 @@ ax.L.YColor = 'k';
 ax.L.FontSize = 12 ;
 ax.L.YLabel.String = ['Magnitude'];
 ax.L.YLabel.FontSize = 12;
-% ax.L.YLim =[0 10];
-% ax.L.YTick = 15*[-1 0 1];
 ax.L.XLabel.String = 'Frequency';
+ax.L.YLim = [0 1];
 ax.L.XLabel.Color = 'k';
 ax.L.XLabel.FontSize = 12;
-ax.L.XLim = [0 20];
-ax.L.XTick = [1, 3.1, 5.3, 7.4, 9.6, 20];
+ax.L.XLim = [0 12];
+ax.L.XTick = [1, 3.1, 5.3, 7.4, 9.6];
 
-for kk = 1:Walking.N{1,1}
-    for jj = 1:Walking.T{kk,2}
-    plot(Walking.TRIAL{kk}{jj,catIdx}.CoherenceFV,Walking.TRIAL{kk}{jj,catIdx}.Coherence,'color',[.5 .5 .5 .5], 'LineWidth',.5)
-    end
-end
+% for kk = 1:Walking.N{1,1}
+%     for jj = 1:Walking.T{kk,2}
+%     plot(Walking.TRIAL{kk}{jj,catIdx}.CoherenceFV,Walking.TRIAL{kk}{jj,catIdx}.Coherence,'color',[.5 .5 .5 .5], 'LineWidth',.5)
+%     end
+% end
+% 
+% for kk = 1:Walking.N{1,1}
+%      plot(Walking.FLY{kk,catIdx}.Mean{8},Walking.FLY{kk,catIdx}.Mean{7}(:,xIdx),'LineWidth',1)
+% end
 
-for kk = 1:Walking.N{1,1}
-     plot(Walking.FLY{kk,catIdx}.Mean{8},Walking.FLY{kk,catIdx}.Mean{7}(:,xIdx),'LineWidth',1)
-end
-
+k.plot = PlotPatch(Walking.GRAND{1,catIdx}.Mean{2}{9}(:,xIdx), Walking.GRAND{1, catIdx}.STD{2}{9}(:, xIdx), ...
+    Walking.GRAND{1,catIdx}.Mean{2}{4}, 2, Walking.N{1,1},[0 0.4470 0.7410],[0 0.4470 0.7410], 0.5, 3);
 h.plot = PlotPatch(Walking.GRAND{1,catIdx}.Mean{2}{7}(:,xIdx),Walking.GRAND{1,catIdx}.STD{2}{7}(:,xIdx), ...
     Walking.GRAND{1,catIdx}.Mean{2}{8}(:,xIdx),2,Walking.N{1,1},'k',[0.4 0.4 0.6],0.5,3);
 
-plot(Walking.GRAND{1,catIdx}.Mean{2}{8},Walking.GRAND{1,catIdx}.Mean{2}{7}(:,xIdx),'k')
-plot(Walking.GRAND{1,catIdx}.Mean{2}{4},Walking.GRAND{1,catIdx}.Mean{2}{9}(:,xIdx),'k')
+
 end

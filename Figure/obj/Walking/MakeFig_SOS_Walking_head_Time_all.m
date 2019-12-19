@@ -28,26 +28,28 @@ FIG.Name = filename;
 
 ax.L = gca; hold on
 ax.L.YColor = 'k';
-ax.L.FontSize = 8;
+ax.L.FontSize = 12;
 ax.L.YLabel.String = ['Head (' char(176) ')'];
-ax.L.YLabel.FontSize = 8;
-ax.L.YLim = 15*[-1 1];
-ax.L.YTick = 15*[-1 0 1];
+ax.L.YLabel.FontSize = 12;
+ax.L.YLim = 20*[-1 1];
+ax.L.YTick = 20*[-1 0 1];
 ax.L.XLabel.String = 'Time (s)';
 ax.L.XLabel.Color = 'k';
-ax.L.XLabel.FontSize = 8;
+ax.L.XLabel.FontSize = 12;
 ax.L.XLim = [0 20];
 
 % for kk = 1:Walking.N{1,1}
 %     for jj = 1:Walking.T{kk,2}
-%     plot(Walking.TRIAL{kk}{jj,catIdx}.Time,Walking.TRIAL{kk}{jj,catIdx}.X(:,xIdx),'color',[.5 .5 .5 .5], 'LineWidth',.5)
+%     plot(Walking.TRIAL{kk}{jj,catIdx}.Time,Walking.TRIAL{kk}{jj,catIdx}.X(:,xIdx),'color',[.5 .5 .5 .5], 'LineWidth',.25)
 %     end
 % end
 % 
 % for kk = 1:Walking.N{1,1}
-%      plot(Walking.FLY{kk,catIdx}.Mean{5},Walking.FLY{kk,catIdx}.Mean{6}(:,1),'LineWidth',1)
+%      plot(Walking.FLY{kk,catIdx}.Mean{5},Walking.FLY{kk,catIdx}.Mean{6}(:,1),'LineWidth',.5)
 % end
- plot(Walking.GRAND{1,1}.Mean{2}{5},Walking.GRAND{1,1}.Mean{2}{6}(:,xIdx),'color', [0.6350 0.0780 0.1840],'LineWidth',2)
+ plot(Walking.TRIAL{1}{1,1}.Time,Walking.TRIAL{1}{1,1}.X(:,xIdx),'color', [0 0.4470 0.7410],'LineWidth',1)
  plot(Walking.GRAND{1,catIdx}.Mean{2}{5},Walking.GRAND{1,catIdx}.Mean{2}{6}(:,xIdx),'k','LineWidth',2)
+ legend('Pattern', 'Fly Grand Mean')
+ 
 
 end

@@ -13,7 +13,7 @@ FILE = cellstr(FILE)';
 
 Walking = load(fullfile(root,FILE{1}),'TRIAL','GRAND', 'FLY','U','N', 'T');
 %%
-figNum = 1;
+figNum = 3;
 catIdx = 2;
 xIdx = 1;
 
@@ -36,21 +36,22 @@ ax.L.YLabel.FontSize = 12;
 ax.L.XLabel.String = 'Frequency';
 ax.L.XLabel.Color = 'k';
 ax.L.XLabel.FontSize = 12;
-ax.L.XLim = [0 20];
-ax.L.XTick = [1, 3.1, 5.3, 7.4, 9.6, 20];
+ax.L.XLim = [0.5 10];
+ax.L.XTick = [1, 3.1, 5.3, 7.4, 9.6];
 
-for kk = 1:Walking.N{1,1}
-    for jj = 1:Walking.T{kk,2}
-    plot(Walking.TRIAL{kk}{jj,catIdx}.Fv,Walking.TRIAL{kk}{jj,catIdx}.Mag(:,xIdx),'color',[.5 .5 .5 .5], 'LineWidth',.5)
-    end
-end
-
-for kk = 1:Walking.N{1,1}
-     plot(Walking.FLY{kk,catIdx}.Mean{7},Walking.FLY{kk,catIdx}.Mean{8}(:,xIdx),'LineWidth',1)
-end
-plot(Walking.TRIAL{1}{1,1}.IOFreq, Walking.TRIAL{1}{1,1}.IOMag(:,xIdx),'color', [0.6350 0.0780 0.1840])
-plot(Walking.TRIAL{1}{1,1}.Fv,Walking.TRIAL{1}{1,1}.Mag(:,xIdx),'color', [0.6350 0.0780 0.1840],'LineWidth',2)
+% for kk = 1:Walking.N{1,1}
+%     for jj = 1:Walking.T{kk,2}
+%     plot(Walking.TRIAL{kk}{jj,catIdx}.Fv,Walking.TRIAL{kk}{jj,catIdx}.Mag(:,xIdx),'color',[.5 .5 .5 .5], 'LineWidth',.5)
+%     end
+% end
+% 
+% for kk = 1:Walking.N{1,1}
+%      plot(Walking.FLY{kk,catIdx}.Mean{7},Walking.FLY{kk,catIdx}.Mean{8}(:,xIdx),'LineWidth',1)
+% end
+h1 = plot(Walking.TRIAL{1}{1,1}.IOFreq, Walking.TRIAL{1}{1,1}.IOMag(:,xIdx),'color', [0.6350 0.0780 0.1840]);
+h2 = plot(Walking.TRIAL{1}{1,1}.Fv,Walking.TRIAL{1}{1,1}.Mag(:,xIdx),'color', [0.6350 0.0780 0.1840],'LineWidth',2);
 h.patch = PlotPatch(Walking.GRAND{1,catIdx}.Mean{2}{8}(:,xIdx),Walking.GRAND{1,catIdx}.STD{2}{8}(:,xIdx),...
         Walking.GRAND{1,catIdx}.Mean{2}{7}(:,xIdx),2,Walking.N{1,1},'k',[0.4 0.4 0.6],0.5,3);
-plot(Walking.GRAND{1,catIdx}.Mean{2}{10},Walking.GRAND{1,catIdx}.Mean{2}{11}(:,xIdx),'k')
+h3 = plot(Walking.GRAND{1,catIdx}.Mean{2}{10},Walking.GRAND{1,catIdx}.Mean{2}{11}(:,xIdx),'k');
+legend([h1, h3],'Pattern', 'Fly Grand Mean')
 end
