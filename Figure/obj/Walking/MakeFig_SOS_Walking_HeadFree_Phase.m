@@ -5,17 +5,16 @@ function [FIG] = MakeFig_SOS_Walking_HeadFree_Phase()
 %   OUTPUTS:
 %       FIG     :   figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'E:\Walking_Experiments';
+root = 'S:\Public\Audrey\Walking SOS';
 
 [FILE,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
-    'Select head angle trials', root, 'MultiSelect','off');
+    'Select Walking Data', root, 'MultiSelect','off');
 FILE = cellstr(FILE)';
 
 Walking = load(fullfile(root,FILE{1}),'TRIAL','GRAND', 'FLY','U','N', 'T');
 
-root = 'S:\Public\Audrey';
 [FILE,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
-    'Select head angle trials', root, 'MultiSelect','off');
+    'Select Flying Data', root, 'MultiSelect','off');
 FILE = cellstr(FILE)';
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','GRAND', 'FLY','U','N', 'T');
 
