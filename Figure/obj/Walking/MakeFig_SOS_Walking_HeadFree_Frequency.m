@@ -5,7 +5,7 @@ function [FIG] = MakeFig_SOS_Walking_HeadFree_Frequency()
 %   OUTPUTS:
 %       FIG     :   figure handle
 %---------------------------------------------------------------------------------------------------------------------------------
-root = 'S:\Public\Audrey';
+root = 'S:\Public\Audrey\Walking SOS';
 
 [FILE,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
     'Select walking trials', root, 'MultiSelect','off');
