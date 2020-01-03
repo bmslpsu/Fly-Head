@@ -17,8 +17,8 @@ Vel = Anti.U{1,3}{1};
 
 %% ANOVA %%
 
-% Y = Anti.SACD.Head.Position_IntError;
-Y = Anti.SACD.Head.Position_Error;
+Y = Anti.SACD.Head.Position_IntError;
+Y = Anti.SACD.Head.Velocity_IntError;
 
 % G1 = Anti.SACD.Head.fly;
 G2 = Anti.SACD.Head.speed;

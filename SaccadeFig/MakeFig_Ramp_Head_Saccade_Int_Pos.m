@@ -130,8 +130,8 @@ for jj = 1:N{1,3}
     
     plot(INTERVAL.Head.Time{jj}(:,:),INTERVAL.Head.Position{jj}(:,:),'Color', [0.7*CC(jj,:) , 0.2])
     
- 	[h.std(jj),h.med(jj)] = PlotPatch(INTERVAL.HeadStats.Position(jj).Median(span), INTERVAL.HeadStats.Position(jj).STD(span), ...
-        INTERVAL.HeadStats.Time(jj).Median(span), 1, 1, CC(jj,:), [0.7 0.7 0.7], 0.4, 3);
+%  	[h.std(jj),h.med(jj)] = PlotPatch(INTERVAL.HeadStats.Position(jj).Median(span), INTERVAL.HeadStats.Position(jj).STD(span), ...
+%         INTERVAL.HeadStats.Time(jj).Median(span), 1, 1, CC(jj,:), [0.7 0.7 0.7], 0.4, 3);
     
 % 	hp(jj) = plot(INTERVAL.HeadStats.Time(jj).Median(span), Stim(span,jj), '--', 'Color', 0.5*CC(jj,:), 'LineWidth', 1.5);
     
@@ -142,8 +142,8 @@ ax.YLim = max(abs(ax.YLim))*[-1 1];
 ax.YLim = 30*[-1 1];
 ax.XLabel.String = 'Time (s)';
 ax.YLabel.String = ['Head Angle (' char(176) ')'];
-uistack(h.std,'top')
-uistack(h.med,'top')
+% uistack(h.std,'top')
+% uistack(h.med,'top')
 % uistack(hp,'top')
 
 

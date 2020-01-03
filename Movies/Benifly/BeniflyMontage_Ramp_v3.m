@@ -21,7 +21,7 @@ function [MOV] = BeniflyMontage_Ramp_v3(rootdir,rootpat,vidFs,export)
     'Select ANGLE file', rootdir, 'MultiSelect','off');
 
 % Select pattern file
-[FILE.pat, ~] = uigetfile({'*.mat', 'DAQ-files'}, ...
+[FILE.pat, PATH.pat] = uigetfile({'*.mat', 'DAQ-files'}, ...
     'Select PATTERN file', rootpat, 'MultiSelect','off');
 
 % Set file names
@@ -37,7 +37,7 @@ PATH.vid = fullfile(pathparts{1:end-2});
 
 % Load data
 disp('Loading Data...')
-pattern_data = load(fullfile(rootpat,FILE.pat),'pattern'); % load pattern
+pattern_data = load(fullfile(PATH.pat,FILE.pat),'pattern'); % load pattern
 benifly_data = ImportBenifly(fullfile(rootdir,FILE.benifly)); % load Benifly tracked kinematics
 daq_data = load(fullfile(PATH.daq,FILE.daq),'data','t_p'); % load daq oattern positions
 vid_data = load(fullfile(PATH.vid,FILE.daq),'t_v'); % load raw video

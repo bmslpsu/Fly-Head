@@ -52,7 +52,7 @@ ax.R.Position = ax.L.Position;
 linkaxes([ax.L ax.R],'x');
 
 PP = nan(size(SACD.Head,1),3); pp = 1;
-debug = false;
+debug = true;
 window = 0.1; % search wiondow [s]
 FIG.Visible = 'off';
 for jj = 1:N{1,3}
@@ -61,7 +61,7 @@ for jj = 1:N{1,3}
          	HEAD = TRIAL{kk,jj}{ii,headIdx};
             WING = TRIAL{kk,jj}{ii,wingIdx};
             
-          	[Head.SACD,Head.thresh,Head.count] = SacdDetect(HEAD.X(:,1),HEAD.Time,2.5,debug);
+          	[Head.SACD,Head.thresh,Head.count] = SacdDetect(HEAD.X(:,1),HEAD.Time,350,debug);
             Head.svel = HEAD.X(:,2);
             Head.svel( (Head.svel<Head.thresh)  & (Head.svel>0))  = 0;
             Head.svel( (Head.svel>-Head.thresh) & (Head.svel<0))  = 0;
@@ -110,7 +110,8 @@ for jj = 1:N{1,3}
                 pp = pp + 1;
                 end
             end
-            % pause()
+            pause()
+            close all
         end
     end
 end

@@ -132,8 +132,6 @@ set([XLabelHC{:}], 'String', 'Time (s)')
 YLabelHC = get(ax([1,clms+1]), 'YLabel');
 set([YLabelHC{:}], 'String', ['Head Velocity Error (' char(176) '/s)'])
 set([YLabelHC{:}], 'String', ['Retinal Slip (Velocity Error) (' char(176) '/s)'])
-
-
 % delete(h.std)
 
 %% Inter-Saccade Velocity Error ALL %%
@@ -164,6 +162,85 @@ for jj = 1:N{1,3}
 end
 plot([0 10], [0 0], '--', 'Color', [0.5 0.5 0.5], 'LineWidth', 1.5);
 set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',[0 1.5],'YLim',150*[-1 1])
+XLabelHC = get(ax, 'XLabel');
+set(XLabelHC, 'String', 'Time (s)')
+YLabelHC = get(ax, 'YLabel');
+set(YLabelHC, 'String', ['Head Velocity Error (' char(176) '/s)'])
+uistack(h.med,'top')
+leg = legend(h.med(1:clms),string(Vel(1:clms)));
+leg.Box = 'off';
+leg.Title.String = ['Speed (' char(176) '/s)'];
+delete(h.std)
+
+%% Inter-Saccade Velocity Error %%
+FIG = figure (5) ; clf
+FIG.Units = 'inches';
+FIG.Position = [2 2 (2)*clms 4];
+FIG.Name = 'Inter-Saccade Head Velocity Error';
+FIG.PaperPositionMode = 'auto';
+movegui(FIG,'center')
+FIG.Color = 'w';
+clear h ax
+ax = gobjects(N{1,3},1);
+hp = gobjects(N{1,3},1);
+hold on
+tt = 0:0.1:10;
+pLim = 0.70;
+for jj = 1:N{1,3}
+	ax(jj) = subplot(ceil(N{1,3}/clms),clms,jj) ; hold on
+    ax(jj).Title.String = [num2str(Vel(jj)) ' (' char(176) '/s)'];
+    ax(jj).Title.Color = 'k';
+    
+    % Only plot until a percentage of intervals are still active
+    remv = isnan(INTERVAL.Head.Position{jj}(1,:));
+    INT = INTERVAL.Head.Position{jj}(:,~remv);
+    tLim = sum(isnan(INT),2)./(size(INT,2)-1);
+    span = 1:length(tLim(tLim<pLim));
+    
+    % plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Velocity_Error{jj},'Color', [0.5*CC(jj,:) , 0.2])
+    
+	[h.std(jj),h.med(jj)] = PlotPatch(INTERVAL.HeadStats.Velocity_IntError(jj).Median(span), ...
+        INTERVAL.HeadStats.Velocity_IntError(jj).STD(span), ...
+        INTERVAL.HeadStats.Time(jj).Median(span), 1, N.fly, CC(jj,:), [0.7 0.7 0.7], 0.4, 2);
+        
+    plot(tt, 0.*tt, '-', 'Color', [0.5 0.5 0.5], 'LineWidth', 1.0);
+end
+set(ax,'FontSize',12,'Color','w','YColor','k','XColor','k','XLim',[0 1.5],'YLim',30*[-1 1])
+XLabelHC = get(ax(8:9), 'XLabel');
+set([XLabelHC{:}], 'String', 'Time (s)')
+YLabelHC = get(ax([1,clms+1]), 'YLabel');
+set([YLabelHC{:}], 'String', ['Head Velocity Error (' char(176) '/s)'])
+set([YLabelHC{:}], 'String', ['Retinal Slip (Velocity Error) (' char(176) '/s)'])
+
+%% Inter-Saccade Velocity Integrated Error ALL %%
+FIG = figure (6) ; clf
+FIG.Units = 'inches';
+FIG.Position = [2 2 6 4];
+FIG.Name = 'Inter-Saccade Head Velocity';
+FIG.PaperPositionMode = 'auto';
+movegui(FIG,'center')
+FIG.Color = 'w';
+clear h ax
+ax = subplot(1,1,1) ; hold on
+hp = gobjects(N{1,3},1);
+pLim = 0.7;
+for jj = 1:N{1,3}
+    % Only plot until a percentage of intervals are still active
+    remv = isnan(INTERVAL.Head.Position{jj}(1,:));
+    INT = INTERVAL.Head.Position{jj}(:,~remv);
+    tLim = sum(isnan(INT),2)./(size(INT,2)-1);
+    span = 1:length(tLim(tLim<pLim));
+    
+    % plot(INTERVAL.Head.Time{jj},INTERVAL.Head.Velocity_Error{jj},'Color', [0.5*CC(jj,:) , 0.2])
+    
+	[h.std(jj),h.med(jj)] = PlotPatch(INTERVAL.HeadStats.Velocity_IntError(jj).Median(span), ...
+        INTERVAL.HeadStats.Velocity_IntError(jj).STD(span), ...
+        INTERVAL.HeadStats.Time(jj).Median(span), 1, N.fly, CC(jj,:), [0.7 0.7 0.7], 0.4, 1.5);
+    
+%     hp(jj) = plot([0 10], repmat(Vel(jj),1,2), '--', 'Color', 0.7*CC(jj,:), 'LineWidth', 1.5);
+end
+plot([0 10], [0 0], '--', 'Color', [0.5 0.5 0.5], 'LineWidth', 1.5);
+set(ax,'FontSize',8,'Color','w','YColor','k','XColor','k','XLim',[0 1.5],'YLim',30*[-1 1])
 XLabelHC = get(ax, 'XLabel');
 set(XLabelHC, 'String', 'Time (s)')
 YLabelHC = get(ax, 'YLabel');
