@@ -1,4 +1,4 @@
-function [D,I,N,U,T,FILES,PATH,basename] = GetFileData(FILES,abscat,varargin)
+function [D,I,N,U,T,FILES,PATH,basename] = GetFileData(FILES,filespec,abscat,varargin)
 %% GetFileData: Parse file name data and returns tables with relevant information
 %   INPUTS:
 %       FILES       :   file cells in the form "var1_val1_var2_val2_..._varn_valn". The first variable is
@@ -7,6 +7,7 @@ function [D,I,N,U,T,FILES,PATH,basename] = GetFileData(FILES,abscat,varargin)
 %                       vector, then it is the root directory & user selects files.
 %       abscat      :   if set to true, indexing is based on the absolute
 %                       value of conditions.
+%       filespec   	:   only read files with this file specification
 %       varargin    :   user can rename the variables by inputing strings equal to the # of variables in
 %                       the file name.
 %   OUTPUTS:
@@ -20,21 +21,20 @@ function [D,I,N,U,T,FILES,PATH,basename] = GetFileData(FILES,abscat,varargin)
 %---------------------------------------------------------------------------------------------------------------------------------
 % Let user load files if no input is specified
 if ~nargin % open file selection GUi in current folder
-    [files, PATH] = uigetfile({'*', 'files'}, 'Select files', 'MultiSelect','on');
-    FILES = cellstr(files)';
+    [files, PATH] = uigetfile({'*','files'},'Select files','MultiSelect','on');
     abscat = false;
 elseif nargin>=1
     if ischar(FILES) || isstring(FILES) % if root directory given, open file selection GUi in root
-        [files, PATH] = uigetfile({'*', 'files'}, 'Select files',FILES, 'MultiSelect','on');
-        FILES = cellstr(files)';
+        [files, PATH] = uigetfile({filespec,'files'},'Select files',FILES,'MultiSelect','on');
     else
         PATH = []; % if only files are given
     end
     
-    if nargin==1
+    if nargin==2
         abscat = false; % default is off
     end
 end
+FILES = cellstr(files)';
 clear files
 
 % Get file data
@@ -188,8 +188,8 @@ end
 
 % Let user set variable names if specififed
 varnames = catg;
-if nargin>2
-    for kk = 1:nargin-2
+if nargin>3
+    for kk = 1:nargin-3
         varnames{kk} = varargin{kk};
     end
 end
