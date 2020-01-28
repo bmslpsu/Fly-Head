@@ -11,10 +11,11 @@ function [centData,cIdx,cVal,R,dR,new_length,n_vector] = nancat_center(data,cent
 %       cIdx        :   center indicies
 %       cVal        :   computed center values
 %       R           :   indicies from center to ends of each column
-%       maxR       	:   length of both sides od "center"
+%       maxR       	:   length of both sides of "center"
 %       new_length 	:   new length of Nan padded vectors
 %       n_vector 	:   total # of vectors in all cells
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 if nargin<3
     dim = 1; % defaults to columns
     if nargin<2
