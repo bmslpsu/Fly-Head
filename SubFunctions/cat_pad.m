@@ -6,7 +6,8 @@ function [nanData] = cat_pad(data,L,val)
 %       val         :   pad value
 %   OUTPUTS:
 %       nanData     :   Nan padded data
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 data = data(:);
 L = L(:);
 nanData = [val*ones(L(1),1) ; data ; val*ones(L(2),1)];

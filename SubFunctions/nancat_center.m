@@ -7,7 +7,7 @@ function [centData,cIdx,cVal,R,dR,new_length,n_vector] = nancat_center(data,cent
 %       Cent     	:   center index , overrides center value
 %       Even     	:   if true,equal sizing on each side of "center"
 %   OUTPUTS:
-%       centDara    :   centered data
+%       centData    :   centered data
 %       cIdx        :   center indicies
 %       cVal        :   computed center values
 %       R           :   indicies from center to ends of each column
@@ -63,7 +63,12 @@ for jj = 1:n_data % for each cell
     [n_length(jj) , n_array(jj)] = size(data{jj});
     R{jj} = nan(2,n_array(jj));
     for kk = 1:n_array(jj)
-        [cIdx(jj,kk),~] = find( data{jj}(:,kk)==cVal{jj}(1,kk) ); % find location of center value
+        if ~isnan(cVal{jj})
+            [cIdx(jj,kk),~] = find( data{jj}(:,kk)==cVal{jj}(1,kk) ); % find location of center value
+        else
+            cIdx(jj,kk) = 1;
+        end
+        
         if nargin==4
             if isempty(Cent)
                 % no affect
