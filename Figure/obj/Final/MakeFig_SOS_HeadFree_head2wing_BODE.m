@@ -4,7 +4,7 @@ function [FIG] = MakeFig_SOS_HeadFree_head2wing_BODE()
 %       -
 %   OUTPUTS:
 %       FIG     :   figure handle
-%---------------------------------------------------------------------------------------------------------------------------------
+%
 root = 'H:\DATA\Rigid_Data\';
 
 % Select files

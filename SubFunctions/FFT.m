@@ -8,7 +8,8 @@ function [Fv, Mag , Phs , FREQ] = FFT(t,x)
 %       Mag : 	magnitude vector
 %       Phs : 	phase vector [rad]
 %       FREQ:   complex frequency domain data
-%---------------------------------------------------------------------------------------------------------------------------------      
+%
+
 Fs = 1/(mean(diff(t)));                 % sampling frequency [Hz]
 L = length(t);                          % length of signal
 Fn = Fs/2;                           	% nyquist frequency [Hz]
@@ -19,5 +20,4 @@ Mag = 2*abs(fts(Iv));                   % magnitude
 Phs = angle(fts(Iv));                   % phase [rad]
 FREQ = fts(Iv);                         % complex frequency domain data
 % Phs = rad2deg(Phs);                     % phase [deg]
-%---------------------------------------------------------------------------------------------------------------------------------
 end

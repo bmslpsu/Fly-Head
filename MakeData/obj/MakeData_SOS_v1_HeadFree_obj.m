@@ -1,17 +1,17 @@
-function [] = MakeData_SOS_HeadFree_obj(rootdir)
-%% MakeData_SOS_HeadFree_obj: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
+function [] = MakeData_SOS_v1_HeadFree_obj(rootdir)
+%% MakeData_SOS_v1_HeadFree_obj: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
 %   INPUTS:
 %       rootdir    	:   root directory
 %   OUTPUTS:
 %       -
 %
-rootdir = 'H:\EXPERIMENTS\RIGID\Experiment_SOS_v2';
-filename = 'SOS_HeadFree_DATA';
+rootdir = 'H:\EXPERIMENTS\RIGID\Experiment_SOS';
+filename = 'SOS_v1_HeadFree_DATA';
 
 %% Setup Directories %%
 root.daq = rootdir;
 % root.ang = fullfile(root.daq,'\Vid\Angles\');
-root.ang = fullfile(root.daq,'\Angles\');
+root.ang = fullfile(root.daq,'\Vid\Angles\');
 
 % Select files
 [FILES, PATH.ang] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -26,8 +26,8 @@ clear rootdir
 %% Get Data %%
 
 % IOFreq = 0.1*round(linspace(0.1,8,10)/0.1)';
-% IOFreq = [0.1, 1, 1.85, 2.75, 3.6, 4.5, 5.35, 6.25, 7.1, 8];
-IOFreq = [1, 3.1, 5.3, 7.4, 9.6];
+IOFreq = [0.1, 1, 1.85, 2.75, 3.6, 4.5, 5.35, 6.25, 7.1, 8];
+% IOFreq = [1, 3.1, 5.3, 7.4, 9.6];
 disp('Loading...')
 ALL 	= cell([N{1,end},10]); % cell array to store all data objects
 TRIAL  	= cell(N{1,1},1);
@@ -70,10 +70,10 @@ for kk = 1:N{1,end}
     % Check WBF & WBA
     if min(wing.f)<150 || mean(wing.f)<180 % check WBF, if too low then don't use trial
         fprintf('Low WBF: Fly %i Trial %i \n',D{kk,1},D{kk,2})
-        continue
+        % continue
     elseif any(wing.Left>10.6) || any(wing.Right>10.6)
         fprintf('WBA out of range: Fly %i Trial %i \n',D{kk,1},D{kk,2})
-        continue
+        % continue
     else
         pp = pp + 1; % set next index to store data
     end
@@ -209,8 +209,7 @@ strFreq(end) = [];
 
 fname = sprintf(['position_function_SOS_REPLAY_fs_%1.1f_T_%1.1f_freq_' strFreq '.mat'],Fs,TT);
 targetDir = 'C:\Users\boc5244\Documents\GitHub\Arena\Functions';
-%%
-save(fullfile(targetDir,fname), 'func');
+% save(fullfile(targetDir,fname), 'func');
 
 %% SAVE %%
 disp('Saving...')

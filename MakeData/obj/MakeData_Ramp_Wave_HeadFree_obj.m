@@ -5,8 +5,9 @@ function [] = MakeData_Ramp_Wave_HeadFree_obj(match,Fc,wave)
 %   OUTPUTS:
 %       -
 %---------------------------------------------------------------------------------------------------------------------------------
-% Fc = 30;
-% match = -1;
+Fc = 30;
+match = -1;
+wave = 30;
 if match==1
     clss = 'CO';
 elseif match==-1
@@ -19,7 +20,7 @@ end
 
 % wave = 30;
 filename = ['Ramp_HeadFree_SACCD_' clss '_filt=' num2str(Fc) '_Wave=' num2str(wave)];
-rootdir = ['H:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\HighContrast\' num2str(wave)];
+rootdir = ['H:\EXPERIMENTS\RIGID\Experiment_Asymmetry_Control_Verification\HighContrast\' num2str(wave)];
 
 %% Setup Directories %%
 %---------------------------------------------------------------------------------------------------------------------------------
@@ -31,7 +32,7 @@ root.ang = fullfile(root.daq,'\Vid\tracked');
 [files, PATH.ang] = uigetfile({'*csv', 'files'}, 'Select files',root.ang, 'MultiSelect', 'on');
 FILES = cellstr(files)';
 
-[D,I,N,U,T,~,~,basename] = GetFileData(FILES,false,'fly','trial','vel','wave');
+[D,I,N,U,T,~,~,basename] = GetFileData(FILES,'',false,'fly','trial','vel','wave');
 
 PATH.daq = root.daq;
 PATH.vid = root.vid;

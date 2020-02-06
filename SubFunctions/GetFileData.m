@@ -1,4 +1,4 @@
-function [D,I,N,U,T,FILES,PATH,basename] = GetFileData(FILES,filespec,abscat,varargin)
+function [D,I,N,U,T,FILES,PATH,basename] = GetFileData(files,filespec,abscat,varargin)
 %% GetFileData: Parse file name data and returns tables with relevant information
 %   INPUTS:
 %       FILES       :   file cells in the form "var1_val1_var2_val2_..._varn_valn". The first variable is
@@ -18,14 +18,15 @@ function [D,I,N,U,T,FILES,PATH,basename] = GetFileData(FILES,filespec,abscat,var
 %       T           :   map of all data + trials per condition
 %       FILES      	:   files used
 %       PATH      	:   file location
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 % Let user load files if no input is specified
 if ~nargin % open file selection GUi in current folder
     [files, PATH] = uigetfile({'*','files'},'Select files','MultiSelect','on');
     abscat = false;
 elseif nargin>=1
-    if ischar(FILES) || isstring(FILES) % if root directory given, open file selection GUi in root
-        [files, PATH] = uigetfile({filespec,'files'},'Select files',FILES,'MultiSelect','on');
+    if ischar(files) || isstring(files) % if root directory given, open file selection GUi in root
+        [files, PATH] = uigetfile({filespec,'files'},'Select files',files,'MultiSelect','on');
     else
         PATH = []; % if only files are given
     end

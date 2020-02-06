@@ -1,5 +1,5 @@
-function [] = MakeFig_Sine_HeadFree_pat_head_Time()
-%% MakeFig_Sine_HeadFree_pat_head_Time:
+function [] = MakeFig_Sine_HeadFree_pat_head_Time_trial()
+%% MakeFig_Sine_HeadFree_pat_head_Time_trial:
 %   INPUTS:
 %       -
 %   OUTPUTS:
@@ -26,7 +26,7 @@ end
 clearvars -except HeadFree Amp nAmp
 
 %%
-filename = 'Sine_HeadFree_pat_head_Time';
+filename = 'Sine_HeadFree_pat_head_Time_trial';
 
 hold on
 catIdx = 2;
@@ -43,6 +43,7 @@ for ww = 1:nAmp
    FIG.Name = [FIG.Name '_' num2str(Amp(ww))];
 end
 
+cmap = hsv(6);
 for ww = 1
     pp = 1;
     for jj = 1:HeadFree{ww}.N{1,3}
@@ -56,7 +57,7 @@ for ww = 1
         ax.L.YLabel.FontSize = 8;
         ax.L.FontSize = 8;
         ax.L.XLim = [0 5];
-        ax.L.YLim = 20*[-1 1];
+        ax.L.YLim = 22*[-1 1];
         ax.L.YTick = 20*[-1 0 1];
         if pp==HeadFree{ww}.N{1,3}
             ax.L.XLabel.String = 'Time (s)';
@@ -64,21 +65,20 @@ for ww = 1
         else
             ax.L.XTickLabels = [];
         end
+        plot([0 5], [15 15],'--','Color','k','LineWidth',0.75)
+        plot([0 5],-[15 15],'--','Color','k','LineWidth',0.75)
         
-    	plot(HeadFree{ww}.TRIAL{5,jj}{2,1}.Time,HeadFree{ww}.TRIAL{5,jj}{2,1}.X(:,xIdx),'-k','LineWidth',1)
+    	plot(HeadFree{ww}.TRIAL{5,jj}{2,1}.Time,HeadFree{ww}.TRIAL{5,jj}{2,1}.X(:,xIdx),'-k','LineWidth',0.5)
 
-        h.patch = PlotPatch(HeadFree{ww}.GRAND{jj,catIdx}.Mean{2}{6}(:,xIdx),2*HeadFree{ww}.GRAND{jj,catIdx}.STD{2}{6}(:,xIdx),...
-            HeadFree{ww}.GRAND{jj,catIdx}.Mean{2}{5}, 1, HeadFree{ww}.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
+%         h.patch = PlotPatch(HeadFree{ww}.GRAND{jj,catIdx}.Mean{2}{6}(:,xIdx),2*HeadFree{ww}.GRAND{jj,catIdx}.STD{2}{6}(:,xIdx),...
+%             HeadFree{ww}.GRAND{jj,catIdx}.Mean{2}{5}, 1, HeadFree{ww}.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
         
-%         yyaxis right ; ax.R = gca;
-%         ax.R.YColor = [0 1 0];
-%         ax.R.YLabel.String = ['Stimulus (' char(176) ')'];
-%         ax.R.YLabel.FontSize = 14;
-%         if pp==HeadFree{ww}.N{1,3}
-%             ax.R.XLabel.String = 'Time (s)';
-%             ax.R.XLabel.FontSize = 14;
-%         end
-%         plot(HeadFree{ww}.TRIAL{5,jj}{2,1}.Time,HeadFree{ww}.TRIAL{5,jj}{2,1}.X(:,xIdx),'-g','LineWidth',1)
+        for kk = 4
+            data = HeadFree{ww}.TRIAL{kk,jj};
+            for ii = 1:size(data,1)
+                plot(data{ii,catIdx}.Time, data{ii,catIdx}.X(:,xIdx),'Color',cmap(ii,:))
+            end
+        end
         
         pp = pp + 1;
     end

@@ -4,7 +4,8 @@ function [FIG] = MakeFig_SOS_HeadFree_pat2wing_ComplexGain()
 %       -
 %   OUTPUTS:
 %       FIG     :   figure handle
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 root = 'H:\DATA\Rigid_Data\';
 
 [FILE,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -32,8 +33,8 @@ for kk = 1:HeadFree.N{1,1}
     end
 end
 
-Real        = real(CmplxGain);
-Imag        = imag(CmplxGain);
+Real = real(CmplxGain);
+Imag = imag(CmplxGain);
 
 for jj = 1:nFreq
     for kk = 1:size(Real,1)
@@ -86,7 +87,6 @@ gains = 0.05:0.05:0.2;
 % gains = 0.2:0.2:1;
 
 %% Complex Gain
-%---------------------------------------------------------------------------------------------------------------------------------
 FIG = figure (1); clf
 FIG.Color = 'w';
 FIG.Units = 'inches';
@@ -134,7 +134,6 @@ leg.Location = 'northwest';
 legend boxoff
 
 %% BODE
-%---------------------------------------------------------------------------------------------------------------------------------
 FIG = figure (2); clf
 FIG.Color = 'w';
 FIG.Position = [100 100 700 700];

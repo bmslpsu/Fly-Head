@@ -41,8 +41,8 @@ classdef FlyStats
                 end
             end
 
-            obj_all = cell(1,nn(2)); % stores concatenateed cell data
-            obj.All = cell(1,nn(2)); % stores concatenateed array data
+            obj_all = cell(1,nn(2)); % stores concatenated cell data
+            obj.All = cell(1,nn(2)); % stores concatenated array data
             for jj = 1:nn(2) % cycle through all input cells in the dimension average
                 obj_all{jj} = cat(3,OBJ{:,jj}); % concatenates object data cells in 3rd dimension
                 for ii = 1:size(obj_all{jj},1) % cycle through properties
@@ -61,7 +61,7 @@ classdef FlyStats
             obj.Min         = cellfun(@(x) nanmin(x,[],3),       	obj.All,'UniformOutput',false);
             obj.Range       = cellfun(@(x) range(x,3),              obj.All,'UniformOutput',false);
         	obj.CircMean    = cellfun(@(x) circ_mean(x,[],3),       obj.All,'UniformOutput',false);
-            obj.CircSTD     = cellfun(@(x) circ_std(x,[],[],3),     obj.All,'UniformOutput',false);
+            [~,obj.CircSTD] = cellfun(@(x) circ_std(x,[],[],3),     obj.All,'UniformOutput',false);
             
             obj.All = [];
         end
@@ -76,7 +76,7 @@ classdef FlyStats
             %       obj     : object instance
             %       n       : derivaties of X to plot, default is all
             if nargin==1
-                n = 1:size(obj.All{6},2);
+                n = 1:size(obj.Mean{6},2);
             end
             
             figure('Name',['Fly Time Domain (# trial = ' num2str(obj.nTrial) ')'])
@@ -91,7 +91,7 @@ classdef FlyStats
                 end
                 xlim([0 time(end)])
                 
-                for jj = 1:size(obj.All{5},3)
+                for jj = 1:size(obj.Mean{5},3)
                     h = plot(obj.All{5}(:,1,jj),obj.All{6}(:,kk,jj));
                     h.Color(4) = 0.5;
                 end

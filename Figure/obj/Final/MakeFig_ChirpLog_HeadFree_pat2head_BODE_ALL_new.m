@@ -4,7 +4,8 @@ function [FIG] = MakeFig_ChirpLog_HeadFree_pat2head_BODE_ALL_new()
 %       -
 %   OUTPUTS:
 %       FIG     : figure handle
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 root = 'H:\DATA\Rigid_Data\';
 
 [CHIRP,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -12,13 +13,14 @@ root = 'H:\DATA\Rigid_Data\';
 CHIRP = cellstr(CHIRP)';
 
 HeadFree = load(fullfile(root,CHIRP{1}),'GRAND','U','N');
-
+clearvars -except HeadFree
+%%
 filename = 'ChirpLog_HeadFree_pat2head_BODE_ALL_new';
 catIdx = 5;
 xIdx = 1;
 CC = [0 0 0.7];
 
-%% One Amplitude
+% One Amplitude
 FIG = figure (1); clf
 FIG.Color = 'w';
 FIG.Units = 'inches';
@@ -57,7 +59,7 @@ ax1 = subplot(2,1,1);
     ax1.XLabel.String = 'Frequency (Hz)';
     ax1.XLabel.FontSize = ax1.YLabel.FontSize;
     ax1.XLabel.Color = 'w';
-    ax1.XLim = [0.3 10];
+    ax1.XLim = [0.2 12];
     ax1.XTick = [ax1.XLim(1),2:2:ax1.XLim(2)];
     ax1.XTickLabels = '';
     h.patch = PlotPatch(GAIN, GSTD, FREQ, 1, HeadFree.N{1,1},CC, [0.4 0.4 0.6], 0.5,2);
@@ -101,10 +103,10 @@ ax2 = subplot(2,1,2);
     ax3.XLabel.FontSize = ax1.YLabel.FontSize;
 
 %% ALL
-
 FIG = figure (2); clf
 FIG.Color = 'w';
-FIG.Position = [100 100 1200 650];
+FIG.Units = 'inches';
+FIG.Position = [2 2 10 4];
 FIG.Name = filename;
 movegui(FIG,'center')
 hold on
@@ -137,16 +139,16 @@ for jj = 1:HeadFree.N{1,3} % amplitudes
         hold on
         ax1.Title.String = [num2str(AMP(:,jj)) , char(176)];
         ax1.Title.Color = 'w';
-        ax1.Title.FontSize = 16;
-        ax1.FontSize = 12;
+        ax1.Title.FontSize = 12;
+        ax1.FontSize = 8;
         ax1.YLabel.String = ['Gain (' char(176) '/' char(176) ')'];
-        ax1.YLabel.FontSize = 14;
+        ax1.YLabel.FontSize = 10;
         ax1.YLim = [0 1.2];
         ax1.YTick = unique(sort([ax1.YTick ax1.YLim(2)]));
      	ax1.XLabel.String = 'Frequency (Hz)';
         ax1.XLabel.FontSize = ax1.YLabel.FontSize;
         ax1.XLabel.Color = 'w';
-       	ax1.XLim = [0.3 10];
+       	ax1.XLim = [0.3 12];
         ax1.XTickLabels = '';
 %         ax1.OuterPosition = ax1.OuterPosition + [0 0 0 0.1];
         
@@ -157,11 +159,11 @@ for jj = 1:HeadFree.N{1,3} % amplitudes
         hold on
 
         h.patch = PlotPatch(GAIN(:,jj), GSTD(:,jj), FREQ(:,jj) ,...
-                            2,HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,2);
+                            2,HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,1);
                         
-        plot([0 12],[1 1],'--g','LineWidth',2);           
+        % plot([0 12],[1 1],'--g','LineWidth',2);           
               
-        ax1.XTick = unique(sort([min(ax1.XLim) ax1.XTick]));
+        ax1.XTick = unique(sort([min(ax1.XLim) 2:2:12]));
         vel = round(AMP(:,jj)*2*pi*ax1.XTick);
         velLabel = cellfun(@(x) num2str(x), num2cell(vel), 'UniformOutput', false);
                
@@ -187,9 +189,9 @@ for jj = 1:HeadFree.N{1,3} % amplitudes
         end
         
         h.patch = PlotPatch(PHASE(:,jj), PSTD(:,jj),FREQ(:,jj),...
-            2,HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,2);
+            2,HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,1);
                 
-        plot([0 12],[0 0],'--g','LineWidth',2);
+        plot([0 12],[0 0],'--k','LineWidth',1);
         
         ax2.XTick = ax1.XTick;
         

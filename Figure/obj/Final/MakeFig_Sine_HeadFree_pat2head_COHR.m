@@ -4,7 +4,8 @@ function [FIG] = MakeFig_Sine_HeadFree_pat2head_COHR()
 %       -
 %   OUTPUTS:
 %       FIG     : figure handle
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 root = 'H:\DATA\Rigid_Data\';
 
 [FILES,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -67,17 +68,17 @@ ax.XLim = [0 13];
 ax.XLabel.String = 'Frequency (Hz)';
 ax.XLabel.FontSize = ax.YLabel.FontSize;
 
-CC = prism(HeadFree{ww}.N {1,3});
+CC = prism(HeadFree{ww}.N{1,3});
 for ww = 1
-    for jj = 1:HeadFree{ww}.N {1,3}
-        PlotPatch(HeadFree{ww}.GRAND{jj,headIdx}.Mean{1}{7}(:,xIdx), HeadFree{ww}.GRAND{jj,headIdx}.STD{1}{7}(:,xIdx),...
-            HeadFree{ww}.GRAND{jj,headIdx}.Mean{1}{8}, 1, HeadFree{ww}.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 1);
-        
-        PlotPatch(HeadFree{ww}.GRAND{jj,wingIdx}.Mean{1}{7}(:,xIdx), HeadFree{ww}.GRAND{jj,wingIdx}.STD{1}{7}(:,xIdx),...
-            HeadFree{ww}.GRAND{jj,wingIdx}.Mean{1}{8}, 1, HeadFree{ww}.N{1,1}, 'r', [0.4 0.4 0.6], 0.5, 1);
-    end
-	errorbar(FREQ.GrandMean{ww,1},COHR.GrandMean{ww,1},1*COHR.GrandSTD{ww,1}./sqrt(HeadFree{ww}.N{1,1}),'-b','LineWidth',2)
- 	errorbar(FREQ.GrandMean{ww,2},COHR.GrandMean{ww,2},1*COHR.GrandSTD{ww,2}./sqrt(HeadFree{ww}.N{1,1}),'-r','LineWidth',2)
+%     for jj = 1:HeadFree{ww}.N{1,3}
+%         PlotPatch(HeadFree{ww}.GRAND{jj,headIdx}.Mean{1}{7}(:,xIdx), HeadFree{ww}.GRAND{jj,headIdx}.STD{1}{7}(:,xIdx),...
+%             HeadFree{ww}.GRAND{jj,headIdx}.Mean{1}{8}, 1, HeadFree{ww}.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 1);
+%         
+%         PlotPatch(HeadFree{ww}.GRAND{jj,wingIdx}.Mean{1}{7}(:,xIdx), HeadFree{ww}.GRAND{jj,wingIdx}.STD{1}{7}(:,xIdx),...
+%             HeadFree{ww}.GRAND{jj,wingIdx}.Mean{1}{8}, 1, HeadFree{ww}.N{1,1}, 'r', [0.4 0.4 0.6], 0.5, 1);
+%     end
+	errorbar(FREQ.GrandMean{ww,1},COHR.GrandMean{ww,1},1*COHR.GrandSTD{ww,1}./sqrt(HeadFree{ww}.N{1,1}),'-b','LineWidth',1)
+ 	errorbar(FREQ.GrandMean{ww,2},COHR.GrandMean{ww,2},1*COHR.GrandSTD{ww,2}./sqrt(HeadFree{ww}.N{1,1}),'-r','LineWidth',1)
 end
 
 end

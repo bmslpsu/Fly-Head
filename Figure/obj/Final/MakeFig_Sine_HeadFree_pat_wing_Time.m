@@ -4,7 +4,8 @@ function [] = MakeFig_Sine_HeadFree_pat_wing_Time()
 %       -
 %   OUTPUTS:
 %       -
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 root = 'H:\DATA\Rigid_Data\';
 
 [FILES,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -48,7 +49,8 @@ for ww = 1
         freq = HeadFree{ww}.U{1,3}{1}(jj);
         
       	ax.R = subplot(HeadFree{ww}.N{1,3},1,pp) ; hold on
-        h.stim = plot(HeadFree{ww}.TRIAL{5,jj}{2,1}.Time,HeadFree{ww}.TRIAL{5,jj}{2,1}.X(:,xIdx),'-k','LineWidth',1);
+        h.stim = plot(HeadFree{ww}.TRIAL{5,jj}{2,1}.Time,HeadFree{ww}.TRIAL{5,jj}{2,1}.X(:,xIdx),...
+            '-k','LineWidth',0.5);
         
         ax.R.YAxisLocation = 'right';
         ax.R.Color = 'none';
@@ -56,8 +58,8 @@ for ww = 1
         ax.R.YLabel.String = ['(' char(176) ')'];
         ax.R.YLabel.FontSize = 8;
         ax.R.XLim = [0 5];
-        ax.R.YLim = 15*[-1 1];
-        ax.R.YTick = 15*[-1 0 1];
+        ax.R.YLim = 5*[-1 1];
+        ax.R.YTick = 5*[-1 0 1];
         if pp==HeadFree{ww}.N{1,3}
             ax.R.XLabel.String = 'Time (s)';
             ax.R.XLabel.FontSize = 8;
@@ -76,7 +78,8 @@ for ww = 1
         ax.L.XColor = 'none';
         
         h.patch = PlotPatch(HeadFree{ww}.GRAND{jj,catIdx}.Mean{2}{6}(:,xIdx),HeadFree{ww}.GRAND{jj,catIdx}.STD{2}{6}(:,xIdx),...
-            HeadFree{ww}.GRAND{jj,catIdx}.Mean{2}{5},1,HeadFree{ww}.N{1,1},'r',[0.4 0.4 0.6],0.5,2);
+            HeadFree{ww}.GRAND{jj,catIdx}.Mean{2}{5},1,HeadFree{ww}.N{1,1},'r',[0.4 0.4 0.6],0.5,1);
+        h.patch.EdgeColor = 'none';
         
         ax.L.Position = ax.R.Position;
 %         uistack(ax.L,'top')

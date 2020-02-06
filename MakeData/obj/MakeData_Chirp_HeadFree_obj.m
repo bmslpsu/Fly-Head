@@ -1,15 +1,14 @@
 function [] = MakeData_Chirp_HeadFree_obj(rootdir)
-%% MakeData_Chirp_HeadFree_obj: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
+%% MakeData_Chirp_HeadFree_obj:
 %   INPUTS:
 %       root        : root directory
 %   OUTPUTS:
 %       -
-%---------------------------------------------------------------------------------------------------------------------------------
-rootdir = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFree';
+%
+rootdir = 'H:\EXPERIMENTS\RIGID\Experiment_ChirpLog_HeadFree';
 filename = 'Chirp_HeadFree_DATA';
-%---------------------------------------------------------------------------------------------------------------------------------
+
 %% Setup Directories %%
-%---------------------------------------------------------------------------------------------------------------------------------
 root.daq = rootdir;
 root.ang = fullfile(root.daq,'\Vid\Angles\');
 
@@ -24,25 +23,25 @@ PATH.daq = root.daq;
 
 clear rootdir
 %% Get Data %%
-%---------------------------------------------------------------------------------------------------------------------------------
 IOFreq = [];
 disp('Loading...')
 ALL 	= cell([N{1,end},11]); % cell array to store all data objects
 TRIAL  	= cell(N{1,1},N{1,3});
 n.catg  = size(N,2) - 1;
 pp = 0;
+tintrp = (0:(1/100):20)';
 for kk = 1:N.file
     disp(kk)
     % Load HEAD & DAQ data
     data = [];
 	load(fullfile(PATH.daq, FILES{kk}),'data','t_p'); % load pattern x-position
     load(fullfile(PATH.ang, FILES{kk}),'hAngles','t_v'); % load head angles % time arrays
-    %-----------------------------------------------------------------------------------------------------------------------------
+    
     % Get head data
     head.Time = t_v;
     head.Pos = hAngles - mean(hAngles);
-    Head = Fly(head.Pos,head.Time,40,IOFreq); % head object
-  	%-----------------------------------------------------------------------------------------------------------------------------
+    Head = Fly(head.Pos,head.Time,40,IOFreq,tintrp); % head object
+  	
     % Get wing data from DAQ
 	wing.f          = medfilt1(100*data(:,6),3); % wing beat frequency [Hz]
     wing.Time       = t_p; % wing time [s]
@@ -53,7 +52,7 @@ for kk = 1:N.file
     wing.Right      = filtfilt(b,a,(data(:,5))); % right wing [V]
     wing.Pos        = wing.Left - wing.Right; % dWBA (L-R) [V]
   	wing.Pos        = wing.Pos - mean(wing.Pos); % subtract mean [V]
-   	Wing            = Fly(wing.Pos,t_p,40,IOFreq,Head.Time); % wing object
+   	Wing            = Fly(wing.Pos,t_p,40,IOFreq,tintrp); % wing object
     
     wing.f          = interp1(wing.Time,wing.f,Head.Time);
    	wing.Left     	= interp1(wing.Time,wing.Left,Head.Time);
@@ -61,7 +60,7 @@ for kk = 1:N.file
 
     Wing.WBF        = wing.f;
     Wing.WBA        = [wing.Left,wing.Right,wing.Left + wing.Right];
-	%-----------------------------------------------------------------------------------------------------------------------------
+	
     % Check WBF & WBA
     if min(wing.f)<150 || mean(wing.f)<180 % check WBF, if too low then don't use trial
         fprintf('Low WBF: Fly %i Trial %i \n',D{kk,1},D{kk,2})
@@ -72,23 +71,23 @@ for kk = 1:N.file
     else
         pp = pp + 1; % set next index to store data
     end
-	%-------------------------------------------------------------------------------------`----------------------------------------
+	
 	% Get pattern data from DAQ
     pat.Time	= t_p;
     pat.Pos 	= panel2deg(data(:,2)); % pattern x-pos: subtract mean and convert to deg [deg]  
     pat.Pos  	= FitPanel(pat.Pos,pat.Time,Head.Time); % fit panel data
- 	Pat      	= Fly(pat.Pos,Head.Time,[],IOFreq); % pattern object
-	%-----------------------------------------------------------------------------------------------------------------------------
+ 	Pat      	= Fly(pat.Pos,Head.Time,[],IOFreq,tintrp); % pattern object
+	
  	% Calculate error between head & pattern
     head.Err = Pat.X(:,1) - Head.X(:,1); % calculate position error between head & pattern [deg]
     Err = Fly(head.Err,Head.Time,0.4*Head.Fs,IOFreq); % error object
-    %-----------------------------------------------------------------------------------------------------------------------------
+    
     % Calculate iput-output relationships
     pat2head    = IO_Class(Pat,Head);
     err2wing    = IO_Class(Err,Wing);
 	head2wing   = IO_Class(Head,Wing);
     pat2wing    = IO_Class(Pat,Wing);
-    %-----------------------------------------------------------------------------------------------------------------------------
+    
     % Store objects in cells
     for jj = 1:n.catg
         ALL{pp,jj} = I{kk,jj};
@@ -112,7 +111,6 @@ ALL( all(cellfun(@isempty, ALL),2), : ) = []; % get rid of emtpty rows becuase o
 % disp('LOADING DONE')
 
 %% Fly Statistics %%
-%---------------------------------------------------------------------------------------------------------------------------------
 FLY = cell(N{1,3},1);
 for kk = 1:N{1,1}
     for jj = 1:N{1,3}
@@ -123,7 +121,6 @@ for kk = 1:N{1,1}
 end
 clear kk jj ii
 %% Grand Statistics %%
-%---------------------------------------------------------------------------------------------------------------------------------
 GRAND = cell(size(FLY,2),size(FLY{1},2));
 for jj = 1:N{1,3}
     for ii = 1:size(FLY{jj},2)
@@ -132,7 +129,7 @@ for jj = 1:N{1,3}
 end
 clear jj ii
 %% SAVE %%
-%---------------------------------------------------------------------------------------------------------------------------------
+
 disp('Saving...')
 save(['H:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
     'TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')

@@ -4,7 +4,8 @@ function [FIG] = MakeFig_ChirpLog_HeadFree_pat2head_COHR()
 %       -
 %   OUTPUTS:
 %       FIG     : figure handle
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 root = 'H:\DATA\Rigid_Data\';
 
 [Free,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -33,7 +34,7 @@ FIG.Name = filename;
 movegui(FIG,'center')
 hold on
 
-amp = 3;
+amp = 1;
 Amp = HeadFree.U{1,3}{1}(amp);
 ax1 = gca;
     hold on
@@ -49,7 +50,7 @@ ax1 = gca;
     ax1.XLabel.String = 'Frequency (Hz)';
     ax1.XLabel.Color = 'k';
     ax1.XLabel.FontSize = ax1.YLabel.FontSize;
-    ax1.XLim = [0.3 10];
+    ax1.XLim = [0.1 12];
 
     FREQ = HeadFree.GRAND{amp,5}.Mean{1}{8};
     COHR = HeadFree.GRAND{amp,5}.Mean{1}{7}(:,xIdx);
@@ -75,7 +76,7 @@ ax1 = gca;
     ax1.XTick = unique(sort([min(ax1.XLim) ax1.XTick]));
     vel = round(Amp*2*pi*ax1.XTick);
     velLabel = cellfun(@(x) num2str(x), num2cell(vel), 'UniformOutput', false);               
-
+    
     ax3 = axes;
     ax3.Position = ax1.Position;
     ax3.FontSize = ax1.FontSize ;

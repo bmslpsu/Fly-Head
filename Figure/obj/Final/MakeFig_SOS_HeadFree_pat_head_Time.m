@@ -4,7 +4,8 @@ function [FIG] = MakeFig_SOS_HeadFree_pat_head_Time()
 %       -
 %   OUTPUTS:
 %       FIG     :   figure handle
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 root = 'H:\DATA\Rigid_Data\';
 
 [FILE,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -12,6 +13,7 @@ root = 'H:\DATA\Rigid_Data\';
 FILE = cellstr(FILE)';
 
 HeadFree = load(fullfile(root,FILE{1}),'TRIAL','GRAND','U','N');
+
 %%
 figNum = 1;
 catIdx = 2;
@@ -38,9 +40,9 @@ ax.L.XLabel.Color = 'k';
 ax.L.XLabel.FontSize = 8;
 ax.L.XLim = [0 20];
 
-plot(HeadFree.TRIAL{1}{2,1}.Time,HeadFree.TRIAL{1}{2,1}.X(:,xIdx),'k','LineWidth',1)
+plot(HeadFree.TRIAL{1}{2,1}.Time,HeadFree.TRIAL{1}{2,1}.X(:,xIdx),'k','LineWidth',0.5)
 
 PlotPatch(HeadFree.GRAND{1,catIdx}.Mean{1}{6}(:,xIdx),HeadFree.GRAND{1,catIdx}.STD{2}{6}(:,xIdx),...
-    HeadFree.GRAND{1,catIdx}.Mean{2}{5}, 1, HeadFree.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
+    HeadFree.GRAND{1,catIdx}.Mean{2}{5}, 1, HeadFree.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 1);
 
 end

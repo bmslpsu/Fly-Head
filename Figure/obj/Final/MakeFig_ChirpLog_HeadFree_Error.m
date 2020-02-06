@@ -4,7 +4,8 @@ function [FIG] = MakeFig_ChirpLog_HeadFree_Error()
 %       -
 %   OUTPUTS:
 %       FIG     : figure handle
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 root = 'H:\DATA\Rigid_Data\';
 
 [CHIRP,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -54,9 +55,9 @@ ax1 = subplot(1,1,1);
     ax1.XLim = [0.1 12];
     ax1.XTick = [ax1.XLim(1),2:2:ax1.XLim(2)];
     
-    h.patch = PlotPatch(MAG,   MSTD, FREQ, 0, HeadFree.N{1,1}, 'g', [0.4 0.4 0.6], 0.5, 2);
+    h.patch = PlotPatch(MAG,   MSTD, FREQ, 0, HeadFree.N{1,1}, 'k', [0.4 0.4 0.6], 0.5, 2);
 
- 	h.patch = PlotPatch(ERROR, ESTD, FREQ, 1, HeadFree.N{1,1}, 'y', [0.4 0.4 0.6], 0.5, 2);
+ 	h.patch = PlotPatch(ERROR, ESTD, FREQ, 1, HeadFree.N{1,1}, 'r', [0.4 0.4 0.6], 0.5, 2);
  	
     ax1.XTick = unique(sort([min(ax1.XLim) ax1.XTick]));
     vel = round(AMP*2*pi*ax1.XTick);

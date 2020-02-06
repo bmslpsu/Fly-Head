@@ -4,7 +4,8 @@ function [FIG] = MakeFig_SOS_HeadFixed_pat_wing_Time()
 %       -
 %   OUTPUTS:
 %       FIG     :   figure handle
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 root = 'H:\DATA\Rigid_Data\';
 
 [FILE,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -46,7 +47,7 @@ ax.L.YColor = 'k';
 ax.L.FontSize = 8;
 ax.L.YLabel.String = '\Delta WBA (V)';
 ax.L.YLabel.FontSize = 8;
-ax.L.YLim = 2*[-1 1];
+ax.L.YLim = 6*[-1 1];
 ax.L.XLabel.FontSize = 8;
 ax.L.XLim = ax.R.XLim;
 ax.L.Color = 'none';
@@ -54,6 +55,6 @@ ax.L.Position = ax.R.Position;
 ax.L.XColor = 'none';
 
 PlotPatch(HeadFree.GRAND{1,catIdx}.Mean{2}{6}(:,xIdx),HeadFree.GRAND{1,catIdx}.STD{2}{6}(:,xIdx),...
-    HeadFree.GRAND{1,catIdx}.Mean{2}{5},1, HeadFree.N{1,1}, 'r', [0.4 0.4 0.6], 0.5, 2);
+    HeadFree.GRAND{1,catIdx}.Mean{2}{5},1, HeadFree.N{1,1}, 'r', [0.4 0.4 0.6], 0.5, 1);
 
 end

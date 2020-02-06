@@ -1,5 +1,5 @@
-function [FIG] = MakeFig_SOS_HeadFree_pat2head_ComplexGain()
-%% MakeFig_SOS_HeadFree_pat2head_ComplexGain:
+function [FIG] = MakeFig_SOS_HeadFree_pat2head_ComplexGain_NEW()
+%% MakeFig_SOS_HeadFree_pat2head_ComplexGain_NEW:
 %   INPUTS:
 %       -
 %   OUTPUTS:
@@ -24,7 +24,7 @@ filename = 'SOS_HeadFree_pat2head_ComplexGain';
 
 Freq = HeadFree.TRIAL{1}{1,catIdx}.IOFreq;
 nFreq = length(Freq);
-fLabel = cellfun(@(x) [num2str(x) ' Hz'], num2cell(Freq),'UniformOutput',false);
+fLabel = string(Freq) + " Hz";
 
 pp = 1;
 for kk = 1:HeadFree.N{1,1}
@@ -37,31 +37,32 @@ end
 Real        = real(CmplxGain);
 Imag        = imag(CmplxGain);
 
-% for jj = 1:nFreq
-%     for kk = 1:size(Real,1)
-%         if (jj==5) && ( Real(kk,jj)<0 && Imag(kk,jj)>0 )
-%             Imag(kk,jj) = -Imag(kk,jj);
-%             Real(kk,jj) = -Real(kk,jj);
-%         end
-%     end
-% end
+for jj = 1:nFreq
+    for kk = 1:size(Real,1)
+        if jj~=1 && ( Real(kk,jj)<0 && Imag(kk,jj)>0 )
+            Imag(kk,jj) = -Imag(kk,jj);
+            Real(kk,jj) = -Real(kk,jj);
+        end
+    end
+end
 
 CmplxGain   = Real + 1i*Imag;
 
 Gain        = abs(CmplxGain);
 Phase       = rad2deg(angle((CmplxGain)));
 
-GAIN        = mean(Gain,1);
-PHASE       = rad2deg(circ_mean(deg2rad(Phase),[],1));
-GAIN_STD    = std(Gain,[],1);
-PHASE_STD   = std(Phase,[],1);
-
 REAL        = mean(Real,1);
 IMAG        = mean(Imag,1);
 
-% CMPLXGAIN   = REAL + 1i*IMAG;
-% GAIN        = abs(CMPLXGAIN);
-% PHASE       = rad2deg(angle((CMPLXGAIN)));
+GAIN_Mean 	= mean(Gain,1);
+PHASE_Mean 	= rad2deg(circ_mean(deg2rad(Phase),[],1));
+GAIN_STD    = std(Gain,[],1);
+[~,PHASE_STD] = circ_std(deg2rad(Phase),[],[],1);
+PHASE_STD = rad2deg(PHASE_STD);
+
+CMPLXGAIN   = REAL + 1i*IMAG;
+GAIN_Mean  	= abs(CMPLXGAIN);
+PHASE_Mean 	= rad2deg(angle((CMPLXGAIN)));
 
 cList = hsv(nFreq);
 
@@ -81,38 +82,35 @@ ax.FontSize = 8;
 ax.XLabel.FontSize = 8;
 ax.YLabel.FontSize = 8;
 
-% ax.XTick = '';
-% ax.YTick = '';
-
-for jj = 1
+for jj = 1:nFreq
     h.trial = scatter(Real(:,jj), Imag(:,jj), 15, 'o','MarkerEdgeColor','k',...
       'MarkerFaceColor',cList(jj,:), 'MarkerFaceAlpha', 0.65, 'LineWidth', 0.5);
 end
 
-% for jj = 1:nFreq
-%   	h.rr = plot([0 REAL(jj)],[0 IMAG(jj)],'Color',[0 0 0 1],'LineWidth',1);
-%     
-%     rSTD = PolarSTD(Real(:,jj),Imag(:,jj),[REAL(jj) IMAG(jj)]);
-%     
-% 	[h.std] = draw_ellipse([REAL(jj) IMAG(jj)], 3*rSTD, 0.5, 0, 90 - PHASE(jj), cList(jj,:)); hold on
-%     h.std{1}.FaceAlpha = 0.4;
-%     for kk = 3:length(h.std)
-%        delete(h.std{kk})
-%     end
-%     h.std{2}.LineWidth = 1;
-%     
-%     h.leg = scatter(REAL(jj),IMAG(jj),1,'o','MarkerEdgeColor','k','MarkerFaceColor',cList(jj,:),...
-%         'MarkerFaceAlpha',1,'LineWidth',1.5);
-%     
-%     h.grand = scatter(REAL(jj),IMAG(jj),10,'o','MarkerEdgeColor','k','MarkerFaceColor','k',...
-%         'MarkerFaceAlpha',1,'LineWidth',1.5);
-% 
-%     hh(jj) = h.leg;
-% end
-% leg = legend(hh,num2strcell(Freq));
-% leg.Title.String = 'Frequency (Hz)';
-% leg.Location = 'northwest';
-% legend boxoff
+for jj = 1:nFreq
+  	h.rr = plot([0 REAL(jj)],[0 IMAG(jj)],'Color',[0 0 0 1],'LineWidth',1);
+    
+    rSTD = PolarSTD(Real(:,jj),Imag(:,jj),[REAL(jj) IMAG(jj)]);
+    
+	[h.std] = draw_ellipse([REAL(jj) IMAG(jj)], 3*rSTD, 0.5, 0, 90 - PHASE_Mean(jj), cList(jj,:)); hold on
+    h.std{1}.FaceAlpha = 0.4;
+    for kk = 3:length(h.std)
+       delete(h.std{kk})
+    end
+    h.std{2}.LineWidth = 1;
+    
+    h.leg = scatter(REAL(jj),IMAG(jj),1,'o','MarkerEdgeColor','k','MarkerFaceColor',cList(jj,:),...
+        'MarkerFaceAlpha',1,'LineWidth',1.5);
+    
+    h.grand = scatter(REAL(jj),IMAG(jj),10,'o','MarkerEdgeColor','k','MarkerFaceColor','k',...
+        'MarkerFaceAlpha',1,'LineWidth',1.5);
+
+    hh(jj) = h.leg;
+end
+leg = legend(hh,string(Freq));
+leg.Title.String = 'Frequency (Hz)';
+leg.Location = 'northwest';
+legend boxoff
 
 %% BODE
 FIG = figure (2); clf
@@ -132,15 +130,13 @@ ax1 = subplot(2,1,1) ; hold on
  	ax1.YLabel.String = ['Gain (' char(176) '/' char(176) ')'];
     ax1.YLabel.FontSize = ax1.XLabel.FontSize;
     
-%     errorbar(Freq,GAIN,GAIN_STD,'-ob','LineWidth',1);
-
   	[h.std,h.gain] = PlotPatch(HeadFree.GRAND{1,catIdx}.Mean{2}{5}(:,xIdx), HeadFree.GRAND{1,catIdx}.STD{2}{5}(:,xIdx), ...
         HeadFree.GRAND{1,catIdx}.Mean{2}{4}, 1, HeadFree.N{1,1}, 'k', [0.4 0.4 0.6], 0.5, 1);
     h.std.EdgeColor = 'none';
  	h.gain.Marker = '.';
     h.gain.MarkerSize = 20;
     
-	[h.std,h.gain] = PlotPatch(GAIN, GAIN_STD, Freq, 1, HeadFree.N{1,1}, 'g', [0.4 0.4 0.6], 0.5, 1);
+	[h.std,h.gain] = PlotPatch(GAIN_Mean, GAIN_STD, Freq, 1, HeadFree.N{1,1}, 'g', [0.4 0.4 0.6], 0.5, 1);
     h.std.EdgeColor = 'none';
 	h.gain.Marker = '.';
     h.gain.MarkerSize = 20;
@@ -148,22 +144,20 @@ ax1 = subplot(2,1,1) ; hold on
 ax2 = subplot(2,1,2) ; hold on
     ax2.FontSize = ax1.FontSize;
     ax2.XLim = ax1.XLim;
-    ax2.YLim = [-300 60];
+    ax2.YLim = [-300 120];
    	ax2.XLabel.String = 'Frequency (Hz)';
     ax2.XLabel.FontSize = 14;
     ax2.XLabel.Color = 'k';
  	ax2.YLabel.String = ['Phase (' char(176) ')'];
     ax2.YLabel.FontSize = ax1.XLabel.FontSize;
-    ax2.YTick = -300:60:60;
-    
-%     errorbar(Freq,PHASE,PHASE_STD,'-ob','LineWidth',3);
-    
+    ax2.YTick = -300:60:120;
+        
  	[~,h.phase1] = PlotPatch(rad2deg(HeadFree.GRAND{1,catIdx}.CircMean{7}{6}(:,xIdx)), rad2deg(HeadFree.GRAND{1,catIdx}.CircSTD{7}{6}(:,xIdx)), ...
-        HeadFree.GRAND{1,catIdx}.Mean{2}{4}, 1, HeadFree.N{1,1}, 'k', [0.4 0.4 0.6], 0.5, 2);
+        HeadFree.GRAND{1,catIdx}.Mean{2}{4}, 1, 1, 'k', [0.4 0.4 0.6], 0.5, 2);
     h.phase1.Marker = '.';
     h.phase1.MarkerSize = 20;
     
-	[~,h.phase2] = PlotPatch(PHASE, PHASE_STD, Freq, 1, HeadFree.N{1,1}, 'g', [0.4 0.4 0.6], 0.5, 2);
+	[~,h.phase2] = PlotPatch(PHASE_Mean, PHASE_STD, Freq, 1, 1, 'g', [0.4 0.4 0.6], 0.5, 2);
     h.phase2.Marker = '.';
     h.phase2.MarkerSize = 20;
     

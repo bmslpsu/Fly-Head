@@ -44,6 +44,7 @@ classdef Fly
         IOFREQ        	= [];       % complex frequency domain data at IO frequencies
         WBF             = [];       % 
       	WBA             = [];       % 
+        pxx             = [];       % 
     end
     
     methods
@@ -52,7 +53,7 @@ classdef Fly
             obj.X = data(:); % store data
             obj.Time = time(:); % store time
             
-            if isempty(tt)
+            if (nargin<5) || isempty(tt)
                 tt = obj.Time;
             end
             
@@ -103,6 +104,8 @@ classdef Fly
                 [~,obj.Mag(:,kk),obj.Phase(:,kk), obj.FREQ(:,kk)] = ...
                     FFT(obj.Time,obj.X(:,kk)); % transform data into frequency domain
             end
+            
+            % [obj.pxx,~] = pwelch(obj.X(:,1), round(obj.n/2), [], obj.Fv, 100);
             
             % Input-Output frequency data     
             if ~isempty(IOFreq)

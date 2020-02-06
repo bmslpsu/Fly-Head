@@ -4,7 +4,7 @@ function [FIG] = MakeFig_Sine_HeadFree_ComplexGain()
 %       -
 %   OUTPUTS:
 %       -
-%---------------------------------------------------------------------------------------------------------------------------------
+%
 root = 'H:\DATA\Rigid_Data\';
 
 [FILES,~] = uigetfile({'*.mat', 'DAQ-files'},...
@@ -20,10 +20,10 @@ end
 
 HeadFree = cell(nAmp,1);
 for ww = 1:nAmp
-    HeadFree{ww} = load(fullfile(root,FILES{ww}),'TRIAL','GRAND','U','N');
+    HeadFree{ww} = load(fullfile(root,FILES{ww}),'TRIAL','GRAND','U','N','T');
 end
+
 %% Complex Gain Calculations
-%---------------------------------------------------------------------------------------------------------------------------------
 clearvars -except nAmp Amp HeadFree
 
 filename = 'Sine_HeadFree_ComplexGain';
@@ -74,7 +74,6 @@ for ww = 1:nAmp
                     R = -R;
                 end
                 
-                
                 Real{ww}(pp,jj) = R;
                 Imag{ww}(pp,jj) = I;
                 
@@ -93,10 +92,28 @@ CmplxGain = cellfun(@(x,y) (x + 1i*y), Real, Imag, 'UniformOutput', false);
 Gain = cellfun(@(x) abs(x), CmplxGain, 'UniformOutput', false);
 Phase = cellfun(@(x) rad2deg(angle(x)), CmplxGain, 'UniformOutput', false);
 
+for ww = 1:nAmp
+   for jj = 1:nFreq
+       phase = Phase{ww}(:,jj);
+       if (jj==5) && (Amp(ww)==18.75)
+           cnd = phase>0;
+           Phase{ww}(cnd,jj) = phase(cnd) - 180;
+       end
+   end    
+end
+
 GAIN = cellfun(@(x) nanmean(x,1), Gain, 'UniformOutput', false);
-PHASE = cellfun(@(x) nanmean(x,1), Phase, 'UniformOutput', false);
 GAIN_STD = cellfun(@(x) nanstd(x,[],1), Gain, 'UniformOutput', false);
-PHASE_STD = cellfun(@(x) nanstd(x,[],1), Phase, 'UniformOutput', false);
+PHASE = cell(nAmp,1);
+PHASE_STD = cell(nAmp,1);
+for ww = 1:nAmp
+   for jj = 1:nFreq
+       phase = deg2rad(Phase{ww}(:,jj));
+       [PHASE{ww}(:,jj)] = rad2deg(circ_mean(phase(~isnan(phase)),[],1));
+       [~,temp] = circ_std(phase(~isnan(phase)),[],[],1);
+       PHASE_STD{ww}(:,jj) = rad2deg(temp);
+   end    
+end
 
 GAIN = cat(1,GAIN{:});
 PHASE = cat(1,PHASE{:});
@@ -139,18 +156,17 @@ PHASE_NORM          = nanmean(Phase_Norm,1);
 GAIN_NORM_STD       = nanstd(Gain_Norm,[],1);
 PHASE_NORM_STD      = nanstd(Phase_Norm,[],1);
 
-gains = 0.05:0.05:0.1;
+% gains = 0.05:0.05:0.1;
 gains = 0.2:0.2:1;
 
 %% Complex Gain: one amplitude
-%---------------------------------------------------------------------------------------------------------------------------------
 FIG = figure (10); clf
 FIG.Color = 'w';
 FIG.Units = 'inches';
 FIG.Position = [1 1 4 4];
 movegui(FIG,'center')
 FIG.Name = filename;
-amp = 3;
+amp = 1;
 
 [ax,h] = ComplexAxes(gains);
 % h.circle(end).Color = 'r';
@@ -195,7 +211,6 @@ leg.Position = leg.Position + [-0.2 0 0 0];
 legend boxoff
 
 %% Complex Gain: Normalized Amplitude
-%---------------------------------------------------------------------------------------------------------------------------------
 FIG = figure (1); clf
 FIG.Color = 'w';
 FIG.Position = [100 100 700 700];
@@ -244,7 +259,6 @@ leg.Location = 'northwest';
 legend boxoff
 
 %% Complex Gain: All Amplitude
-%---------------------------------------------------------------------------------------------------------------------------------
 FIG = figure (2); clf
 FIG.Color = 'w';
 FIG.Position = [100 100 1400 800];
@@ -299,7 +313,6 @@ for ww = 1:nAmp
 end
 
 %% Complex Gain: Normalized Bode Plot
-%---------------------------------------------------------------------------------------------------------------------------------
 FIG = figure (3); clf
 FIG.Color = 'w';
 FIG.Position = [100 100 800 700];
@@ -351,127 +364,115 @@ ax3 = axes;
     ax3.XLabel.String = ['Peak Velocity (' char(176) '/s)'];
     ax3.XLabel.FontSize = ax1.YLabel.FontSize;
 
-%% Complex Gain: All Bode Plot
-%---------------------------------------------------------------------------------------------------------------------------------
+%% Complex Gain: All on One Bode Plot
 FIG = figure (4); clf
 FIG.Color = 'w';
-FIG.Position = [100 100 1200 800];
+FIG.Units = 'inches';
+FIG.Position = [2 2 4 5];
 FIG.Name = 'All Bode';
 movegui(FIG,'center')
 hold on
+clear h ax
+cmap = hsv(nAmp);
 for ww = 1:nAmp
-    ax1 = subplot(2,nAmp,ww) ; hold on
-        ax1.FontSize = 12;
-        ax1.XLim = [0 12.5];
-        ax1.YLim = [0 1.0];
-        ax1.XLabel.FontSize = 14;
-        ax1.XLabel.Color = 'w';
-        ax1.YLabel.String = ['Gain (' char(176) '/' char(176) ')'];
-        ax1.YLabel.FontSize = ax1.XLabel.FontSize;
-        ax1.XTick = Freq;
-        ax1.XTickLabel = '';
+    ax(1) = subplot(2,1,1) ; hold on
+        ax(1).FontSize = 8;
+        ax(1).XLim = [0 12.5];
+        ax(1).YLim = [0 1.0];
+        ax(1).XLabel.FontSize = 10;
+        ax(1).XLabel.Color = 'w';
+        ax(1).YLabel.String = ['Gain (' char(176) '/' char(176) ')'];
+        ax(1).YLabel.FontSize = ax(1).XLabel.FontSize;
+        ax(1).XTick = Freq;
+        ax(1).XTickLabel = '';
 
-        errorbar(Freq,GAIN(ww,:),2*GAIN_STD(ww,:),'-b','LineWidth',4)
+        [~,h.gain(ww)] = PlotPatch(GAIN(ww,:),GAIN_STD(ww,:),Freq,1,HeadFree{ww}.N{1,1},cmap(ww,:),[0.4 0.4 0.6],0.2,2);
+     	h.gain(ww).Marker = '.';
+        h.gain(ww).MarkerSize = 15;
 
-    ax2 = subplot(2,nAmp,ww+nAmp) ; hold on
-        ax2.FontSize = ax1.FontSize;
-        ax2.XLim = ax1.XLim;
-        ax2.YLim = [-180 180];
-        ax2.XLabel.String = 'Frequency (Hz)';
-        ax2.XLabel.FontSize = 14;
-        ax2.XLabel.Color = 'k';
-        ax2.YLabel.String = ['Phase (' char(176) ')'];
-        ax2.YLabel.FontSize = ax1.XLabel.FontSize;
-        ax2.XTick = ax1.XTick;
-        ax2.YTick = -180:60:180;
+    ax(2) = subplot(2,1,2) ; hold on
+        ax(2).FontSize = ax(1).FontSize;
+        ax(2).XLim = ax(1).XLim;
+        ax(2).YLim = [-180 180];
+        ax(2).XLabel.String = 'Frequency (Hz)';
+        ax(2).XLabel.FontSize = 10;
+        ax(2).XLabel.Color = 'k';
+        ax(2).YLabel.String = ['Phase (' char(176) ')'];
+        ax(2).YLabel.FontSize = ax(1).XLabel.FontSize;
+        ax(2).XTick = ax(1).XTick;
+        ax(2).YTick = -180:60:180;
 
-        errorbar(Freq,PHASE(ww,:),2*PHASE_STD(ww,:),'-b','LineWidth',4)
+        [~,h.phase(ww)] = PlotPatch(PHASE(ww,:),PHASE_STD(ww,:),Freq,1,HeadFree{ww}.N{1,1},cmap(ww,:),[0.4 0.4 0.6],0.2,2);
+        h.phase(ww).Marker = '.';
+        h.phase(ww).MarkerSize = 15;
+        plot([0 12.5],[0 0],'--k','LineWidth',1)
+end
+leg = legend(h.gain,string(Amp));
+leg.Box = 'off';
+leg.Title.String = 'Amplitude (°)';
+
+%% Complex Gain: All Bode Plot
+FIG = figure (5); clf
+FIG.Color = 'w';
+FIG.Units = 'inches';
+FIG.Position = [2 2 12 5];
+FIG.Name = 'All Bode';
+movegui(FIG,'center')
+hold on
+clear h ax
+cmap = hsv(nAmp);
+for ww = 1:nAmp
+    ax(1) = subplot(2,nAmp,ww) ; hold on
+        ax(1).FontSize = 8;
+        ax(1).XLim = [0 12.5];
+        ax(1).YLim = [0 1.0];
+        ax(1).XLabel.FontSize = 10;
+        ax(1).XLabel.Color = 'w';
+        ax(1).YLabel.String = ['Gain (' char(176) '/' char(176) ')'];
+        ax(1).YLabel.FontSize = ax(1).XLabel.FontSize;
+        ax(1).XTick = Freq;
+        ax(1).XTickLabel = '';
+
+        [~,h.gain] = PlotPatch(GAIN(ww,:),GAIN_STD(ww,:),Freq,1,1,cmap(ww,:),[0.4 0.4 0.6],0.2,2);
+     	h.gain.Marker = '.';
+        h.gain.MarkerSize = 15;
+
+    ax(2) = subplot(2,nAmp,ww+nAmp) ; hold on
+        ax(2).FontSize = ax(1).FontSize;
+        ax(2).XLim = ax(1).XLim;
+        ax(2).YLim = [-180 180];
+        ax(2).XLabel.String = 'Frequency (Hz)';
+        ax(2).XLabel.FontSize = 10;
+        ax(2).XLabel.Color = 'k';
+        ax(2).YLabel.String = ['Phase (' char(176) ')'];
+        ax(2).YLabel.FontSize = ax(1).XLabel.FontSize;
+        ax(2).XTick = ax(1).XTick;
+        ax(2).YTick = -180:60:180;
+
+        [~,h.phase] = PlotPatch(PHASE(ww,:),PHASE_STD(ww,:),Freq,1,1,cmap(ww,:),[0.4 0.4 0.6],0.2,2);
+        h.phase.Marker = '.';
+        h.phase.MarkerSize = 15;
         plot([0 12.5],[0 0],'--g','LineWidth',1)
 
-	ax3 = axes;
-        ax3.Position = ax1.Position + [0 -0.00 0 0];
-        ax3.FontSize = ax1.FontSize ;
-        ax3.Color = 'none';
-        ax3.YAxisLocation = 'right';
-        ax3.YAxis.Color = 'none';
-        ax3.XAxisLocation = 'top';
-        ax3.XLim = ax1.XLim;
-        ax3.XTick = ax1.XTick;
+	ax(3) = axes;
+        ax(3).Position = ax(1).Position + [0 -0.00 0 0];
+        ax(3).FontSize = ax(1).FontSize ;
+        ax(3).Color = 'none';
+        ax(3).YAxisLocation = 'right';
+        ax(3).YAxis.Color = 'none';
+        ax(3).XAxisLocation = 'top';
+        ax(3).XLim = ax(1).XLim;
+        ax(3).XTick = ax(1).XTick;
 
         velLabel = cellfun(@(x) num2str(x), num2cell(Vel(ww,:)),'UniformOutput',false);
 
-        ax3.XTickLabels = velLabel;
-        ax3.XLabel.String = ['Peak Velocity (' char(176) '/s)'];
-        ax3.XLabel.FontSize = ax1.YLabel.FontSize;
+        ax(3).XTickLabels = velLabel;
+        ax(3).XLabel.String = ['Peak Velocity (' char(176) '/s)'];
+        ax(3).XLabel.FontSize = ax(1).YLabel.FontSize;
+        % set(ax,'XScale','log')
 end
 
-%% Complex Gain: BODE - one amplitude
-%---------------------------------------------------------------------------------------------------------------------------------
-FIG = figure (11); clf
-FIG.Color = 'w';
-FIG.Units = 'inches';
-FIG.Position = [1 1 4 4];
-FIG.Name = 'BODE';
-movegui(FIG,'center')
-hold on
-
-amp = 3;
-ax1 = subplot(2,1,1) ; hold on
-    ax1.FontSize = 8;
-    ax1.XLim = [0 12.5];
-    ax1.YLim = [0 1.0];
-    ax1.XLabel.FontSize = 8;
-    ax1.XLabel.Color = 'w';
-    ax1.YLabel.String = ['Gain (' char(176) '/' char(176) ')'];
-    ax1.YLabel.FontSize = ax1.XLabel.FontSize;
-    ax1.XTick = Freq;
-    ax1.XTickLabel = '';
-
-%     errorbar(Freq,GAIN(amp,:),2*GAIN_STD(amp,:),'-b','LineWidth',2)
-    
-	[~,h.gain] = PlotPatch(GAIN(amp,:), GAIN_STD(amp,:), Freq, 3, HeadFree{amp}.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
-    h.gain.Marker = '.';
-    h.gain.MarkerSize = 20;
-    
-ax2 = subplot(2,1,2) ; hold on
-    ax2.FontSize = ax1.FontSize;
-    ax2.XLim = ax1.XLim;
-    ax2.YLim = [-180 180];
-    ax2.XLabel.String = 'Frequency (Hz)';
-    ax2.XLabel.FontSize = 8;
-    ax2.XLabel.Color = 'k';
-    ax2.YLabel.String = ['Phase (' char(176) ')'];
-    ax2.YLabel.FontSize = ax1.XLabel.FontSize;
-    ax2.XTick = ax1.XTick;
-    ax2.YTick = -180:60:180;
-
-%     errorbar(Freq,PHASE(amp,:),2*PHASE_STD(amp,:),'-b','LineWidth',2)
-    
-	[~,h.gain] = PlotPatch(PHASE(amp,:), PHASE_STD(amp,:), Freq, 3, HeadFree{amp}.N{1,1}, 'b', [0.4 0.4 0.6], 0.5, 2);
-    h.gain.Marker = '.';
-    h.gain.MarkerSize = 20;
-    
-    plot([0 12.5],[0 0],'--k','LineWidth',1)
-
-ax3 = axes;
-    ax3.Position = ax1.Position + [0 -0.00 0 0];
-    ax3.FontSize = ax1.FontSize ;
-    ax3.Color = 'none';
-    ax3.YAxisLocation = 'right';
-    ax3.YAxis.Color = 'none';
-    ax3.XAxisLocation = 'top';
-    ax3.XLim = ax1.XLim;
-    ax3.XTick = ax1.XTick;
-
-    velLabel = cellfun(@(x) num2str(x), num2cell(Vel(ww,:)),'UniformOutput',false);
-
-    ax3.XTickLabels = velLabel;
-    ax3.XLabel.String = ['Peak Velocity (' char(176) '/s)'];
-    ax3.XLabel.FontSize = ax1.YLabel.FontSize;
-
-
 %% Gain & Phase vs Amplitude
-%---------------------------------------------------------------------------------------------------------------------------------
 FIG = figure (5); clf
 FIG.Color = 'w';
 FIG.Position = [100 100 700 700];
@@ -516,7 +517,6 @@ leg.Title.String = 'Frequency (Hz)';
 legend boxoff
 
 %% Complex Gain: Amplitude Change
-%---------------------------------------------------------------------------------------------------------------------------------
 FIG = figure (6); clf
 FIG.Color = 'w';
 FIG.Units = 'inches';
