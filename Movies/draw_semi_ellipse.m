@@ -11,7 +11,7 @@ function [h,top,bot] = draw_semi_ellipse(center,L,ratio,ecc,ang,C)
 %       h           : handles for ellipse figure data
 %       top         : top point of ellipse
 %       bottom    	: bottom point of ellipse
-%---------------------------------------------------------------------------------------------------------------------------------
+
 % Example Input %
 % center = [0,0];
 % L = 1;
@@ -19,7 +19,7 @@ function [h,top,bot] = draw_semi_ellipse(center,L,ratio,ecc,ang,C)
 % ecc = 0.5;
 % ang = 45;
 % C = [1 0 0];
-%---------------------------------------------------------------------------------------------------------------------------------
+
 % Top point
 top(1) = center(1) + 2*L*(1-ratio)*sind(ang);
 top(2) = center(2) + 2*L*(1-ratio)*cosd(ang);

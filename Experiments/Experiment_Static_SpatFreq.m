@@ -5,16 +5,15 @@ function [] = Experiment_Static_SpatFreq(Fn)
 %           2. User must maunally set the root folder in the fucntion
 %   INPUTS:
 %       Fn      :  	fly number
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 daqreset
 imaqreset
 %% Set Directories & Controller Parameters %%
-%---------------------------------------------------------------------------------------------------------------------------------
 % rootdir = ['D:\EXPERIMENTS\Experiment_Asymmetry_Control_Verification\LowContrast\' num2str(spatFreq) '\'];
 rootdir = 'D:\EXPERIMENTS\Experiment_Static_SpatFreq\';
 viddir = [rootdir 'Vid\'];
 %% EXPERIMENTAL PARAMETERS %%
-%---------------------------------------------------------------------------------------------------------------------------------
 n.tracktime = 10;  	% seconds for each EXPERIMENT
 n.resttime = 2;    	% seconds for each REST
 n.pause = 0.2;      % pause between commands
@@ -22,7 +21,6 @@ n.AI = 6;        	% # of analog input channels
 n.rep = 6;          % number of cycles through spatial frequencies for each fly
 
 %% SETUP DATA AQUISITION: NiDAQ (session mode)
-%---------------------------------------------------------------------------------------------------------------------------------
 % Find DAQ
 devices = daq.getDevices;
 s = daq.createSession('ni');
@@ -55,7 +53,6 @@ TriggerSignal = (square(2*pi*FrameRate*t,90) + 1)';
 
 disp('DAQ Setup Done...')
 %% SETUP CAMERA INPUT %%
-%---------------------------------------------------------------------------------------------------------------------------------
 adaptorName = 'gige';
 deviceID = 1;
 vidFormat = 'Mono8';
@@ -89,7 +86,6 @@ set(srcObj1(1),'TriggerSelector','FrameStart');
 
 disp('VID Setup Done...')
 %% Set variable to control pattern spatial frequency %%
-%---------------------------------------------------------------------------------------------------------------------------------
 freq = 7.5*[0 3 4 8 inf nan]';  	% [deg] spatial frequencies
 n.freq = length(freq);              % # of velocities
 ypos = [1 4 5 7 12 1];            	% pattern y-pos corresponding to spatial frequencies
@@ -110,7 +106,6 @@ for kk = 1:length(ypos)
 end
 
 %% START EXPERIMENT AND DATA COLLECTION %%
-%---------------------------------------------------------------------------------------------------------------------------------
 tic
 for kk = 1:n.rep*n.freq
     disp('-------------------------------------------------------')
@@ -130,7 +125,7 @@ for kk = 1:n.rep*n.freq
     Panel_com('start');                                         % start closed-loop tracking
     pause(n.resttime)
     Panel_com('stop');
-    %-----------------------------------------------------------------------------------------------------------------------------
+    
     % SETUP EXPERIMENT
     pause(1)
     disp(['Spatial Frequency: ' num2str(Freq_all(kk)) ' Hz'])
@@ -145,14 +140,14 @@ for kk = 1:n.rep*n.freq
     Panel_com('set_funcY_freq', 50);pause(n.pause);                             % default Y update rate
     Panel_com('set_mode', [0,0]);pause(n.pause)                                 % 0=open,1=closed,2=fgen,3=vmode,4=pmode
     Panel_com('send_gain_bias',[0,0,0,0]);pause(n.pause)                        % no gain
-    %-----------------------------------------------------------------------------------------------------------------------------
+    
     % RUN EXPERIMENT AND COLLECT DATA
     queueOutputData(s,TriggerSignal) % set trigger AO signal
     Panel_com('start')  % run trial
     [data,t_p] = s.startForeground;
 	stop(vid) % stop video buffer
     Panel_com('stop')
-    %-----------------------------------------------------------------------------------------------------------------------------
+    
     % GET DATA AND SAVE TO .mat FILE
 	[vidData,t_v] = getdata(vid, vid.FramesAcquired); % get video data
       
@@ -172,10 +167,10 @@ for kk = 1:n.rep*n.freq
     filename = ['Fly_' num2str(Fn) '_Trial_' num2str(kk) '_SpatFreq_' num2str(Freq_all(kk)) '_Vel_' num2str(0) '.mat'];
     save(fullfile(rootdir,filename),'-v7.3','data','t_p');
     save(fullfile(viddir,filename),'-v7.3','vidData','t_v');
-    %-----------------------------------------------------------------------------------------------------------------------------
+    
 end
 toc
-%---------------------------------------------------------------------------------------------------------------------------------
+
 disp('Done')
 daqreset
 imaqreset

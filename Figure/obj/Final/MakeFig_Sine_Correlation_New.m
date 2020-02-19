@@ -1,5 +1,5 @@
-function [] = MakeFig_SOS_Correlation()
-%% MakeFig_SOS_Correlation:
+function [] = MakeFig_Sine_Correlation_New()
+%% MakeFig_Sine_Correlation_New:
 
 root = 'H:\DATA\Rigid_Data\';
 
@@ -69,6 +69,7 @@ movegui(fig,'center')
 
 ax = gobjects(nAmp,nFreq);
 pp = 1;
+R = nan(nAmp,nFreq);
 for ww = 1:nAmp
     for jj = 1:nFreq
      	xData = HEAD{jj,ww}(:);
@@ -76,17 +77,28 @@ for ww = 1:nAmp
         
     	% Calculate linear best fit
         [r,m,b] = regression(xData,yData,'one');
+        R(ww,jj) = r;
         xFit = linspace(-20,20,4000);
         yFit = m*xFit + b;
         
         ax(pp) = subplot(nAmp,nFreq,pp) ; hold on        
-            xlabel({'Head (°)','test'})
+            xlabel({'Head (°)'})
             ylabel('Wing (V)');
             [h] = scatplot(xData,yData);
             delete(h.cb)
 
         plot(xFit,yFit,'r','LineWidth',2)
-        title(['r = ' num2str(r)])
+        % title(['r = ' num2str(r)])
+        
+        if ww == 1
+            title([num2str(HeadFree{ww}.U{1,3}{1}(jj)) ' Hz'])
+        end
+        
+        if jj ==1
+            ylabel({[Amp(ww) '°'], ax(pp).YLabel.String})
+        end
+        
+        text(mean(ax(pp).XLim),mean(ax(pp).YLim),['r =' num2str(r)]);
         
         pp =  pp + 1;
     end
@@ -101,6 +113,7 @@ movegui(fig,'center')
 
 ax = gobjects(nAmp,nFreq);
 pp = 1;
+R = nan(nAmp,nFreq);
 for ww = 1:nAmp
     for jj = 1:nFreq
      	xData = STIM{jj,ww}(:);
@@ -108,17 +121,27 @@ for ww = 1:nAmp
         
     	% Calculate linear best fit
         [r,m,b] = regression(xData,yData,'one');
+        R(ww,jj) = r;
         xFit = linspace(-20,20,4000);
         yFit = m*xFit + b;
         
         ax(pp) = subplot(nAmp,nFreq,pp) ; hold on        
             xlabel('Stimulus (°)')
-            ylabel('Head (°)');
+            ylabel('Head (°)')
             [h] = scatplot(xData,yData);
             delete(h.cb)
 
         plot(xFit,yFit,'r','LineWidth',2)
-        title(['r = ' num2str(r)])
+        
+        if ww == 1
+            title([num2str(HeadFree{ww}.U{1,3}{1}(jj)) ' Hz'])
+        end
+        
+        if jj ==1
+            ylabel({[Amp(ww) '°'], ax(pp).YLabel.String})
+        end
+        
+        text(mean(ax(pp).XLim),mean(ax(pp).YLim),['r =' num2str(r)]);
         
         pp =  pp + 1;
     end

@@ -83,6 +83,11 @@ for kk = 1:N{1,end}
     pat.Pos 	= panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]  
     pat.Pos  	= FitPanel(pat.Pos,pat.Time,tt); % fit panel data
  	Pat      	= Fly(pat.Pos,Head.Time,0.4*Head.Fs,IOFreq,[]); % pattern object
+    
+%     close all
+%     clc
+    
+	% test = welch(Pat.X(:,1), Pat.Time, 4, 0.8, true);
 	
  	% Calculate error between head & pattern
     head.Err = Pat.X(:,1) - Head.X(:,1); % calculate position error between head & pattern [deg]
