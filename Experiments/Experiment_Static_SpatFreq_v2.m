@@ -1,14 +1,16 @@
 function [] = Experiment_Static_SpatFreq_v2(Fn)
 %% Experiment_Static_SpatFreq_v2: runs an experiment using LED arena and fly panel controller
-% Written for Panel Controller v3 and NiDAQ seesion mode
+%
+%  Written for Panel Controller v3 and NiDAQ seesion mode
+%
 %   INPUTS:
-%       Fn          :  	fly number
+%       Fn      :  	fly number
 %
 
 daqreset
 imaqreset
 %% Set directories & experimental paramters
-root = 'C:\BC\Rigid_data\Experiment_Static_v2';
+root = 'C:\BC\Rigid_data\Experiment_Static_Wave';
 
 % EXPERIMENTAL PARAMETERS
 n_tracktime = 10 + 1;       % length(func)/fps; seconds for each EXPERIMENT
@@ -58,6 +60,9 @@ end
 
 %% EXPERIMENT LOOP
 disp('Start Experiment:')
+disp('Wavelengths:')
+disp(Freq_all')
+disp('--------------------------------------------------')
 for ii = 1:n_trial   
     disp('Trial')
     disp(num2str(ii));  % print counter to command line
@@ -73,10 +78,12 @@ for ii = 1:n_trial
     
     % EXPERIMENT SETUP %
     disp('Play Stimulus: ')
+    disp(['Wavelength = ' num2str(Freq_all(ii))])
+    
     if isnan(Freq_all(kk))
-        Panel_com('set_pattern_id', 1);pause(n.pause)	% set pattern
+        Panel_com('set_pattern_id', 1);pause(n_pause)	% set pattern
     else
-        Panel_com('set_pattern_id', 2);pause(n.pause)	% set pattern
+        Panel_com('set_pattern_id', 2);pause(n_pause)	% set pattern
     end
     
     Panel_com('set_pattern_id', patID); pause(n_pause)           	% set pattern
@@ -108,7 +115,7 @@ for ii = 1:n_trial
     disp('Saving...')
     disp('----------------------------------------------------------------------')
     
-    fname = ['Fly_' num2str(Fn) '_Trial_' num2str(ii) '_SpatFreq_' num2str(Freq_all(ii)) ...
+    fname = ['Fly_' num2str(Fn) '_Trial_' num2str(ii) '_Wave_' num2str(Freq_all(ii)) ...
         '_Vel_' num2str(0) '.mat'];
     
     save(fullfile(root,fname),'-v7.3','data','t_p','vidData','t_v');
