@@ -17,10 +17,9 @@ n_tracktime = 10 + 1;       % length(func)/fps; seconds for each EXPERIMENT
 n_resttime = 1;             % seconds for each REST
 n_pause = 0.2;              % seconds for each pause between panel commands
 n_rep = 6;                  % number of cycles through spatial frequencies for each fly
-patID = 2;                  % Spatial frequency grating pattern
 FPS = 200;                  % camera frame rate
 nFrame = FPS*n_tracktime;   % # of frames to log
-Gain = 750;                	% camera gain
+Gain = 1000;               	% camera gain
 Fs = 5000;                  % DAQ sampling rate [Hz]
 AI = 1:6;                	% Analog input channels
 AO = 0;                     % Analog output channels
@@ -62,9 +61,9 @@ disp('Start Experiment:')
 disp('Wavelengths:')
 disp(Freq_all')
 disp('--------------------------------------------------')
-for ii = 1:n_trial
+for kk = 1:n_trial
     disp('Trial')
-    disp(num2str(ii));  % print counter to command line
+    disp(num2str(kk));  % print counter to command line
     preview(vid);       % open video preview window
 	start(vid)          % start video buffer
     
@@ -77,7 +76,7 @@ for ii = 1:n_trial
     
     % EXPERIMENT SETUP %
     disp('Play Stimulus: ')
-    disp(['Wavelength = ' num2str(Freq_all(ii))])
+    disp(['Wavelength = ' num2str(Freq_all(kk))])
     
     if isnan(Freq_all(kk))
         Panel_com('set_pattern_id', 1);pause(n_pause)	% set pattern
@@ -85,13 +84,13 @@ for ii = 1:n_trial
         Panel_com('set_pattern_id', 2);pause(n_pause)	% set pattern
     end
     
-    Panel_com('set_pattern_id', patID); pause(n_pause)    	% set pattern
     Panel_com('set_position',[randi([1,96]) , ...        	% set starting position (xpos,ypos)
                   	ypos_all(kk)]); pause(n_pause)           
 	Panel_com('set_funcX_freq', 50); pause(n_pause)      	% update rate for x-channel
     Panel_com('set_funcY_freq', 50); pause(n_pause)     	% update rate for y-channel
     Panel_com('set_mode', [0,0]); pause(n_pause)         	% 0=open,1=closed,2=fgen,3=vmode,4=pmode
-	
+	Panel_com('send_gain_bias',[0 0 0 0]); pause(n_pause) 	% [xgain,xoffset,ygain,yoffset]
+
     % START EXPERIMENT & DATA COLLECTION %
     queueOutputData(s,TRIG) % set trigger AO signal
     T = timer('StartDelay',0.5,'TimerFcn',@(src,evt) Panel_com('start'));
@@ -113,7 +112,7 @@ for ii = 1:n_trial
     disp('Saving...')
     disp('----------------------------------------------------------------------')
     
-    fname = ['Fly_' num2str(Fn) '_Trial_' num2str(ii) '_Wave_' num2str(Freq_all(ii)) ...
+    fname = ['Fly_' num2str(Fn) '_Trial_' num2str(kk) '_Wave_' num2str(Freq_all(kk)) ...
         '_Vel_' num2str(0) '.mat'];
     
     save(fullfile(root,fname),'-v7.3','data','t_p','vidData','t_v');
@@ -123,5 +122,5 @@ delete(vid)
 disp('Done');
 daqreset
 imaqreset
-PControl
+% PControl
 end
