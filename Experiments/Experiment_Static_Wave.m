@@ -1,26 +1,23 @@
-function [] = Experiment_Static_SpatFreq_v2(Fn)
-%% Experiment_Static_SpatFreq_v2: runs an experiment using LED arena and fly panel controller
+function [] = Experiment_Static_Wave(Fn)
+%% Experiment_Static_Wave: runs an experiment using LED arena and fly panel controller
 %
 %  Written for Panel Controller v3 and NiDAQ seesion mode
 %
 %   INPUTS:
 %       Fn      :  	fly number
 %
-
 daqreset
 imaqreset
-%% Set directories & experimental paramters
+
+%% Set directories & experimental parameters
 root = 'C:\BC\Rigid_data\Experiment_Static_Wave';
 
 % EXPERIMENTAL PARAMETERS
 n_tracktime = 10 + 1;       % length(func)/fps; seconds for each EXPERIMENT
 n_resttime = 1;             % seconds for each REST
 n_pause = 0.2;              % seconds for each pause between panel commands
-n_trial = 20;               % # of repetitions
 n_rep = 6;                  % number of cycles through spatial frequencies for each fly
 patID = 2;                  % Spatial frequency grating pattern
-funcX = 1;                  % SOS (20s)
-xUpdate = 50;               % function update rate
 FPS = 200;                  % camera frame rate
 nFrame = FPS*n_tracktime;   % # of frames to log
 Gain = 750;                	% camera gain
@@ -39,31 +36,33 @@ TRIG(TRIG==-1) = 4;
 [vid,~] = Basler_acA640_120gm(FPS,Gain,nFrame);
 
 %% Set variable to control pattern spatial frequency
-freq = 7.5*[0 3 4 8 inf nan]';  % [deg] spatial frequencies
-n_freq = length(freq);         	% # of velocities
+wave = 7.5*[0 3 4 8 inf nan]';  % [deg] spatial frequencies
+n_wave = length(wave);         	% # of velocities
 ypos = [1 4 5 7 12 1];       	% pattern y-pos corresponding to spatial frequencies
 
 % Create sequence of randomly shuffled frequencies
-Freq_all = nan(n_freq*n_rep,1);
+Freq_all = nan(n_wave*n_rep,1);
 pp = 0;
 for kk = 1:n_rep
-    Freq_rand = freq(randperm(n_freq),:);    % reshuffle randomly
-    Freq_all(pp+1:pp+n_freq,1) = Freq_rand;  % add rep
-    pp = kk*n_freq;
+    Freq_rand = wave(randperm(n_wave),:);    % reshuffle randomly
+    Freq_all(pp+1:pp+n_wave,1) = Freq_rand;  % add rep
+    pp = kk*n_wave;
 end
 
 % y-pos index vector
 ypos_all = Freq_all;
 for kk = 1:length(ypos)
-    ypos_all(ypos_all==freq(kk)) = ypos(kk);
+    ypos_all(ypos_all==wave(kk)) = ypos(kk);
 end
+
+n_trial = n_rep * n_wave;
 
 %% EXPERIMENT LOOP
 disp('Start Experiment:')
 disp('Wavelengths:')
 disp(Freq_all')
 disp('--------------------------------------------------')
-for ii = 1:n_trial   
+for ii = 1:n_trial
     disp('Trial')
     disp(num2str(ii));  % print counter to command line
     preview(vid);       % open video preview window
@@ -86,17 +85,16 @@ for ii = 1:n_trial
         Panel_com('set_pattern_id', 2);pause(n_pause)	% set pattern
     end
     
-    Panel_com('set_pattern_id', patID); pause(n_pause)           	% set pattern
-    Panel_com('set_position',[randi([1,96]) , ...                   % set starting position (xpos,ypos)
+    Panel_com('set_pattern_id', patID); pause(n_pause)    	% set pattern
+    Panel_com('set_position',[randi([1,96]) , ...        	% set starting position (xpos,ypos)
                   	ypos_all(kk)]); pause(n_pause)           
-    Panel_com('set_posfunc_id',[funcX, 1]); pause(n_pause)       	% arg1 = channel (x=1,y=2); arg2 = funcid
-	Panel_com('set_funcX_freq', xUpdate); pause(n_pause)            % update rate for x-channel
-    Panel_com('set_funcY_freq', 50); pause(n_pause)              	% update rate for y-channel
-    Panel_com('set_mode', [4,0]); pause(n_pause)                    % 0=open,1=closed,2=fgen,3=vmode,4=pmode
+	Panel_com('set_funcX_freq', 50); pause(n_pause)      	% update rate for x-channel
+    Panel_com('set_funcY_freq', 50); pause(n_pause)     	% update rate for y-channel
+    Panel_com('set_mode', [0,0]); pause(n_pause)         	% 0=open,1=closed,2=fgen,3=vmode,4=pmode
 	
     % START EXPERIMENT & DATA COLLECTION %
     queueOutputData(s,TRIG) % set trigger AO signal
-    T = timer('StartDelay',0.1,'TimerFcn',@(src,evt) Panel_com('start'));
+    T = timer('StartDelay',0.5,'TimerFcn',@(src,evt) Panel_com('start'));
     start(T)
     tic
         [data, t_p ] = s.startForeground; % data collection
