@@ -7,7 +7,8 @@ function [fitData] = FitPanel(X,t,t_new,varargin)
 %       debug   :   if true, show plot
 %   OUTPUTS:
 %       fitData     :   fit data  
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 Xw = X;
 thresh = 3; % velcoity threshold to detect panel transitions 
 n = length(Xw); % length of signal

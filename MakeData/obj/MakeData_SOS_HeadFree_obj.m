@@ -34,7 +34,8 @@ TRIAL  	= cell(N{1,1},1);
 n.catg  = size(N,2) - 1;
 pp = 0;
 span = 1:2000;
-tt = linspace(0,20,2000)';
+% tt = linspace(0,20,2000)';
+tt = (0:(1/100):(20 - 1/100))';
 for kk = 1:N{1,end}
     disp(kk)
     % Load HEAD & DAQ data
@@ -45,7 +46,7 @@ for kk = 1:N{1,end}
     % Get head data
     head.Time = t_v(span);
     head.Pos = hAngles(span) - mean(hAngles(span));
-    Head = Fly(head.Pos,head.Time,40,IOFreq,[]); % head object
+    Head = Fly(head.Pos,head.Time,40,IOFreq,tt); % head object
 
     % Get wing data from DAQ
 %     sync = find(data(:,1)>1,1,'first');

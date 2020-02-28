@@ -10,7 +10,8 @@ function [acor,timeLag,maxCC,timeDiff] = CrossCorr(x,y,Fs)
 %       lag         :   time-lags
 %       maxCC     	:   maximum cross-correlation
 %       timeDiff 	:   time-difference
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 [acor,lag] = xcorr(x,y);
 timeLag = lag/Fs;
 [~,idx] = max(abs(acor));

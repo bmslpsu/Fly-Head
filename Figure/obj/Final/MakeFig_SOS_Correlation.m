@@ -80,18 +80,20 @@ for ww = 1:nAmp
         yFit = m*xFit + b;
         
         ax(pp) = subplot(nAmp,nFreq,pp) ; hold on        
-            xlabel({'Head (°)','test'})
+            xlabel({'Head (°)'})
             ylabel('Wing (V)');
-            [h] = scatplot(xData,yData);
-            delete(h.cb)
+%             [h] = scatplot(xData,yData,[],[],[],[],1,[]);
+%             delete(h.cb)
 
-        plot(xFit,yFit,'r','LineWidth',2)
-        title(['r = ' num2str(r)])
+            H = densityplot(xData,yData);
+            
+        % plot(xFit,yFit,'r','LineWidth',2)
+        % title(['r = ' num2str(r)])
         
         pp =  pp + 1;
     end
 end
-set(ax, 'FontSize', 8, 'LineWidth', 1.5, 'XLim', 20*[-1 1], 'YLim', 9*[-1 1])
+% set(ax, 'FontSize', 8, 'LineWidth', 1.5, 'XLim', 20*[-1 1], 'YLim', 9*[-1 1])
 
 
 %% Stim vs Head
@@ -114,8 +116,10 @@ for ww = 1:nAmp
         ax(pp) = subplot(nAmp,nFreq,pp) ; hold on        
             xlabel('Stimulus (°)')
             ylabel('Head (°)');
-            [h] = scatplot(xData,yData);
-            delete(h.cb)
+%             [h] = scatplot(xData,yData);
+%             delete(h.cb)
+
+        H = densityplot(xData,yData);
 
         plot(xFit,yFit,'r','LineWidth',2)
         title(['r = ' num2str(r)])
@@ -123,7 +127,7 @@ for ww = 1:nAmp
         pp =  pp + 1;
     end
 end
-set(ax, 'FontSize', 8, 'LineWidth', 1.5, 'XLim', 20*[-1 1], 'YLim', 20*[-1 1])
+% set(ax, 'FontSize', 8, 'LineWidth', 1.5, 'XLim', 20*[-1 1], 'YLim', 20*[-1 1])
 
 %% Stim vs Wing
 fig = figure (3); clf
@@ -145,8 +149,10 @@ for ww = 1:nAmp
         ax(pp) = subplot(nAmp,nFreq,pp) ; hold on        
             xlabel('Stimulus (°)')
             ylabel('Wing (V)');
-            [h] = scatplot(xData,yData);
-            delete(h.cb)
+%             [h] = scatplot(xData,yData);
+%             delete(h.cb)
+            
+            H = densityplot(xData,yData);
 
         plot(xFit,yFit,'r','LineWidth',2)
         title(['r = ' num2str(r)])

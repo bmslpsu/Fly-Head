@@ -30,7 +30,7 @@ FIG.Position = [2 2 10 5];
 FIG.Name = filename;
 movegui(FIG,'center')
 hold on
-Fly
+
 AMP     = [];
 FREQ    = [];
 VEL     = [];
@@ -101,7 +101,7 @@ for jj = 1:HeadFree.N{1,3} % amplitudes
         ax(3).XLabel.FontSize = ax(1).YLabel.FontSize;
         
         pp = pp + 1;
-      	set(ax,'FontSize', 8, 'XLim',[0.1 12])
+      	set(ax,'FontSize', 8, 'XLim',[0.2 12])
         set(ax, 'XTick', sort([ax(1).XLim(1),2:2:12]))
         linkaxes(ax,'x')
 end

@@ -4,7 +4,8 @@ function [FIG] = MakeFig_ChirpLog_HeadFree_WBF_WBA()
 %       -
 %   OUTPUTS:
 %       FIG     :   figure handle
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 root = 'H:\DATA\Rigid_Data\';
 
 [Free,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -126,10 +127,10 @@ for jj = 1:HeadFree.N{1,3}
 	h.grand(jj) = plot(HeadFree.GRAND{jj,catIdx}.Median{2}{5}, HeadFree.GRAND{jj,catIdx}.Median{2}{26},...
         'Color','k','LineWidth',2);
 end
-uistack(h.fly,'top')
+% uistack(h.fly,'top')
 uistack(h.grand,'top')
 
-legend([h.trial(1),h.fly(1),h.grand(1)],'trials','fly means','grand mean')
+% legend([h.trial(1),h.fly(1),h.grand(1)],'trials','fly means','grand mean')
 %% WBA Raw
 FIG = figure (2); clf
 FIG.Color = 'w';

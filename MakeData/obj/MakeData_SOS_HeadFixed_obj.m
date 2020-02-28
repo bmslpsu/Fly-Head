@@ -1,15 +1,17 @@
 function [] = MakeData_SOS_HeadFixed_obj(rootdir)
-%% MakeData_SOS_HeadFixed_obj: Reads in all raw trials, transforms data, and saves in organized structure for use with figure functions
+%% MakeData_SOS_HeadFixed_obj:
+%
+% Reads in all raw trials, transforms data, and saves in organized structure 
+% for use with figure functions
 %   INPUTS:
 %       rootdir    	:   root directory
 %   OUTPUTS:
 %       -
-%---------------------------------------------------------------------------------------------------------------------------------
-rootdir = 'H:\EXPERIMENTS\Experiment_SOS_v2_HeadFixed';
+%
+rootdir = 'H:\EXPERIMENTS\RIGID\Experiment_SOS_v2_HeadFixed';
 filename = 'SOS_HeadFixed_DATA';
-%---------------------------------------------------------------------------------------------------------------------------------
+
 %% Setup Directories %%
-%---------------------------------------------------------------------------------------------------------------------------------
 root.daq = rootdir;
 
 % Select files
@@ -21,7 +23,6 @@ FILES = cellstr(FILES)';
 
 clear rootdir
 %% Get Data %%
-%---------------------------------------------------------------------------------------------------------------------------------
 % IOFreq = 0.1*round(linspace(0.1,8,10)/0.1)';
 IOFreq = [1, 3.1, 5.3, 7.4, 9.6];
 disp('Loading...')
@@ -29,14 +30,13 @@ ALL 	= cell([N{1,end},5]); % cell array to store all data objects
 TRIAL  	= cell(N{1,1},1);
 n.catg  = size(N,2) - 1;
 pp = 0;
-span = 1:2100;
-tt = linspace(0,20,2000)';
+tt = (0:(1/100):(10 - 1/100))';
 for kk = 1:N{1,end}
     disp(kk)
     % Load DAQ data
     data = [];
 	load(fullfile(PATH.daq, FILES{kk}),'data','t_p'); % load pattern x-position
-  	%-----------------------------------------------------------------------------------------------------------------------------
+  	
     % Get wing data from DAQ
 	wing.f          = medfilt1(100*data(:,6),3); % wing beat frequency [Hz]
     wing.Time       = t_p; % wing time [s]
@@ -55,7 +55,7 @@ for kk = 1:N{1,end}
 
     Wing.WBF        = wing.f;
     Wing.WBA        = [wing.Left,wing.Right,wing.Left + wing.Right];
-    %-----------------------------------------------------------------------------------------------------------------------------
+    
 	% Check WBF & WBA
     if min(wing.f)<150 || mean(wing.f)<180 % check WBF, if too low then don't use trial
         fprintf('Low WBF: Fly %i Trial %i \n',D{kk,1},D{kk,2})
@@ -66,19 +66,19 @@ for kk = 1:N{1,end}
     else
         pp = pp + 1; % set next index to store data
     end
-	%-----------------------------------------------------------------------------------------------------------------------------
+	
 	% Get pattern data from DAQ
-    pat.Time	= tt;
+    pat.Time	= t_p;
     pat.Pos 	= panel2deg(data(:,2));  % pattern x-pos: subtract mean and convert to deg [deg]  
     pat.Pos  	= FitPanel(pat.Pos,pat.Time,tt); % fit panel data
  	Pat      	= Fly(pat.Pos,tt,0.4*100,IOFreq); % pattern object
-	%-----------------------------------------------------------------------------------------------------------------------------
+	
  	% Calculate error between head & pattern
     Err = Pat; % error object
-    %-----------------------------------------------------------------------------------------------------------------------------
+    
     % Calculate iput-output relationships
     err2wing = IO_Class(Err,Wing);
-    %-----------------------------------------------------------------------------------------------------------------------------
+    
     % Store objects in cells
     for jj = 1:n.catg
         ALL{pp,jj} = I{kk,jj};
@@ -102,7 +102,6 @@ clear jj ii kk pp qq ww n a b spant_p t_v hAngles data head wing pat bode tt ...
 disp('LOADING DONE')
 
 %% Fly Statistics %%
-%---------------------------------------------------------------------------------------------------------------------------------
 FLY = cell(N{1,1},size(TRIAL{1},2));
 for kk = 1:N{1,1}
     for ii = 1:size(TRIAL{kk},2)
@@ -111,14 +110,12 @@ for kk = 1:N{1,1}
 end
 clear kk ii
 %% Grand Statistics %%
-%---------------------------------------------------------------------------------------------------------------------------------
 GRAND = cell(1,size(FLY,2));
 for ii = 1:size(FLY,2)
     GRAND{ii} = GrandStats(FLY(:,ii));
 end
 clear ii
 %% SAVE %%
-%---------------------------------------------------------------------------------------------------------------------------------
 disp('Saving...')
 save(['H:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
     'TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')

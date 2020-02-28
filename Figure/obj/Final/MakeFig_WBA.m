@@ -4,8 +4,9 @@ function [FIG] = MakeFig_WBA()
 %       -
 %   OUTPUTS:
 %       FIG     :   figure handle
-%---------------------------------------------------------------------------------------------------------------------------------
-root = 'H:\EXPERIMENTS\Experiment_SOS_v2\WBA';
+%
+
+root = 'H:\EXPERIMENTS\RIGID\Experiment_SOS_v2\WBA';
 % root = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFree\Vid\WBA';
 [~,I.Free,N.Free,~,~,FILES,PATH] = GetFileData(root);
 
@@ -37,7 +38,7 @@ WBA_Free_med = [1*ones(N.Free.fly,1), accumarray(I.Free.fly, WBA.Free(:, 3), [],
 vid.Free_med = cellfun(@(x) median(x,3), vid.Free, 'Uniformoutput', false);
 vid.Free_all = median(cat(3,vid.Free_med{:}),3);
 
-root = 'H:\EXPERIMENTS\Experiment_SOS_v2_HeadFixed\WBA';
+root = 'H:\EXPERIMENTS\RIGID\Experiment_SOS_v2_HeadFixed\WBA';
 % root = 'H:\EXPERIMENTS\Experiment_ChirpLog_HeadFixed\Vid\WBA';
 [~,I.Fixed,N.Fixed,~,~,FILES,PATH] = GetFileData(root);
 
@@ -91,7 +92,7 @@ ax1 = gca;
 ax1.FontSize = 8;
 bx = boxplot(ax1,WBA_ALL(:,2),WBA_ALL(:,1),'Labels',{'Free','Fixed'});
 
-ax1.YLim = [0 300];
+ax1.YLim = [150 300];
 ax1.YTick = 0:50:300;
 
 ylabel(['\Sigma WBA (' char(176) ')'],'FontSize',8)

@@ -25,13 +25,16 @@ if ~nargin % open file selection GUi in current folder
     [files, PATH] = uigetfile({'*','files'},'Select files','MultiSelect','on');
     abscat = false;
 elseif nargin>=1
+    if nargin==1
+        filespec = '';
+    end
     if ischar(files) || isstring(files) % if root directory given, open file selection GUi in root
         [files, PATH] = uigetfile({filespec,'files'},'Select files',files,'MultiSelect','on');
     else
         PATH = []; % if only files are given
     end
     
-    if nargin==2
+    if nargin==1 || nargin==2
         abscat = false; % default is off
     end
 end

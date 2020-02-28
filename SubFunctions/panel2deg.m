@@ -4,7 +4,8 @@ function [degData] = panel2deg(voltData)
 %       voltData    :   raw voltage ouput of arena
 %   OUTPUTS:
 %       degData     :   angular position of arena pattern  
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 vRange = 10;    % ouput voltage range
 pixels = 96;    % # of pixels around display
 spRes  = 3.75;  % deg/pixel

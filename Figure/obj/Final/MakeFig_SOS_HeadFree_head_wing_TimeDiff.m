@@ -4,7 +4,8 @@ function [FIG] = MakeFig_SOS_HeadFree_head_wing_TimeDiff()
 %       -
 %   OUTPUTS:
 %       FIG     :   figure handle
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 root = 'H:\DATA\Rigid_Data\';
 
 % Select files

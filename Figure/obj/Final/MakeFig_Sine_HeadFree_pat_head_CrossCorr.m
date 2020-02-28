@@ -4,7 +4,8 @@ function [] = MakeFig_Sine_HeadFree_pat_head_CrossCorr()
 %       -
 %   OUTPUTS:
 %       -
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 root = 'H:\DATA\Rigid_Data\';
 
 % Select files
