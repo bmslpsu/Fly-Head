@@ -23,6 +23,7 @@ xIdx = 1;
 pat2head = 5;
 pat2wing = 8;
 fixedwing = 3;
+head2wing = 7;
 
 FIG = figure (1) ; clf
 FIG.Color = 'w';
@@ -50,6 +51,9 @@ PlotPatch(HeadFree.GRAND{pat2head}.Mean{1}{7}(:,xIdx), HeadFree.GRAND{pat2head}.
 [~,h.wing_fixed] = PlotPatch(HeadFixed.GRAND{fixedwing}.Mean{1}{7}(:,xIdx), HeadFixed.GRAND{fixedwing}.STD{1}{7}(:,xIdx),...
     HeadFixed.GRAND{fixedwing}.Mean{1}{8}(:,xIdx), 1, HeadFixed.N{1,1}, [0.4 0 0.8], [0.4 0.4 0.6], 0.5, 2);
 
+[~,h.headwing] = PlotPatch(HeadFree.GRAND{head2wing}.Mean{1}{7}(:,xIdx), HeadFree.GRAND{head2wing}.STD{1}{7}(:,xIdx),...
+    HeadFree.GRAND{head2wing}.Mean{1}{8}(:,xIdx), 1, HeadFree.N{1,1}, [0 0.8 0.2], [0.4 0.4 0.6], 0.5, 2);
+
 uistack(h.wing,'top')
 uistack(h.wing_fixed,'top')
 
@@ -62,4 +66,8 @@ errorbar(HeadFree.GRAND{pat2wing}.Mean{1}{4}(:,xIdx),HeadFree.GRAND{pat2wing}.Me
 errorbar(HeadFixed.GRAND{fixedwing}.Mean{1}{4}(:,xIdx),HeadFixed.GRAND{fixedwing}.Mean{1}{9}(:,xIdx),...
     1*HeadFixed.GRAND{fixedwing}.STD{1}{9}(:,xIdx)./sqrt(HeadFixed.N{1,1}),'Color',[0.4 0 0.8],'LineWidth',2)
 
+errorbar(HeadFree.GRAND{head2wing}.Mean{1}{4}(:,xIdx),HeadFree.GRAND{head2wing}.Mean{1}{9}(:,xIdx),...
+    1*HeadFree.GRAND{head2wing}.STD{1}{9}(:,xIdx)./sqrt(HeadFree.N{1,1}), 'Color', [0 0.8 0.2], 'LineWidth',2)
+
+set(ax,'LineWidth',1.5,'FontSize',8)
 end

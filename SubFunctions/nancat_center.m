@@ -63,7 +63,7 @@ for jj = 1:n_data % for each cell
     [n_length(jj) , n_array(jj)] = size(data{jj});
     R{jj} = nan(2,n_array(jj));
     for kk = 1:n_array(jj)
-        if ~isnan(cVal{jj})
+        if ~isnan(cVal{jj}(kk))
             [cIdx(jj,kk),~] = find( data{jj}(:,kk)==cVal{jj}(1,kk) ); % find location of center value
         else
             cIdx(jj,kk) = 1;

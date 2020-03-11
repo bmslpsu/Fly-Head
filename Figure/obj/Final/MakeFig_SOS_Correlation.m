@@ -22,9 +22,9 @@ end
 clearvars -except HeadFree Amp nAmp
 
 stimIdx = 1;
-headIdx = 2;
-wingIdx = 3;
-errIdx  = 4;
+headIdx = 1;
+wingIdx = 2;
+errIdx  = 1;
 xIdx = 1;
 
 nFreq = HeadFree{1}.N{1,3};
@@ -82,10 +82,10 @@ for ww = 1:nAmp
         ax(pp) = subplot(nAmp,nFreq,pp) ; hold on        
             xlabel({'Head (°)'})
             ylabel('Wing (V)');
-%             [h] = scatplot(xData,yData,[],[],[],[],1,[]);
-%             delete(h.cb)
+            [h] = scatplot(xData,yData,[],[],[],[],1,[]);
+            delete(h.cb)
 
-            H = densityplot(xData,yData);
+            % H = densityplot(xData,yData);
             
         % plot(xFit,yFit,'r','LineWidth',2)
         % title(['r = ' num2str(r)])
@@ -93,7 +93,8 @@ for ww = 1:nAmp
         pp =  pp + 1;
     end
 end
-% set(ax, 'FontSize', 8, 'LineWidth', 1.5, 'XLim', 20*[-1 1], 'YLim', 9*[-1 1])
+set(ax, 'FontSize', 8, 'LineWidth', 1.5, 'XLim', 20*[-1 1], 'YLim', 9*[-1 1])
+% set(ax, 'XTick', [], 'YTick', [])
 
 
 %% Stim vs Head
@@ -119,7 +120,7 @@ for ww = 1:nAmp
 %             [h] = scatplot(xData,yData);
 %             delete(h.cb)
 
-        H = densityplot(xData,yData);
+        % H = densityplot(xData,yData);
 
         plot(xFit,yFit,'r','LineWidth',2)
         title(['r = ' num2str(r)])
@@ -127,7 +128,7 @@ for ww = 1:nAmp
         pp =  pp + 1;
     end
 end
-% set(ax, 'FontSize', 8, 'LineWidth', 1.5, 'XLim', 20*[-1 1], 'YLim', 20*[-1 1])
+set(ax, 'FontSize', 8, 'LineWidth', 1.5, 'XLim', 20*[-1 1], 'YLim', 20*[-1 1])
 
 %% Stim vs Wing
 fig = figure (3); clf
@@ -149,13 +150,13 @@ for ww = 1:nAmp
         ax(pp) = subplot(nAmp,nFreq,pp) ; hold on        
             xlabel('Stimulus (°)')
             ylabel('Wing (V)');
-%             [h] = scatplot(xData,yData);
-%             delete(h.cb)
+            [h] = scatplot(xData,yData);
+            delete(h.cb)
             
-            H = densityplot(xData,yData);
+            % H = densityplot(xData,yData);
 
-        plot(xFit,yFit,'r','LineWidth',2)
-        title(['r = ' num2str(r)])
+%         plot(xFit,yFit,'r','LineWidth',2)
+%         title(['r = ' num2str(r)])
         
         pp =  pp + 1;
     end

@@ -1,4 +1,4 @@
-function [FIG] = MakeFig_ChirpLog_HeadFree_pat2head_BODE_ALL_new2()
+function [FIG] = MakeFig_ChirpLog_HeadFree_pat2wing_BODE_ALL_new2()
 %% MakeFig_ChirpLog_HeadFree_pat2head_BODE_ALL_new:
 %   INPUTS:
 %       -
@@ -16,11 +16,10 @@ HeadFree = load(fullfile(root,CHIRP{1}),'GRAND','U','N');
 clearvars -except HeadFree
 
 %%
-filename = 'ChirpLog_HeadFree_pat2head_BODE_ALL_new';
-catIdx = 5;
+filename = 'ChirpLog_HeadFree_pat2wing_BODE_ALL_new';
+catIdx = 6;
 xIdx = 1;
-CC = [0 0 0.7];
-y_lim = 1;
+y_lim = 0.3;
 n_amp = HeadFree.N.Amp;
 
 AMP     = [];

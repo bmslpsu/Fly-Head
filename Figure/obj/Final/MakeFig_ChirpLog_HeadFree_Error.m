@@ -75,7 +75,9 @@ ax1 = subplot(1,1,1);
     ax3.XTickLabels = velLabel;
     ax3.XLabel.String = ['Peak Velocity (' char(176) '/s)'];
     ax3.XLabel.FontSize = ax1.YLabel.FontSize;
-
+    
+    set([ax1,ax3],'LineWidth',1.5)
+    
 %% Time Domain
 FIG = figure (2); clf
 FIG.Color = 'w';
