@@ -227,7 +227,7 @@ classdef Fly
                 subplot(2,nn,pp) ; hold on ; grid on
                 title(['X_' num2str(kk)])
              	plot(obj.Fv,obj.Mag(:,kk),'k')
-                plot(obj.IOFreq,obj.IOMag(:,kk),'r*')
+                % plot(obj.IOFreq,obj.IOMag(:,kk),'r*')
                 xlim([0 lim])
                 
                 if pp==1
@@ -237,7 +237,7 @@ classdef Fly
                 subplot(2,nn,pp+nn) ; hold on ; grid on
                 ylabel('Phase')
              	plot(obj.Fv,obj.Phase(:,kk),'k')
-                plot(obj.IOFreq,obj.IOPhase(:,kk),'r*')
+                % plot(obj.IOFreq,obj.IOPhase(:,kk),'r*')
              	xlim([0 lim])
 
                 if pp==(n+1)

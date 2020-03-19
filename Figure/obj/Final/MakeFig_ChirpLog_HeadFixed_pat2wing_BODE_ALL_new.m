@@ -4,7 +4,8 @@ function [FIG] = MakeFig_ChirpLog_HeadFixed_pat2wing_BODE_ALL_new()
 %       -
 %   OUTPUTS:
 %       FIG     : figure handle
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 root = 'H:\DATA\Rigid_Data\';
 
 % Select chirp files
@@ -14,6 +15,7 @@ CHIRP = cellstr(CHIRP)';
 
 HeadFree = load(fullfile(root,CHIRP{1}),'GRAND','U','N');
 
+%%
 figNum = 1;
 filename = 'ChirpLog_HeadFixed_pat2wing_BODE_ALL_new';
 catIdx = 3;

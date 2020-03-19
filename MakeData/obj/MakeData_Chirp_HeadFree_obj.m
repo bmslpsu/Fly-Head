@@ -29,7 +29,7 @@ ALL 	= cell([N{1,end},11]); % cell array to store all data objects
 TRIAL  	= cell(N{1,1},N{1,3});
 n.catg  = size(N,2) - 1;
 pp = 0;
-tintrp = (0:(1/100):20)';
+tintrp = (0:(1/200):20)';
 for kk = 1:N.file
     disp(kk)
     % Load HEAD & DAQ data
@@ -129,7 +129,6 @@ for jj = 1:N{1,3}
 end
 clear jj ii
 %% SAVE %%
-
 disp('Saving...')
 save(['H:\DATA\Rigid_Data\' filename '_' datestr(now,'mm-dd-yyyy') '.mat'],...
     'TRIAL','FLY','GRAND','D','I','U','N','T','-v7.3')

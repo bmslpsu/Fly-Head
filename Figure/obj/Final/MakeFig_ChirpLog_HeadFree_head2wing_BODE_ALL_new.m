@@ -4,7 +4,8 @@ function [FIG] = MakeFig_ChirpLog_HeadFree_head2wing_BODE_ALL_new()
 %       -
 %   OUTPUTS:
 %       FIG     : figure handle
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 root = 'H:\DATA\Rigid_Data\';
 
 [CHIRP,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -13,15 +14,19 @@ CHIRP = cellstr(CHIRP)';
 
 HeadFree = load(fullfile(root,CHIRP{1}),'GRAND','U','N');
 
+%%
+clearvars -except HeadFree
+
 filename = 'ChirpLog_HeadFree_head2wing_BODE_ALL_new';
 catIdx = 7;
 xIdx = 1;
-CC = [0.2 0.5 1];
+CC = 'k';
 
-%% ALL Amp
+% ALL Amp
 FIG = figure (1); clf
 FIG.Color = 'w';
-FIG.Position = [100 100 1200 650];
+FIG.Units = 'inches';
+FIG.Position = [2 2 4*2.5 5];
 FIG.Name = filename;
 movegui(FIG,'center')
 hold on
@@ -36,13 +41,13 @@ for jj = 1:HeadFree.N{1,3}
     GSTD(:,jj)  = HeadFree.GRAND{jj,catIdx}.STD{2}{2}(:,xIdx);
     PSTD(:,jj)  = rad2deg(HeadFree.GRAND{jj,catIdx}.CircSTD{7}{3}(:,xIdx));
     
-    [b,a] = butter(2,0.5,'low');
-    [bb,aa] = butter(2,0.5,'low');
-    mff = 2;
-    PHASE(:,jj) = filtfilt(bb,aa,medfilt1(filtfilt(b,a,PHASE(:,jj)),mff));
-    GAIN(:,jj)  = filtfilt(bb,aa,medfilt1(filtfilt(b,a,GAIN(:,jj)),mff));
-    GSTD(:,jj)  = filtfilt(bb,aa,medfilt1(filtfilt(b,a,GSTD(:,jj)),mff));
-    PSTD(:,jj)  = filtfilt(bb,aa,medfilt1(filtfilt(b,a,PSTD(:,jj)),mff));
+%     [b,a] = butter(2,0.5,'low');
+%     [bb,aa] = butter(2,0.5,'low');
+%     mff = 2;
+%     PHASE(:,jj) = filtfilt(bb,aa,medfilt1(filtfilt(b,a,PHASE(:,jj)),mff));
+%     GAIN(:,jj)  = filtfilt(bb,aa,medfilt1(filtfilt(b,a,GAIN(:,jj)),mff));
+%     GSTD(:,jj)  = filtfilt(bb,aa,medfilt1(filtfilt(b,a,GSTD(:,jj)),mff));
+%     PSTD(:,jj)  = filtfilt(bb,aa,medfilt1(filtfilt(b,a,PSTD(:,jj)),mff));
     
     ax1 = subplot(2,HeadFree.N{1,3},pp);
         hold on
@@ -56,7 +61,7 @@ for jj = 1:HeadFree.N{1,3}
      	ax1.XLabel.String = 'Frequency (Hz)';
         ax1.XLabel.FontSize = ax1.YLabel.FontSize;
         ax1.XLabel.Color = 'w';
-       	ax1.XLim = [0.3 10];
+       	ax1.XLim = [0.1 12];
         ax1.XTickLabels = '';
         
         if pp>1
@@ -66,7 +71,7 @@ for jj = 1:HeadFree.N{1,3}
         hold on
 
         h.patch = PlotPatch(GAIN(:,jj), GSTD(:,jj), FREQ(:,jj) ,...
-                            2,HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,2);
+                            2,HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,1);
                         
         plot([0 12],[1 1],'--g','LineWidth',2);           
               
@@ -95,7 +100,7 @@ for jj = 1:HeadFree.N{1,3}
         end
         
         h.patch = PlotPatch(PHASE(:,jj), PSTD(:,jj), FREQ(:,jj) , 3,...
-            HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,2);
+            HeadFree.N{1,1},CC,[0.4 0.4 0.6],0.5,1);
                 
         plot([0 12],[0 0],'--g','LineWidth',2);
         

@@ -10,12 +10,12 @@ function [MOV] = BeniflyMontage_SOS_v2(rootdir,rootpat,vidFs,export)
 %       MOV         : structure containing movie 
 %
 % Example Input %
-% clear ; clc ; close all
-% export = true;
-% vidFs = 50;
+clear ; clc ; close all
+export = true;
+vidFs = 50;
 % rootdir = 'H:\EXPERIMENTS\Experiment_SOS_v2\Benifly\new';
-% rootdir = 'H:\EXPERIMENTS\Experiment_Sinusoid\15\Vid\Benifly\new';
-% rootpat = 'C:\Users\boc5244\Documents\GitHub\Arena\Patterns';
+rootdir = 'H:\EXPERIMENTS\RIGID\Experiment_Sinusoid\3.75\Vid\Benifly';
+rootpat = 'C:\Users\boc5244\Documents\GitHub\Arena\Patterns';
 
 % Select angle file
 [FILE.benifly, PATH.benifly] = uigetfile({'*.csv', 'DAQ-files'}, ...
@@ -33,8 +33,8 @@ FILE.montage = [FILE.basename '_Montage_v2.avi'];
 
 % Make path for pattern positions from daq and video time (assume one folder back)
 pathparts = strsplit(PATH.benifly,filesep);
-PATH.daq = fullfile(pathparts{1:end-4});
-PATH.vid = fullfile(pathparts{1:end-3});
+PATH.daq = fullfile(pathparts{1:end-3});
+PATH.vid = fullfile(pathparts{1:end-2});
 
 % Load data
 disp('Loading Data...')

@@ -4,7 +4,8 @@ function [FIG] = MakeFig_Sine_HeadFree_pat2head_BODE()
 %       -
 %   OUTPUTS:
 %       FIG     : figure handle
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 root = 'H:\DATA\Rigid_Data\';
 
 % Select files
@@ -93,8 +94,8 @@ hold on
 % end
 
 % Grand Stats
-for ww = 1:nAmp % amplitudes
-    ax1 = subplot(2,1,1) ; hold on ; xlim([0 12.5]) ; ylim(1*[0 1]) ; title([num2str(Amp) , char(176)])
+for ww = 3 % amplitudes
+    ax1 = subplot(2,1,1) ; hold on ; xlim([0 12.5]) ; ylim(1*[0 1]) ; title([num2str(Amp(ww)) , char(176)])
     ax1.FontSize = 8;
     ax1.YLabel.FontSize = 8;
     ax1.XLabel.FontSize = 8;

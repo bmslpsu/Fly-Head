@@ -4,7 +4,8 @@ function [FIG] = MakeFig_ChirpLog_HeadFree_pat2wing_BODE_ALL_new()
 %       -
 %   OUTPUTS:
 %       FIG     : figure handle
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 root = 'H:\DATA\Rigid_Data\';
 
 [Free,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
@@ -19,13 +20,10 @@ Fixed = cellstr(Fixed)';
 HeadFree = load(fullfile(root,Free{1}),'GRAND','U','N');
 HeadFixed = load(fullfile(root,Fixed{1}),'GRAND','U','N');
 
-
-
-
 %%
-filename = 'ChirpLog_HeadFree_pat2head_BODE_ALL_new';
-stim2wing = 8; 
-err2wing = 5;
+filename = 'ChirpLog_HeadFree_pat2wing_BODE_ALL_new';
+stim2wing = 6; 
+err2wing = 6;
 xIdx = 1;
 CC = [0 0 0.7];
 

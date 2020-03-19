@@ -37,6 +37,9 @@ for jj = 1:n_amp % amplitudes
     GSTD(:,jj)     = abs(HeadFree.GRAND{jj,catIdx}.STD{1}{17}(:,xIdx));
     PSTD(:,jj)     = rad2deg((HeadFree.GRAND{jj,catIdx}.STD{1}{17}(:,xIdx)));
     
+    
+    
+    
 %  	[b,a] = butter(2,0.5,'low');
 %     [bb,aa] = butter(2,0.5,'low');
 %     mff = 1;

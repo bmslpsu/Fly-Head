@@ -8,11 +8,13 @@ function [FIG] = MakeFig_ChirpLog_HeadFree_pat2wing_BODE_ALL_new2()
 
 root = 'H:\DATA\Rigid_Data\';
 
-[CHIRP,~] = uigetfile({'*.mat', 'DAQ-files'}, ...
-    'Select chirp file', root, 'MultiSelect','on');
-CHIRP = cellstr(CHIRP)';
+[Free,~] = uigetfile({'*.mat'}, 'Select free file', root, 'MultiSelect','off');
+[Fixed,~] = uigetfile({'*.mat'}, 'Select fixed file', root, 'MultiSelect','off');
 
-HeadFree = load(fullfile(root,CHIRP{1}),'GRAND','U','N');
+HeadFree = load(fullfile(root,Free),'GRAND','U','N');
+HeadFixed = load(fullfile(root,Fixed),'GRAND','U','N');
+
+
 clearvars -except HeadFree
 
 %%

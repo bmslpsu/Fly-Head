@@ -62,8 +62,8 @@ for ww = 1:nAmp
                 R = real(C);
                 I = imag(C);
                 
-                Fv = HeadFree{2, 1}.TRIAL{5, 1}{1, 1}.Fv  
-                plot()
+                %Fv = HeadFree{1, 1}.TRIAL{5, 1}{1, 1}.Fv  
+                %plot()
                 
                 Complex{ww}(pp,jj)  = C;
                 Real{ww}(pp,jj)     = R;
@@ -86,8 +86,8 @@ for jj = 1:nFreq
    scatter(real(Complex{5}(:,jj)), imag(Complex{5}(:,jj)), 'o','MarkerEdgeColor','k',...
         'MarkerFaceColor', color_freq(jj,:), 'MarkerFaceAlpha', 0.65, 'LineWidth', 0.5);
 end
-FFT
-datawrap
+% FFT
+% datawrap
 ComplexGain = cellfun(@(x,y) (x + 1i*y), Real, Imag, 'UniformOutput', false);
 Gain = cellfun(@(x) abs(x), ComplexGain, 'UniformOutput', false);
 Phase = cellfun(@(x) rad2deg(angle(x)), ComplexGain, 'UniformOutput', false);
