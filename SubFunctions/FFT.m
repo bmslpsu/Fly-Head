@@ -1,8 +1,10 @@
 function [Fv, Mag , Phs , FREQ] = FFT(t,x)
 %% FFT: Computes fast-fourier-transform
+%
 %   INPUTS:
 %       t   :  	time vector [s]
 %       x   : 	data
+%
 %   OUTPUTS:
 %       Fv  :  	frequency vector [Hz]
 %       Mag : 	magnitude vector

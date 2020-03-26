@@ -6,7 +6,8 @@ function [ax,h] = ComplexAxes(mag,magOff,invertColor)
 %   OUTPUTS:
 %       ax              :   axis handle
 %       h               :   graphics handle structure
-%---------------------------------------------------------------------------------------------------------------------------------
+%
+
 if nargin<=2
    invertColor = false; % default
    if nargin<=1
