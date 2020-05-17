@@ -47,7 +47,7 @@ end
 
 [n_center, ~] = cellfun(@(x) size(x), data, 'UniformOutput', true); % size of dimension to center around in each cell
 
-if n_center<=2
+if n_center <= 2
     error('Error: need at least 3 values in array')
 end
 
