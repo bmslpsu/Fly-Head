@@ -472,6 +472,57 @@ for ww = 1:nAmp
         % set(ax,'XScale','log')
 end
 
+%% Complex Gain: All Bode Plot for EMD mean temporal frequency
+
+emd_data = load('C:\Users\BC\Box\Research\Manuscripts\Head\EMD\data\EMD_Model=1_Wave=30_Amp=15_Accp=4.95_Delay=35.mat');
+
+FIG = figure (5); clf
+FIG.Color = 'w';
+FIG.Units = 'inches';
+FIG.Position = [2 2 14 5];
+FIG.Name = 'All Bode';
+movegui(FIG,'center')
+hold on
+clear h ax
+cmap = hsv(nAmp);
+mean_temp_freq = 4*Freq.*Amp / 30;
+ax = gobjects(nAmp,2);
+for ww = 1:nAmp
+    ax(ww,1) = subplot(2,nAmp,ww) ; hold on
+        ax(ww,1).YLabel.String = 'Gain (°)';
+        [~,h.gain] = PlotPatch(GAIN(ww,:),GAIN_STD(ww,:), ... 
+            mean_temp_freq(ww,:),1,1,cmap(ww,:),[0.4 0.4 0.6],0.2,2);
+     	h.gain.Marker = '.';
+        h.gain.MarkerSize = 15;
+        
+        plot(emd_data.mean_tempfreq_raw, emd_data.Mag_Raw, 'k', 'LineWidth', 2)
+        plot(emd_data.mean_tempfreq_head, emd_data.Mag_Head, '.-b', 'LineWidth', 2, ...
+                        'Marker', '.', 'MarkerSize', 15)
+
+    ax(ww,2) = subplot(2,nAmp,ww+nAmp) ; hold on
+        ax(ww,2).YLim = [-180 180];
+        ax(ww,2).YLabel.String = 'Phase (°)';
+        ax(ww,2).YTick = -180:60:180;
+
+        [~,h.phase] = PlotPatch(PHASE(ww,:),PHASE_STD(ww,:), ...
+            mean_temp_freq(ww,:),1,1,cmap(ww,:),[0.4 0.4 0.6],0.2,2);
+        h.phase.Marker = '.';
+        h.phase.MarkerSize = 15;
+        plot([0 25],[0 0],'--', 'Color', [0.5 0.5 0.5], 'LineWidth', 1)
+        
+        plot(emd_data.mean_tempfreq_raw, rad2deg(emd_data.Phase_Raw), 'k', 'LineWidth', 2)
+        plot(emd_data.mean_tempfreq_head, rad2deg(emd_data.Phase_Head), '.-b', 'LineWidth', 2, ...
+                        'Marker', '.', 'MarkerSize', 15)
+
+end
+set(ax, 'FontSize', 10, 'LineWidth', 1.5, 'Xlim', [0 25], 'XTick', 0:5:25)
+linkaxes(ax(:,1), 'y')
+linkaxes(ax(:,2), 'y')
+linkaxes(ax, 'x')
+
+XLabelHC = get(ax(:,2), 'XLabel');
+set([XLabelHC{:}], 'String', 'Mean Temporal Frequency  (Hz)')
+
 %% Gain & Phase vs Amplitude
 FIG = figure (5); clf
 FIG.Color = 'w';
