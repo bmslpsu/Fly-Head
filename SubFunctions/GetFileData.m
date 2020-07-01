@@ -63,7 +63,7 @@ end
 % Test whether data is string or number --> determine if category or value
 valvar = false(1,n.vars);
 for ii = 1:n.vars
-    valvar(ii) = isnan(str2double(vardata{1,ii}));
+    valvar(ii) = isnan(str2double(vardata{1,ii})) && ~strcmp('NaN', vardata{1,ii});
 end
 
 if ~valvar(1) % make sure naming convetion is consistent and file name starts with a category
@@ -90,7 +90,7 @@ end
 loc.catg = loc.catg(1:length(loc.val)); % if there are more categories than values --> get rid of trailing categories
 n.catg = length(loc.val); % # of categories
 n.val = length(loc.catg); % # of values
-if length(varargin)>n.catg
+if length(varargin) > n.catg
    error('Error: more variable names than variables')
 end
 
