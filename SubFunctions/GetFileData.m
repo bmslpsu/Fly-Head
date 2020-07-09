@@ -24,7 +24,7 @@ function [D,I,N,U,T,FILES,PATH,basename] = GetFileData(files,filespec,abscat,var
 if ~nargin % open file selection GUi in current folder
     [files, PATH] = uigetfile({'*','files'},'Select files','MultiSelect','on');
     abscat = false;
-elseif nargin>=1
+elseif nargin >= 1
     if nargin==1
         filespec = '';
     end
@@ -192,7 +192,7 @@ end
 
 % Let user set variable names if specififed
 varnames = catg;
-if nargin>3
+if nargin > 3
     for kk = 1:nargin-3
         varnames{kk} = varargin{kk};
     end
@@ -261,18 +261,25 @@ mapSum = sum(map,1); % # of trials per condition
 % Table from raw file data
 D = splitvars([ table(numdata), cell2table(vardata(:,varIdx)) ]);
 D.Properties.VariableNames = varnames;
+
 % Table from index data
 I = splitvars(table(Ind));
 I.Properties.VariableNames = varnames;
+
 % Table from # data
 N = splitvars(table([nn,n.file]));
 N.Properties.VariableNames = [varnames,'file'];
+
 % Table from unique data
 U = cell2table(unq);
 U.Properties.VariableNames = varnames;
+% U = cell2table(cell(1,length(varnames)), 'VariableNames', varnames);
+% U{1,1:n.catg} = unq;
+
 % Table from map conditions
 M = splitvars(table(mapSum));
 M.Properties.VariableNames = mapname;
+
 % Table from all trials ,flies, conditions
 T = splitvars(table(unq{1} , reps{:,1} , map , mpass));
 T.Properties.VariableNames = [varnames(1:2) , mapname ,['CHECK_' num2str(minTrial)]];
