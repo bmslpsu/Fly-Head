@@ -1,5 +1,5 @@
-function [MOV] = BeniflyMontage_SOS_v2(rootdir,rootpat,vidFs,export)
-%% BeniflyMontage_SOS_v2:  makes movie for fly in rigid tether
+function [MOV] = BeniflyMontage_SOS_v3(rootdir,rootpat,vidFs,export)
+%% BeniflyMontage_SOS_v3:  makes movie for fly in rigid tether
 %                   Includes fly video, head tracking, wing tracking,pattern position and plots of data
 %   INPUT:
 %       rootdir     : directory containing BENIFLY file
@@ -13,9 +13,9 @@ function [MOV] = BeniflyMontage_SOS_v2(rootdir,rootpat,vidFs,export)
 clear ; clc ; close all
 export = true;
 vidFs = 50;
-rootdir = 'H:\EXPERIMENTS\Experiment_SOS_v2\Benifly\new';
+rootdir = 'H:\EXPERIMENTS\RIGID\Experiment_SOS_v2\Benifly\new';
 % rootdir = 'H:\EXPERIMENTS\RIGID\Experiment_Sinusoid\3.75\Vid\Benifly';
-rootpat = 'C:\Users\boc5244\Documents\GitHub\Arena\Patterns';
+rootpat = 'C:\Users\BC\Box\Git\Arena\Patterns';
 
 % Select angle file
 [FILE.benifly, PATH.benifly] = uigetfile({'*.csv', 'DAQ-files'}, ...
@@ -29,12 +29,12 @@ rootpat = 'C:\Users\boc5244\Documents\GitHub\Arena\Patterns';
 FILE.basename = FILE.benifly(1:end-4);
 FILE.daq = [FILE.basename '.mat'];
 FILE.vid = [FILE.basename '.avi'];
-FILE.montage = [FILE.basename '_Montage_v2.avi'];
+FILE.montage = [FILE.basename '_Montage_v3.avi'];
 
 % Make path for pattern positions from daq and video time (assume one folder back)
 pathparts = strsplit(PATH.benifly,filesep);
 PATH.daq = fullfile(pathparts{1:end-3});
-PATH.vid = fullfile(pathparts{1:end-2});
+PATH.vid = fullfile(pathparts{1:end-3});
 
 % Load data
 disp('Loading Data...')
@@ -51,7 +51,9 @@ root.mov = [PATH.benifly '\Movie']; % movie directory
 mkdir(root.mov) % create directory for export images
 % root.image = [root.daq 'Movie\' dirName]; % image directory
 
-% Get video, pattern, position, & angles data
+%% Get video, pattern, position, & angles data
+Fs = 100;
+tintrp = (0:(1/Fs):20)';
 Fly.vid = benifly_vid; % video data
 Fly.time = vid_data.t_v; % video time
 Fly.Fs = round(1/mean(diff(Fly.time))); % video sampling rate
@@ -61,6 +63,9 @@ Fly.head = filtfilt(b,a,rad2deg(benifly_data.Head));
 Fly.wba = rad2deg(benifly_data.LWing - benifly_data.RWing);
 Fly.wba = hampel(Fly.time,Fly.wba);
 Fly.wba = filtfilt(b,a,Fly.wba - mean(Fly.wba));
+
+Fly.head = interp1(Fly.time, Fly.head, tintrp, 'pchip');
+Fly.wba = interp1(Fly.time, Fly.wba, tintrp, 'pchip');
 
 [Fly.xP,Fly.yP,Fly.dp,n_frame] = size(Fly.vid ); % get size of video
 center = [round(Fly.yP/2) , round(Fly.xP/2)]; % center point for pattern & fly
@@ -73,17 +78,20 @@ y1 = center(2);
 sA = 3.75 * pi/180; % angle pixel subtends
 Pat.pos = round((96/10)*(daq_data.data(:,2)-mean(0))); % pattern position
 Pat.time = daq_data.t_p; % pattern time
-Pat.int = interp1(Pat.time, Pat.pos, Fly.time, 'nearest'); % interpolate pattern to match fly video
+Pat.int = interp1(Pat.time, Pat.pos, tintrp, 'pchip'); % interpolate pattern to match fly video
 pat_lim = 40;
 Pat.wrap = wrapdata(Pat.int,pat_lim,false);
 Stim = 3.75*(Pat.wrap - mean(Pat.wrap));
 
-% Create structure to store frames
+Fly.time = tintrp;
+n_frame = length(Fly.time);
+
+%% Create structure to store frames
 MOV(1:n_frame) = struct('cdata', [], 'colormap',[]);
 
 % Create video object
 if export
-    VID = VideoWriter(fullfile(root.mov,FILE.montage),'Uncompressed AVI');
+    VID = VideoWriter(fullfile(root.mov,FILE.montage),'MPEG-4');
     VID.FrameRate = vidFs;
     open(VID)
 end
@@ -159,9 +167,9 @@ for jj = 1:n_frame % for each frame
     
     drawnow
     
-    set(ax, 'Color', 'k', 'YColor', 'w', 'XColor', 'w', 'XLim', [0 round(Fly.time(end))]) 
+    set(ax, 'Color', 'w', 'YColor', 'w', 'XColor', 'w', 'XLim', [0 round(Fly.time(end))]) 
     set(ax(1:2), 'YLim', 20*[-1 1], 'YTick', [-15 0 15])
-    set(ax(3), 'YLim', 30*[-1 1], 'YTick', [-25 0 25])
+    set(ax(3), 'YLim', 20*[-1 1], 'YTick', [-15 0 15])
     set(ax(1:2), 'XTick', [])
     set(ax(3),  'XTick', 0:2:round(Fly.time(end)))
     set(ax, 'FontSize', 9)
