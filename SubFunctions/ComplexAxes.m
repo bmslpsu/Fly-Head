@@ -57,7 +57,7 @@ for kk = 1:length(mag)
     h.circle(kk).LineStyle = '-';
     h.circle(kk).LineWidth = 1;
     h.text(kk) = text(magX(kk),magY(kk),num2str(mag(kk)),'Color',axColor,'FontSize',8);
-    h.text(kk).FontWeight = 'bold';
+    %h.text(kk).FontWeight = 'bold';
 %     if mag(kk)==1
 %         h.circle(kk).Color = [0.8 0 0 0.5];
 %     end

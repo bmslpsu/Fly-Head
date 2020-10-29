@@ -4,7 +4,7 @@ function [MAG,PHASE,FIdx] = Get_IO_Freq(Freq,Mag,Phase,uFreq,varargin)
 %       Freq  	: frequency vector
 %       Mag   	: magnitude vector
 %       Phase 	: Phase vector
-%       uFreq   : unique freuncies present
+%       uFreq   : unique frequncies present
 %       fTol    : frequency search tolerance (default=2*T) >>> varargin{1}
 %       debug 	: showplot (default=false) >>> varargin{2}
 %   OUTPUTS:

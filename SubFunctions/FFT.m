@@ -21,5 +21,5 @@ Iv = 1:length(Fv);                  	% index vector
 Mag = 2*abs(fts(Iv));                   % magnitude
 Phs = angle(fts(Iv));                   % phase [rad]
 FREQ = fts(Iv);                         % complex frequency domain data
-% Phs = rad2deg(Phs);                     % phase [deg]
+% Phs = rad2deg(Phs);                	% phase [deg]
 end
