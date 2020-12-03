@@ -1,7 +1,7 @@
 function [ax,h] = ComplexAxes(mag,magOff,invertColor)
 %% ComplexAxes:
 %   INPUTS:
-%       mag             :   magntidues rings to display (default = 1:10)
+%       mag             :   magnitudes rings to display (default = 1:10)
 %       invertColor     :   invert background & axes colors if true
 %   OUTPUTS:
 %       ax              :   axis handle

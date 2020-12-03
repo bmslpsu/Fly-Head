@@ -5,13 +5,13 @@ function [] = MakeData_SOS_HeadFree_obj(rootdir)
 %   OUTPUTS:
 %       -
 %
-rootdir = 'H:\EXPERIMENTS\RIGID\Experiment_SOS_v2';
+rootdir = 'E:\EXPERIMENTS\RIGID\Experiment_SOS_v2';
 filename = 'SOS_HeadFree_DATA';
 
 %% Setup Directories %%
 root.daq = rootdir;
 % root.ang = fullfile(root.daq,'\Vid\Angles\');
-root.ang = fullfile(root.daq,'\Angles\');
+root.ang = fullfile(root.daq,'\tracked_head\');
 
 % Select files
 [FILES, PATH.ang] = uigetfile({'*.mat', 'DAQ-files'}, ...

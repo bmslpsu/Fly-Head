@@ -11,9 +11,12 @@ function [Fv, Mag , Phs , FREQ] = FFT(t,x)
 %       Phs : 	phase vector [rad]
 %       FREQ:   complex frequency domain data
 %
-
-Fs = 1/(mean(diff(t)));                 % sampling frequency [Hz]
-L = length(t);                          % length of signal
+if length(t) == 1
+    Fs = t;
+else
+    Fs = 1/(mean(diff(t)));                 % sampling frequency [Hz]
+end
+L = length(x);                          % length of signal
 Fn = Fs/2;                           	% nyquist frequency [Hz]
 Fv = (linspace(0, 1, fix(L/2)+1)*Fn)';  % frequency vector [Hz]
 fts = fft(x)/L;                        	% normalized fourier transform
