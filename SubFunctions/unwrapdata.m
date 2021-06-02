@@ -34,7 +34,7 @@ while any(go)
     
   	if debug
         if ~any(go)
-            plot(wrap,'k','LineWidth',1.5)
+            plot(wrap,'k','LineWidth',1)
         else
             plot(wrap)
         end
