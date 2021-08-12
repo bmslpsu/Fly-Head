@@ -1,7 +1,7 @@
 function [D,I,N,U,T,FILES,PATH,basename] = GetFileData(files,filespec,abscat,varargin)
 %% GetFileData: Parse file name data and returns tables with relevant information
 %   INPUTS:
-%       FILES       :   file cells in the form "var1_val1_var2_val2_..._varn_valn". The first variable is
+%       files       :   file cells in the form "var1_val1_var2_val2_..._varn_valn". The first variable is
 %                       the control group & the second is the repetions,
 %                       the rest are categories. If "FILES" is a character
 %                       vector, then it is the root directory & user selects files.
