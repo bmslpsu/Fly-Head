@@ -14,7 +14,7 @@ function [Fv, Mag , Phs , FREQ] = FFT(t,x)
 if length(t) == 1
     Fs = t;
 else
-    Fs = 1/(mean(diff(t)));                 % sampling frequency [Hz]
+    Fs = 1/(mean(diff(t)));             % sampling frequency [Hz]
 end
 L = length(x);                          % length of signal
 Fn = Fs/2;                           	% nyquist frequency [Hz]
